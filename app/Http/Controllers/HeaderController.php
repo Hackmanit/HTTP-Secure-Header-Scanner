@@ -2,8 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Crawler;
-use App\Jobs\CrawlSite;
+use App\Jobs\AnalyzeSite;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Validator;
@@ -40,7 +39,7 @@ class HeaderController extends Controller
         // TODO: Further settings
 
         $id = str_random();
-        $this->dispatch(new CrawlSite($id, $url, $whiteList, $withOptions));
+        $this->dispatch(new AnalyzeSite($id, $url, $whiteList, $withOptions));
 
         return redirect()->route('displayReport', $id);
     }

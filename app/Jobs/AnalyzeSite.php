@@ -3,13 +3,14 @@
 namespace App\Jobs;
 
 use App\Crawler;
+use App\Report;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Collection;
 
-class CrawlSite implements ShouldQueue
+class AnalyzeSite implements ShouldQueue
 {
     use InteractsWithQueue, Queueable, SerializesModels;
 
@@ -38,5 +39,6 @@ class CrawlSite implements ShouldQueue
     public function handle()
     {
         $this->crawler->extractAllLinks();
+        $report = new Report($this->id);
     }
 }

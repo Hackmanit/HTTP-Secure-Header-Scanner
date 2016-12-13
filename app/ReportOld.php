@@ -4,7 +4,7 @@ namespace App;
 
 use GuzzleHttp\Psr7\Response as GuzzleResponse;
 
-class Report {
+class ReportOld {
 
     protected $scoreBag;
     protected $response;
