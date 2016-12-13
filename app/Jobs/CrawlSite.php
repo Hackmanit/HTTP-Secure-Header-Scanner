@@ -19,7 +19,10 @@ class CrawlSite implements ShouldQueue
     /**
      * Create a new job instance.
      *
-     * @return void
+     * @param $id
+     * @param $url
+     * @param Collection $whitelist
+     * @param Collection $withOptions
      */
     public function __construct($id, $url, Collection $whitelist, Collection $withOptions)
     {
@@ -34,23 +37,6 @@ class CrawlSite implements ShouldQueue
      */
     public function handle()
     {
-        /*
-         * Aufgabe / Fahrplan
-         * 1. URL eingeben
-         * 2. Report erhalten, wie sicher meine Header auf welchen Seiten sind
-         * 3. Da das seine Zeit dauert, Wartebildschirm mit Status
-         *  3.1 Später wiederkommen / Ticket
-         */
-
-        /*
-         * TODO:
-         * 1. Nutzer gibt URL ein
-         * 2. Job wird dispatcht
-         * 3. Bei Abarbeitung werden die Responses in Redis gespeichert
-         *  3.1 Schon ausgewertet?
-         *
-         */
-
         $this->crawler->extractAllLinks();
     }
 }

@@ -5,10 +5,7 @@ namespace App;
 use Illuminate\Support\Collection;
 use voku\helper\HtmlDomParser;
 use GuzzleHttp\Client;
-use \GuzzleHttp\Psr7\Response;
 use Illuminate\Support\Facades\Redis;
-
-use App\CachedResponse;
 
 class Crawler
 {
@@ -23,10 +20,12 @@ class Crawler
 
     /**
      * Crawler constructor.
-     * @param $url
-     * @param $withOptions
-     * @param $whitelist
+     * @param $id
+     * @param $mainUrl
+     * @param Collection $withOptions
+     * @param Collection $whitelist
      * @param $limit
+     * @internal param $url
      */
     public function __construct($id, $mainUrl, Collection $withOptions, Collection $whitelist, $limit = null)
     {
@@ -77,7 +76,7 @@ class Crawler
                 }
             }
         }
-        return $this->crawledUrls;
+        Redis::hset($this->id, "crawledUrls", $this->crawledUrls);
     }
 
     /**
@@ -120,8 +119,7 @@ class Crawler
     /**
      * Parses the $response with the set $withOptions and returns all links that are found.
      *
-     * @param CachedResponse $response
-     * @param Collection $withOptions
+     * @param $link
      * @return Collection
      *
      * TODO: Weitere Elemente
