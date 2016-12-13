@@ -35,7 +35,7 @@ class Crawler
         $this->withOptions = $withOptions;
         $this->whitelist = $whitelist;
 
-        if($limit === null)
+        if ($limit === null)
             $this->limit = env('LIMIT', 100);
         else
             $this->limit = $limit;
@@ -45,38 +45,38 @@ class Crawler
     }
 
     // TODO: if header is image or pdf, dont crawl this.
-    // TODO: Proxy checken
-    // TODO: smartcard
     // TODO: Downnload des Reports in einer HTML Datei
 
 
-    public function extractAllLinks() {
+    public function extractAllLinks()
+    {
+        while ($link = $this->toCrawl->pop()) {
 
-        while($link = $this->toCrawl->pop()) {
+            if (! $this->crawledUrls->contains($link)) {
+                $this->crawledUrls = $this->crawledUrls->push($link);
 
+                $extractedLinks = $this->extractLinks($link)->unique();
 
-            $extractedLinks = $this->extractLinks($link)->unique();
-            $this->crawledUrls = $this->crawledUrls->push($link)->unique();
+                // Limit
+                if ( $this->crawledUrls->count() > $this->limit)
+                    break;
 
-            foreach ($extractedLinks as $extractedLink) {
+                foreach ($extractedLinks as $extractedLink) {
 
-                // TODO: Improve performance by checking that on $this->toCrawl is no URL that is already on $this->crawledUrls
-                if (!$this->crawledUrls->contains($extractedLink)) {
-
-                    if ($this->crawledUrls->count() + $this->toCrawl->count() < $this->limit) {
+                    if (! $this->crawledUrls->contains($extractedLink)) {
 
                         $this->toCrawl->push($extractedLink)->unique();
+
                         Redis::hset($this->id, 'amountUrlsToCrawl', $this->toCrawl->count());
 
                         Redis::hset($this->id, 'amountUrls', $this->crawledUrls->count());
 
                         \Log::info('URLs crawled: ' . Redis::hget($this->id, 'amountUrls') . " / " . (Redis::hget($this->id, 'amountUrls') + $this->toCrawl->count()));
+
                     }
                 }
-
             }
         }
-
         return $this->crawledUrls;
     }
 
@@ -102,13 +102,15 @@ class Crawler
      */
     protected function getHttpResponse($url)
     {
-        $cached = Redis::hget($this->id, "response.$url");
-        if($cached)
+        $cached = Redis::hget("response", $url);
+        if ($cached)
             return unserialize($cached);
 
         $client = new Client([
             'timeout' => 20
         ]);
+
+        // TODO: HTTP Proxy! @Lednerb, see here: http://docs.guzzlephp.org/en/latest/request-options.html#proxy
         $response = $client->get($url, ['http_errors' => false]);
         $response->url = $url;
 
@@ -125,7 +127,8 @@ class Crawler
      * TODO: Weitere Elemente
      * Orientation: https://github.com/zaproxy/zaproxy/blob/develop/src/org/zaproxy/zap/spider/parser/SpiderHtmlParser.java
      */
-    protected function parseDom($link) {
+    protected function parseDom($link)
+    {
         $dom = HtmlDomParser::str_get_html($this->getHttpResponse($link)->getBody());
 
         $links = collect();
@@ -156,14 +159,15 @@ class Crawler
      * @param Collection $parsedUrls
      * @return Collection with Urls
      */
-    protected function optimizeUrls($scannedUrl, Collection $parsedUrls) {
+    protected function optimizeUrls($scannedUrl, Collection $parsedUrls)
+    {
         $urls = $parsedUrls
             ->unique()
             // Remove everything behind #
             ->map(function ($value, $key) {
                 $pos = strpos($value, '#');
-                if($pos !== false)
-                    return substr($value, 0 , $pos);
+                if ($pos !== false)
+                    return substr($value, 0, $pos);
                 return $value;
             })
             ->map(function ($value, $key) use ($scannedUrl) {
@@ -172,15 +176,20 @@ class Crawler
                 // TODO: switch-case umschreiben
                 switch ($value) {
                     case strncmp($value, 'http', 4) === 0:
-                        return $this->unparse_url($parsed, $scannedUrl); break;
+                        return $this->unparse_url($parsed, $scannedUrl);
+                        break;
                     case strncmp($value, '//', 2) === 0:
-                        return $this->unparse_url($parsed, $scannedUrl); break; // parse_url($scannedUrl, PHP_URL_SCHEME)  . $value;
+                        return $this->unparse_url($parsed, $scannedUrl);
+                        break; // parse_url($scannedUrl, PHP_URL_SCHEME)  . $value;
                     case strncmp($value, '/', 1) === 0:
-                        return $this->unparse_url($parsed, $scannedUrl); break;
+                        return $this->unparse_url($parsed, $scannedUrl);
+                        break;
                     case strncmp($value, '../', 3) === 0:
-                        return $this->unparse_url($parsed, $scannedUrl); break; //parse_url($scannedUrl, PHP_URL_SCHEME) . '://' . parse_url($scannedUrl, PHP_URL_HOST) . substr($value, 3); break;
+                        return $this->unparse_url($parsed, $scannedUrl);
+                        break; //parse_url($scannedUrl, PHP_URL_SCHEME) . '://' . parse_url($scannedUrl, PHP_URL_HOST) . substr($value, 3); break;
                     case strncmp($value, './', 2) === 0:
-                        return $this->unparse_url($parsed, $scannedUrl); break;
+                        return $this->unparse_url($parsed, $scannedUrl);
+                        break;
 
                     default: {
                         if (strpos($value, ':') === false) // filters mailto:, javascript:, data: etc.
@@ -191,8 +200,7 @@ class Crawler
             // Whitelist-Filter
             ->filter(function ($value, $key) {
                 return $this->whitelist->contains(strtolower(parse_url($value, PHP_URL_HOST)));
-            })
-        ;
+            });
         return $urls;
     }
 
@@ -203,16 +211,17 @@ class Crawler
      * @param $scanned_url
      * @return string
      */
-    function unparse_url($parsed_url, $scanned_url) {
-        $scheme   = isset($parsed_url['scheme']) ? $parsed_url['scheme'] . '://' : 'https://' ;
-        $host     = isset($parsed_url['host']) ? strtolower($parsed_url['host']) : strtolower(parse_url($scanned_url, PHP_URL_HOST));
-        $port     = isset($parsed_url['port']) ? ':' . $parsed_url['port'] : '';
-        $user     = isset($parsed_url['user']) ? $parsed_url['user'] : '';
-        $pass     = isset($parsed_url['pass']) ? ':' . $parsed_url['pass']  : '';
-        $pass     = ($user || $pass) ? "$pass@" : '';
-        $path     = isset($parsed_url['path']) ? $parsed_url['path'] : '';
-        if(strncmp($path, "/", 1) !== 0) $path = "/" . $path;
-        $query    = isset($parsed_url['query']) ? '?' . $parsed_url['query'] : '';
+    function unparse_url($parsed_url, $scanned_url)
+    {
+        $scheme = isset($parsed_url['scheme']) ? $parsed_url['scheme'] . '://' : 'https://';
+        $host = isset($parsed_url['host']) ? strtolower($parsed_url['host']) : strtolower(parse_url($scanned_url, PHP_URL_HOST));
+        $port = isset($parsed_url['port']) ? ':' . $parsed_url['port'] : '';
+        $user = isset($parsed_url['user']) ? $parsed_url['user'] : '';
+        $pass = isset($parsed_url['pass']) ? ':' . $parsed_url['pass'] : '';
+        $pass = ($user || $pass) ? "$pass@" : '';
+        $path = isset($parsed_url['path']) ? $parsed_url['path'] : '';
+        if (strncmp($path, "/", 1) !== 0) $path = "/" . $path;
+        $query = isset($parsed_url['query']) ? '?' . $parsed_url['query'] : '';
         return "$scheme$user$pass$host$port$path$query";
     }
 

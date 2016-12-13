@@ -26,7 +26,7 @@ class CachedResponse
         $this->headers = collect($response->getHeaders());
         $this->body = $response->getBody()->getContents();
 
-        Redis::hset($id, "response.$url", serialize($this));
+        Redis::hset("response", $url, serialize($this));
     }
 
     /**
