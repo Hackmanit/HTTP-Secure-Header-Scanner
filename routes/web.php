@@ -12,13 +12,12 @@
 */
 
 Route::get('/', function () {
-    return view('start');
+    return view('enter');
 });
 
-Route::get('test', function () {
-   $url = "https://www.hackmanit.de/trainings.html?query=string";
-   $checkedUrl = parse_url($url);
+Route::post('/', ['as' => 'requestReport', 'uses' => 'HeaderController@requestReport']);
+Route::get('report/{id}', ['as' => 'displayReport', 'uses' => 'HeaderController@displayReport']);
 
-   return $checkedUrl['scheme'] . '://' . $checkedUrl["host"] . $checkedUrl['path'] .  '?'. $checkedUrl['query'];
-
+Route::get('/test', function() {
+    dd(Redis::hkeys("inppH919UWVLTRBN"));
 });

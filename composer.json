@@ -9,7 +9,8 @@
         "laravel/framework": "5.3.*",
         "predis/predis": "^1.1",
         "guzzlehttp/guzzle": "^6.2",
-        "voku/simple_html_dom": "^1.5"
+        "voku/simple_html_dom": "^1.5",
+        "laravelcollective/html": "^5.3.0"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",

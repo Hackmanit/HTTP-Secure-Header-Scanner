@@ -3,7 +3,6 @@
 namespace App;
 
 use GuzzleHttp\Psr7\Response as GuzzleResponse;
-use Log;
 
 class Report {
 
