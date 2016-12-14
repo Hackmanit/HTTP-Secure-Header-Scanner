@@ -15,3 +15,7 @@ Es wird daher nicht mit Eloquent gearbeitet.
 Es wird zunächtst die übergebene URL nach weiteren URLs durchsucht.
 Alle HTTP-Responses werden in Redis zwischengespeichert, damit mehrfache Anfragen vermieden werden.
 
+
+#### Background jobs
+Unbedingt die Anzahl der Versuche angeben, sonst Endlosschleife:
+`--tries=3`

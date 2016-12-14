@@ -13,7 +13,12 @@ use App\Report;
 class HeaderController extends Controller
 {
 
-    // TODO: feature sitemap.xml einlesen und auswerten.
+    public function index() {
+
+        $hostIp = exec("/sbin/ip route|awk '/default/ { print $3 }'");
+
+        return view('enter')->with('hostIp', $hostIp);
+    }
 
     /**
      * Main function for the routing.
@@ -23,10 +28,12 @@ class HeaderController extends Controller
      */
     public function requestReport(Request $request)
     {
-        header('Access-Control-Allow-Origin: *');
 
         $validator = Validator::make($request->all(), [
             'url' => 'required|url',
+            'proxy' => 'boolean',
+            'proxyAddress' => 'required_with:proxy',
+            'ignoreTLS' => 'boolean',
         ]);
 
         if ($validator->fails()) {
@@ -35,11 +42,16 @@ class HeaderController extends Controller
 
         $url = $request->input('url');
         $whiteList = collect(strtolower(parse_url($url, PHP_URL_HOST)));
-        $withOptions = collect([]);
-        // TODO: Further settings
+
+        $options = collect([]);
+        if ($request->input('proxy'))
+            $options->put('proxy', $request->input('proxyAddress'));
+        if ($request->input('ignoreTLS'))
+            $options->push('ignoreTLS');
+
 
         $id = str_random();
-        $this->dispatch(new AnalyzeSite($id, $url, $whiteList, $withOptions));
+        $this->dispatch(new AnalyzeSite($id, $url, $whiteList, $options));
 
         return redirect()->route('displayReport', $id);
     }

@@ -30,6 +30,31 @@ header('Access-Control-Allow-Origin: *');
                     <button class="btn btn-primary form-control">SCAN!</button>
                 </div>
             </div>
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox" name="ignoreTLS" value="1">
+                            SSL/TLS Zertifikatsfehler ignorieren
+                        </label>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox" name="proxy" value="1" v-model="proxy">
+                            Proxy verwenden
+                        </label>
+                        <span v-show="proxy">
+                                <br><input type="text" class="form-control" name="proxyAddress" value="http://{{ $hostIp }}:8888">
+                            </span>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+
+            </div>
+            {!! Form::close() !!}
         </div>
     </div>
 

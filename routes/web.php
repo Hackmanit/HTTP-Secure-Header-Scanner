@@ -11,13 +11,12 @@
 |
 */
 
-Route::get('/', function () {
-    return view('enter');
-});
+Route::get('/', 'HeaderController@index');
 
 Route::post('/', ['as' => 'requestReport', 'uses' => 'HeaderController@requestReport']);
 Route::get('report/{id}', ['as' => 'displayReport', 'uses' => 'HeaderController@displayReport']);
 
 Route::get('/test', function() {
-    dd(Redis::hkeys("inppH919UWVLTRBN"));
+    $crawler = new App\Crawler("xyz", "https://youtube.com", collect(["youtube.com"]), collect(['proxy' => 'tcp://172.18.0.1:8888', 'ignoreTLS']), 11);
+    $crawler->extractAllLinks();
 });

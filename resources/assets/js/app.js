@@ -18,11 +18,10 @@ require('./bootstrap');
 var app = new Vue({
     el: '#app',
     data: {
-        message: 'Welcome',
-        errors: '',
-        url: 'https://slashdesign.it',
-        reports: []
+
+        proxy: '',
     },
+    /*
     methods: {
         getReport: _.debounce(function() {
           var app = this;
@@ -40,7 +39,7 @@ var app = new Vue({
                    });
               });
         }, 500)
-    }
+    }*/
 });
 
 $(document).ready(function () {

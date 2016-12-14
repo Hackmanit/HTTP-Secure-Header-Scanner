@@ -11,28 +11,33 @@ class Crawler
 {
     protected $id;
     protected $mainUrl;
-    protected $withOptions;
+    protected $options;
+    protected $guzzleOptions;
     protected $whitelist;
     protected $limit;
 
     protected $toCrawl;
     protected $crawledUrls;
 
+    // TODO: if header is image or pdf, dont crawl this.
+    // TODO: Downnload des Reports in einer HTML Datei
+    // TODO: feature sitemap.xml einlesen und auswerten.
+
     /**
      * Crawler constructor.
      * @param $id
      * @param $mainUrl
-     * @param Collection $withOptions
      * @param Collection $whitelist
+     * @param Collection $options
      * @param $limit
      * @internal param $url
      */
-    public function __construct($id, $mainUrl, Collection $withOptions, Collection $whitelist, $limit = null)
+    public function __construct($id, $mainUrl, Collection $whitelist, Collection $options = null, $limit = null)
     {
         $this->id = $id;
         $this->mainUrl = $mainUrl;
-        $this->withOptions = $withOptions;
         $this->whitelist = $whitelist;
+        $this->options = $options;
 
         if ($limit === null)
             $this->limit = env('LIMIT', 100);
@@ -41,11 +46,14 @@ class Crawler
 
         $this->toCrawl = collect([$mainUrl]);
         $this->crawledUrls = collect();
+
+        $this->guzzleOptions = collect(['http_errors' => true]);
+        if ($this->options->contains('ignoreTLS'))
+            $this->guzzleOptions->put('verify', false);
+        if ($this->options->has('proxy'))
+            $this->guzzleOptions->put('proxy', $this->options->get('proxy'));
+
     }
-
-    // TODO: if header is image or pdf, dont crawl this.
-    // TODO: Downnload des Reports in einer HTML Datei
-
 
     public function extractAllLinks()
     {
@@ -102,11 +110,10 @@ class Crawler
             return unserialize($cached);
 
         $client = new Client([
-            'timeout' => 20
+            'timeout' => 0
         ]);
 
-        // TODO: HTTP Proxy! @Lednerb, see here: http://docs.guzzlephp.org/en/latest/request-options.html#proxy
-        $response = $client->get($url, ['http_errors' => false]);
+        $response = $client->get($url, $this->guzzleOptions->toArray());
         $response->url = $url;
 
         return new CachedResponse($this->id, $url, $response);
@@ -130,16 +137,16 @@ class Crawler
         foreach ($dom->find("a") as $link)
             $links->push($link->href);
 
-        if ($this->withOptions->contains('images'))
+        if ($this->options->contains('images'))
             foreach ($dom->find("img") as $link)
                 $links->push($link->src);
-        if ($this->withOptions->contains('media'))
+        if ($this->options->contains('media'))
             foreach ($dom->find("video,audio,source") as $link)
                 $links->push($link->src);
-        if ($this->withOptions->contains('css'))
+        if ($this->options->contains('css'))
             foreach ($dom->find("link") as $link)
                 $links->push($link->href);
-        if ($this->withOptions->contains('scripts'))
+        if ($this->options->contains('scripts'))
             foreach ($dom->find("script") as $link)
                 $links->push($link->src);
 

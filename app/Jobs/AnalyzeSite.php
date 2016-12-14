@@ -23,12 +23,12 @@ class AnalyzeSite implements ShouldQueue
      * @param $id
      * @param $url
      * @param Collection $whitelist
-     * @param Collection $withOptions
+     * @param Collection $options
      */
-    public function __construct($id, $url, Collection $whitelist, Collection $withOptions)
+    public function __construct($id, $url, Collection $whitelist, Collection $options)
     {
         $this->id = $id;
-        $this->crawler = new Crawler($id, $url, $withOptions, $whitelist);
+        $this->crawler = new Crawler($id, $url, $whitelist, $options);
     }
 
     /**
