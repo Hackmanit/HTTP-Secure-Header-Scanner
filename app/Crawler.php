@@ -51,7 +51,6 @@ class Crawler
     {
         while ($link = $this->toCrawl->pop()) {
 
-            if (! $this->crawledUrls->contains($link)) {
                 $this->crawledUrls = $this->crawledUrls->push($link);
 
                 $extractedLinks = $this->extractLinks($link)->unique();
@@ -60,21 +59,19 @@ class Crawler
                 if ( $this->crawledUrls->count() > $this->limit)
                     break;
 
-                // TODO: Improve Performance by filtering the $extracedLinks befor the foreach-loop runs
-                foreach ($extractedLinks as $extractedLink) {
+                foreach ($extractedLinks->diff($this->crawledUrls)->diff($this->toCrawl) as $extractedLink) {
+                    // Limit
+                    if( $this->toCrawl->count() + $this->crawledUrls->count() >= $this->limit )
+                        break;
 
-                    if (! $this->crawledUrls->contains($extractedLink)) {
-
-                        if( $this->toCrawl->count() + $this->crawledUrls->count() < $this->limit )
-                            $this->toCrawl->push($extractedLink)->unique();
-
-                        Redis::hset($this->id, 'amountUrlsToCrawl', $this->toCrawl->count());
-                        Redis::hset($this->id, 'amountUrls', $this->crawledUrls->count());
-                        \Log::info('URLs crawled: ' . Redis::hget($this->id, 'amountUrls') . " / " . (Redis::hget($this->id, 'amountUrls') + $this->toCrawl->count()));
-                    }
+                    $this->toCrawl->push($extractedLink)->unique();
                 }
+
+                Redis::hset($this->id, 'amountUrlsToCrawl', $this->toCrawl->count());
+                Redis::hset($this->id, 'amountUrls', $this->crawledUrls->count());
+                \Log::info('URLs crawled: ' . Redis::hget($this->id, 'amountUrls') . " / " . (Redis::hget($this->id, 'amountUrls') + $this->toCrawl->count()));
             }
-        }
+
         Redis::hset($this->id, "crawledUrls", $this->crawledUrls);
     }
 
