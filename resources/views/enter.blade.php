@@ -86,8 +86,8 @@ sub2.example.com" class="form-control"></textarea>
                             Use a proxy
                         </label>
                         <span v-show="proxy">
-                                <br><input type="text" class="form-control" name="proxyAddress" value="http://{{ $hostIp }}:8888">
-                            </span>
+                            <br><input type="text" class="form-control" name="proxyAddress" value="http://{{ $hostIp }}:8888">
+                        </span>
                     </div>
                 </div>
             </div>

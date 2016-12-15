@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ReportRequest;
 use App\Jobs\AnalyzeSite;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
@@ -26,22 +27,9 @@ class HeaderController extends Controller
      * @param Request $request
      * @return array
      */
-    public function requestReport(Request $request)
+    public function requestReport(ReportRequest $request)
     {
-
-        $validator = Validator::make($request->all(), [
-            'url' => 'required|url',
-            'proxy' => 'boolean',
-            'proxyAddress' => 'required_with:proxy',
-            'ignoreTLS' => 'boolean',
-        ]);
-
-        if ($validator->fails()) {
-            return ["status" => "error", "errors" => $validator->messages()];
-        }
-
         $url = $request->input('url');
-
         if (substr($url, -1) !== '/')
             $url = $url . '/';
 
@@ -49,20 +37,18 @@ class HeaderController extends Controller
         $whiteList = collect(strtolower(parse_url($url, PHP_URL_HOST)));
         $whiteList->push(explode("\n", $request->input('whitelist')))->flatten();
 
+        // Set options for crawler
         $options = collect([]);
-        // Proxy options
         if ($request->has('proxy'))
             $options->put('proxy', $request->input('proxyAddress'));
         if ($request->has('ignoreTLS'))
             $options->push('ignoreTLS');
-
-        // Set options for crawler
-        if(!empty($request->input('scan')) )
+        if($request->has('scan'))
             foreach ($request->input('scan') as $type)
                 $options->push($type);
 
         $id = str_random();
-        $this->dispatch(new AnalyzeSite($id, $url, $whiteList, $options));
+        $this->dispatch(new AnalyzeSite($id, $url, $whiteList, $options, $request->input('limit')));
 
         return redirect()->route('displayReport', $id);
     }
