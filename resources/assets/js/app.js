@@ -20,6 +20,7 @@ var app = new Vue({
     data: {
 
         proxy: '',
+        limitOn: '',
     },
     /*
     methods: {

@@ -41,14 +41,25 @@ class HeaderController extends Controller
         }
 
         $url = $request->input('url');
+
+        if (substr($url, -1) !== '/')
+            $url = $url . '/';
+
+        // whitelist
         $whiteList = collect(strtolower(parse_url($url, PHP_URL_HOST)));
+        $whiteList->push(explode("\n", $request->input('whitelist')))->flatten();
 
         $options = collect([]);
-        if ($request->input('proxy'))
+        // Proxy options
+        if ($request->has('proxy'))
             $options->put('proxy', $request->input('proxyAddress'));
-        if ($request->input('ignoreTLS'))
+        if ($request->has('ignoreTLS'))
             $options->push('ignoreTLS');
 
+        // Set options for crawler
+        if(!empty($request->input('scan')) )
+            foreach ($request->input('scan') as $type)
+                $options->push($type);
 
         $id = str_random();
         $this->dispatch(new AnalyzeSite($id, $url, $whiteList, $options));
@@ -57,7 +68,12 @@ class HeaderController extends Controller
     }
 
     public function displayReport($id) {
-        return $id . '<br><a href="/">Back</a>';
+        $string = "";
+        $count = 1;
+        foreach (unserialize(Redis::hget($id, "crawledUrls")) as $link)
+            $string .= $count++ . ' | ' . $link . "<br>";
+
+        return  $string . '<br><br><a href="/">Back</a>';
     }
 
 

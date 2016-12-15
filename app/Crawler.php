@@ -2,6 +2,7 @@
 
 namespace App;
 
+use ClassesWithParents\E;
 use Illuminate\Support\Collection;
 use voku\helper\HtmlDomParser;
 use GuzzleHttp\Client;
@@ -63,6 +64,7 @@ class Crawler
 
                 $extractedLinks = $this->extractLinks($link)->unique();
 
+
                 // Limit
                 if ( $this->crawledUrls->count() > $this->limit)
                     break;
@@ -80,7 +82,7 @@ class Crawler
                 \Log::info('URLs crawled: ' . Redis::hget($this->id, 'amountUrls') . " / " . (Redis::hget($this->id, 'amountUrls') + $this->toCrawl->count()));
             }
 
-        Redis::hset($this->id, "crawledUrls", $this->crawledUrls);
+        Redis::hset($this->id, "crawledUrls", serialize($this->crawledUrls));
     }
 
     /**
@@ -143,7 +145,7 @@ class Crawler
         if ($this->options->contains('media'))
             foreach ($dom->find("video,audio,source") as $link)
                 $links->push($link->src);
-        if ($this->options->contains('css'))
+        if ($this->options->contains('links'))
             foreach ($dom->find("link") as $link)
                 $links->push($link->href);
         if ($this->options->contains('scripts'))
@@ -165,6 +167,14 @@ class Crawler
      */
     protected function optimizeUrls($scannedUrl, Collection $parsedUrls)
     {
+
+        // Add the $scannedUrl to the list if it does not have any further $urls like .pdf or .jpg etc.
+        if($parsedUrls->count() == 0) {
+            $this->id;
+            $return = collect([$this->unparse_url($scannedUrl, $scannedUrl)]);
+            return $return;
+        }
+
         $urls = $parsedUrls
             ->unique()
             // Remove everything behind #
@@ -184,7 +194,7 @@ class Crawler
                         break;
                     case strncmp($value, '//', 2) === 0:
                         return $this->unparse_url($parsed, $scannedUrl);
-                        break; // parse_url($scannedUrl, PHP_URL_SCHEME)  . $value;
+                        break;
                     case strncmp($value, '/', 1) === 0:
                         return $this->unparse_url($parsed, $scannedUrl);
                         break;
@@ -217,7 +227,7 @@ class Crawler
      */
     function unparse_url($parsed_url, $scanned_url)
     {
-        $scheme = isset($parsed_url['scheme']) ? $parsed_url['scheme'] . '://' : 'https://';
+        $scheme = isset($parsed_url['scheme']) ? $parsed_url['scheme'] . '://' : 'http://';
         $host = isset($parsed_url['host']) ? strtolower($parsed_url['host']) : strtolower(parse_url($scanned_url, PHP_URL_HOST));
         $port = isset($parsed_url['port']) ? ':' . $parsed_url['port'] : '';
         $user = isset($parsed_url['user']) ? $parsed_url['user'] : '';

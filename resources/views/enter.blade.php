@@ -24,26 +24,66 @@ header('Access-Control-Allow-Origin: *');
             {!! Form::open(['route' => 'requestReport']) !!}
             <div class="row">
                 <div class="col-md-11">
-                    <input class="form-control" name="url" placeholder="https://yoururl.com" value="https://youtube.com">
+                    <input class="form-control" name="url" placeholder="https://yoururl.com" value="https://hackmanit.de">
                 </div>
                 <div class="col-md-1">
                     <button class="btn btn-primary form-control">SCAN!</button>
                 </div>
             </div>
             <div class="row">
-                <div class="col-md-4">
+                <div class="col-md-3">
+                    <div class="checkbox">
+                        <textarea name="whitelist" rows="5" placeholder="sub1.example.com
+sub2.example.com" class="form-control"></textarea>
+                    </div>
+
+                </div>
+                <div class="col-md-3">
                     <div class="checkbox">
                         <label>
-                            <input type="checkbox" name="ignoreTLS" value="1">
-                            SSL/TLS Zertifikatsfehler ignorieren
+                            <input type="checkbox" name="scan[]" value="images">
+                            Include <b>img</b>-Tags
+                        </label>
+                        <label>
+                            <input type="checkbox" name="scan[]" value="scripts">
+                            Include <b>script</b>-Tags
+                        </label>
+                        <label>
+                            <input type="checkbox" name="scan[]" value="links">
+                            Include <b>link</b>-Tags
+                        </label>
+                        <label>
+                            <input type="checkbox" name="scan[]" value="media">
+                            Include <b>audio</b>- and <b>video</b>-Tags
+                        </label>
+                        <label>
+                            <input type="checkbox" name="scan[]" value="area">
+                            Include <b>area</b>-Tags
                         </label>
                     </div>
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-3">
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox" name="ignoreTLS" value="1" checked>
+                            Ignore SSL/TLS certificate errors
+                        </label>
+                    </div>
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox" name="limitOn" value="1" v-model="limitOn">
+                            Limit crawling
+                        </label>
+                        <span v-show="limitOn">
+                                <br><input type="text" class="form-control" name="limit" value="{{ env('LIMIT', 100) }}">
+                            </span>
+                    </div>
+                </div>
+                <div class="col-md-3">
                     <div class="checkbox">
                         <label>
                             <input type="checkbox" name="proxy" value="1" v-model="proxy">
-                            Proxy verwenden
+                            Use a proxy
                         </label>
                         <span v-show="proxy">
                                 <br><input type="text" class="form-control" name="proxyAddress" value="http://{{ $hostIp }}:8888">
