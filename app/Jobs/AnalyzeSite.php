@@ -15,6 +15,8 @@ class AnalyzeSite implements ShouldQueue
     use InteractsWithQueue, Queueable, SerializesModels;
 
     protected $id;
+    protected $url;
+    protected $options;
     protected $crawler;
 
     /**

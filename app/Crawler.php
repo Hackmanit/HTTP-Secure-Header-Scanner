@@ -2,7 +2,6 @@
 
 namespace App;
 
-use ClassesWithParents\E;
 use Illuminate\Support\Collection;
 use voku\helper\HtmlDomParser;
 use GuzzleHttp\Client;
@@ -64,7 +63,6 @@ class Crawler
 
                 $extractedLinks = $this->extractLinks($link)->unique();
 
-
                 // Limit
                 if ( $this->crawledUrls->count() > $this->limit)
                     break;
@@ -79,9 +77,13 @@ class Crawler
 
                 Redis::hset($this->id, 'amountUrlsToCrawl', $this->toCrawl->count());
                 Redis::hset($this->id, 'amountUrls', $this->crawledUrls->count());
-                \Log::info('URLs crawled: ' . Redis::hget($this->id, 'amountUrls') . " / " . (Redis::hget($this->id, 'amountUrls') + $this->toCrawl->count()));
-            }
 
+                // Merge the toCrawl list with the crawledUrls if the crawler should only return the links on the $mainUrl
+                if ($this->options->contains('doNotCrawl')) {
+                    $this->crawledUrls = $this->crawledUrls->push($this->toCrawl)->flatten()->unique();
+                    break;
+                }
+            }
         Redis::hset($this->id, "crawledUrls", serialize($this->crawledUrls));
     }
 

@@ -46,6 +46,8 @@ class HeaderController extends Controller
         if($request->has('scan'))
             foreach ($request->input('scan') as $type)
                 $options->push($type);
+        if ($request->has('doNotCrawl'))
+            $options->push('doNotCrawl');
 
         $id = str_random();
         $this->dispatch(new AnalyzeSite($id, $url, $whiteList, $options, $request->input('limit')));

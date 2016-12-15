@@ -31,6 +31,7 @@ class ReportRequest extends FormRequest
             'ignoreTLS' => 'boolean',
             'limitOn' => 'boolean',
             'limit' => 'required_with:limitOn|numeric|min:1',
+            'doNotCrawl' => 'boolean',
         ];
     }
 }

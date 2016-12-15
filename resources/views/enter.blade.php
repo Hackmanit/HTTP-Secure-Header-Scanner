@@ -71,8 +71,14 @@ sub2.example.com" class="form-control"></textarea>
                     </div>
                     <div class="checkbox">
                         <label>
+                            <input type="checkbox" name="doNotCrawl" value="1">
+                            Do NOT crawl
+                        </label>
+                    </div>
+                    <div class="checkbox">
+                        <label>
                             <input type="checkbox" name="limitOn" value="1" v-model="limitOn">
-                            Limit crawling
+                            Limit scan
                         </label>
                         <span v-show="limitOn">
                                 <br><input type="text" class="form-control" name="limit" value="{{ env('LIMIT', 100) }}">
