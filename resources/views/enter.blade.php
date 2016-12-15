@@ -33,7 +33,7 @@ header('Access-Control-Allow-Origin: *');
             <div class="row">
                 <div class="col-md-3">
                     <div class="checkbox">
-                        <textarea name="whitelist" rows="5" placeholder="sub1.example.com
+                        <textarea name="whitelist" rows="6" placeholder="sub1.example.com
 sub2.example.com" class="form-control"></textarea>
                     </div>
 
@@ -60,15 +60,13 @@ sub2.example.com" class="form-control"></textarea>
                             <input type="checkbox" name="scan[]" value="area">
                             Include <b>area</b>-Tags
                         </label>
+                        <label>
+                            <input type="checkbox" name="scan[]" value="frames">
+                            Include <b>iframe</b>- and <b>frame</b>-Tags
+                        </label>
                     </div>
                 </div>
                 <div class="col-md-3">
-                    <div class="checkbox">
-                        <label>
-                            <input type="checkbox" name="ignoreTLS" value="1" checked>
-                            Ignore SSL/TLS certificate errors
-                        </label>
-                    </div>
                     <div class="checkbox">
                         <label>
                             <input type="checkbox" name="doNotCrawl" value="1">
@@ -86,6 +84,12 @@ sub2.example.com" class="form-control"></textarea>
                     </div>
                 </div>
                 <div class="col-md-3">
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox" name="ignoreTLS" value="1" checked>
+                            Ignore SSL/TLS certificate errors
+                        </label>
+                    </div>
                     <div class="checkbox">
                         <label>
                             <input type="checkbox" name="proxy" value="1" v-model="proxy">

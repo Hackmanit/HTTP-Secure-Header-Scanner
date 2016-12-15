@@ -156,6 +156,12 @@ class Crawler
         if ($this->options->contains('area'))
             foreach ($dom->find("area") as $link)
                 $links->push($link->href);
+        if ($this->options->contains('frames')) {
+            foreach ($dom->find("frame") as $link)
+                $links->push($link->src);
+            foreach ($dom->find("iframe") as $link)
+                $links->push($link->src);
+        }
 
         return $links;
     }
