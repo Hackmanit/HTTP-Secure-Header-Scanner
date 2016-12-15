@@ -149,6 +149,9 @@ class Crawler
         if ($this->options->contains('scripts'))
             foreach ($dom->find("script") as $link)
                 $links->push($link->src);
+        if ($this->options->contains('area'))
+            foreach ($dom->find("area") as $link)
+                $links->push($link->href);
 
         return $links;
     }
