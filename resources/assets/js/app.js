@@ -13,7 +13,11 @@ var app = new Vue({
 
         proxy: '',
         limitOn: '',
+        toggle: true,
     },
+    methods: {
+
+    }
     /*
     methods: {
         getReport: _.debounce(function() {

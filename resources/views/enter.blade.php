@@ -18,7 +18,7 @@ header('Access-Control-Allow-Origin: *');
 </head>
 <body>
 <div class="container" id="app">
-    <div class="row spacer">
+    <div class="row spacer" id="step1">
         <div class="col-md-12">
             <h3>Enter your URL</h3>
             {!! Form::open(['route' => 'requestReport']) !!}
@@ -41,27 +41,34 @@ sub2.example.com" class="form-control"></textarea>
                 <div class="col-md-3">
                     <div class="checkbox">
                         <label>
-                            <input type="checkbox" name="scan[]" value="images">
+                            <input type="checkbox" v-model="toggle">
+                            <span v-show="!toggle">Select all</span>
+                            <span v-show="toggle">Deselect all</span>
+                        </label>
+                    </div>
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox" name="scan[]" value="images" v-bind:checked="toggle">
                             Include <b>img</b>-Tags
                         </label>
                         <label>
-                            <input type="checkbox" name="scan[]" value="scripts">
+                            <input type="checkbox" name="scan[]" value="scripts" v-bind:checked="toggle">
                             Include <b>script</b>-Tags
                         </label>
                         <label>
-                            <input type="checkbox" name="scan[]" value="links">
+                            <input type="checkbox" name="scan[]" value="links" v-bind:checked="toggle">
                             Include <b>link</b>-Tags
                         </label>
                         <label>
-                            <input type="checkbox" name="scan[]" value="media">
+                            <input type="checkbox" name="scan[]" value="media" v-bind:checked="toggle">
                             Include <b>audio</b>- and <b>video</b>-Tags
                         </label>
                         <label>
-                            <input type="checkbox" name="scan[]" value="area">
+                            <input type="checkbox" name="scan[]" value="area" v-bind:checked="toggle">
                             Include <b>area</b>-Tags
                         </label>
                         <label>
-                            <input type="checkbox" name="scan[]" value="frames">
+                            <input type="checkbox" name="scan[]" value="frames" v-bind:checked="toggle">
                             Include <b>iframe</b>- and <b>frame</b>-Tags
                         </label>
                     </div>
