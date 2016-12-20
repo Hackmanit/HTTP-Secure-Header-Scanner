@@ -6,7 +6,7 @@ header('Access-Control-Allow-Origin: *');
 <head>
     <meta charset="utf-8">
     <title>JS Frontend</title>
-    <link rel="stylesheet" href="{{ elixir('css/app.css') }}">
+    <link rel="stylesheet" href="{{ elixir('css/all.css') }}">
     <style>
         .panel-heading {
             cursor: pointer;
@@ -18,13 +18,23 @@ header('Access-Control-Allow-Origin: *');
 </head>
 <body>
 <div class="container" id="app">
-    <div class="row spacer" id="step1">
+
+    <div class="vertical-center full-height" v-show="show.load">
+        <div class="sk-folding-cube">
+            <div class="sk-cube1 sk-cube"></div>
+            <div class="sk-cube2 sk-cube"></div>
+            <div class="sk-cube4 sk-cube"></div>
+            <div class="sk-cube3 sk-cube"></div>
+        </div>
+    </div>
+
+    <div class="vertical-center full-height" :class="{ 'animated zoomIn': show.form, 'hidden': !show.form }">
         <div class="col-md-12">
             <h3>Enter your URL</h3>
             {!! Form::open(['route' => 'requestReport']) !!}
             <div class="row">
                 <div class="col-md-11">
-                    <input class="form-control" name="url" placeholder="https://yoururl.com" value="https://hackmanit.de">
+                    <input class="form-control" placeholder="https://yoururl.com" v-model="formRequest.url">
                 </div>
                 <div class="col-md-1">
                     <button class="btn btn-primary form-control">SCAN!</button>
@@ -33,7 +43,7 @@ header('Access-Control-Allow-Origin: *');
             <div class="row">
                 <div class="col-md-3">
                     <div class="checkbox">
-                        <textarea name="whitelist" rows="6" placeholder="sub1.example.com
+                        <textarea v-model="formRequest.whitelist" rows="6" placeholder="sub1.example.com
 sub2.example.com" class="form-control"></textarea>
                     </div>
 
@@ -41,34 +51,33 @@ sub2.example.com" class="form-control"></textarea>
                 <div class="col-md-3">
                     <div class="checkbox">
                         <label>
-                            <input type="checkbox" v-model="toggle">
-                            <span v-show="!toggle">Select all</span>
-                            <span v-show="toggle">Deselect all</span>
+                            <input type="checkbox" v-model="toggleScans">
+                            Select all
                         </label>
                     </div>
                     <div class="checkbox">
                         <label>
-                            <input type="checkbox" name="scan[]" value="images" v-bind:checked="toggle">
+                            <input type="checkbox" v-model="formRequest.scan.images">
                             Include <b>img</b>-Tags
                         </label>
                         <label>
-                            <input type="checkbox" name="scan[]" value="scripts" v-bind:checked="toggle">
+                            <input type="checkbox" v-model="formRequest.scan.scripts">
                             Include <b>script</b>-Tags
                         </label>
                         <label>
-                            <input type="checkbox" name="scan[]" value="links" v-bind:checked="toggle">
+                            <input type="checkbox" v-model="formRequest.scan.links">
                             Include <b>link</b>-Tags
                         </label>
                         <label>
-                            <input type="checkbox" name="scan[]" value="media" v-bind:checked="toggle">
+                            <input type="checkbox" v-model="formRequest.scan.media">
                             Include <b>audio</b>- and <b>video</b>-Tags
                         </label>
                         <label>
-                            <input type="checkbox" name="scan[]" value="area" v-bind:checked="toggle">
+                            <input type="checkbox" v-model="formRequest.scan.area">
                             Include <b>area</b>-Tags
                         </label>
                         <label>
-                            <input type="checkbox" name="scan[]" value="frames" v-bind:checked="toggle">
+                            <input type="checkbox" v-model="formRequest.scan.frames">
                             Include <b>iframe</b>- and <b>frame</b>-Tags
                         </label>
                     </div>
@@ -76,34 +85,34 @@ sub2.example.com" class="form-control"></textarea>
                 <div class="col-md-3">
                     <div class="checkbox">
                         <label>
-                            <input type="checkbox" name="doNotCrawl" value="1">
+                            <input type="checkbox" v-model="formRequest.doNotCrawl">
                             Do NOT crawl
                         </label>
                     </div>
                     <div class="checkbox">
                         <label>
-                            <input type="checkbox" name="limitOn" value="1" v-model="limitOn">
+                            <input type="checkbox" v-model="formRequest.limitOn">
                             Limit scan
                         </label>
-                        <span v-show="limitOn">
-                                <br><input type="text" class="form-control" name="limit" value="{{ env('LIMIT', 100) }}">
+                        <span v-show="formRequest.limitOn">
+                                <br><input class="form-control" v-model="formRequest.limit">
                             </span>
                     </div>
                 </div>
                 <div class="col-md-3">
                     <div class="checkbox">
                         <label>
-                            <input type="checkbox" name="ignoreTLS" value="1" checked>
+                            <input type="checkbox" v-model="formRequest.ignoreTLS">
                             Ignore SSL/TLS certificate errors
                         </label>
                     </div>
                     <div class="checkbox">
                         <label>
-                            <input type="checkbox" name="proxy" value="1" v-model="proxy">
+                            <input type="checkbox" v-model="formRequest.proxy">
                             Use a proxy
                         </label>
-                        <span v-show="proxy">
-                            <br><input type="text" class="form-control" name="proxyAddress" value="http://{{ $hostIp }}:8888">
+                        <span v-show="formRequest.proxy">
+                            <br><input type="text" class="form-control" v-model="formRequest.proxyAddress">
                         </span>
                     </div>
                 </div>

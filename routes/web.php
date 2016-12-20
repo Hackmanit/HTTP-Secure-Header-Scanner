@@ -12,13 +12,16 @@
 */
 
 Route::get('/', 'HeaderController@index');
-
 Route::post('/', ['as' => 'requestReport', 'uses' => 'HeaderController@requestReport']);
+
+Route::get('/jsConfig', 'HeaderController@jsConfig');
 Route::get('report/{id}', ['as' => 'displayReport', 'uses' => 'HeaderController@displayReport']);
 
 Route::get('/test', function() {
-    $crawler = new App\Crawler(str_random(), "https://hackmanit.de", collect(["hackmanit.de", "www.hackmanit.de"]), collect(), 1000);
+    $id = str_random();
+    $crawler = new App\Crawler($id, "https://www.hackmanit.de/trainings.html", collect(["hackmanit.de", "www.hackmanit.de"]), collect(['doNotCrawl']), 1000);
     $crawler->extractAllLinks();
+    return $id;
 });
 
 Route::get('/testUnparseUrl', function () {

@@ -15,10 +15,7 @@ class HeaderController extends Controller
 {
 
     public function index() {
-
-        $hostIp = exec("/sbin/ip route|awk '/default/ { print $3 }'");
-
-        return view('enter')->with('hostIp', $hostIp);
+        return view('enter');
     }
 
     /**
@@ -62,6 +59,13 @@ class HeaderController extends Controller
             $string .= $count++ . ' | ' . $link . "<br>";
 
         return  $string . '<br><br><a href="/">Back</a>';
+    }
+
+    public function jsConfig() {
+        return [
+            'LIMIT' => env("LIMIT"),
+            'HOST_IP' => exec("/sbin/ip route|awk '/default/ { print $3 }'")
+        ];
     }
 
 

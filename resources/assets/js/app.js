@@ -10,13 +10,43 @@ require('./bootstrap');
 var app = new Vue({
     el: '#app',
     data: {
+        toggleScans: true,
+        show: {
+            form: false,
+            report: false,
+        },
+        formRequest: {
+            url : 'https://www.hackmanit.de',
+            whitelist: '',
+            scan : {
+                images: true,
+                scripts: true,
+                links: true,
+                media: true,
+                area: true,
+                frames: true,
+            },
+            doNotCrawl: false,
+            limitOn: false,
+            limit: '',
+            ignoreTLS: true,
+            proxy: '',
+            proxyAddress: ''
+        },
+    },
 
-        proxy: '',
-        limitOn: '',
-        toggle: true,
+    mounted() {
+        axios.get('/jsConfig').then(response => [
+            this.formRequest.proxyAddress = "http://" + response.data.HOST_IP + ":8888",
+            this.formRequest.limit = response.data.LIMIT,
+            this.show.load = false,
+            this.show.form = true,
+        ]);
     },
     methods: {
-
+        sendRequest () {
+            axios.post()
+        },
     }
     /*
     methods: {
@@ -38,15 +68,3 @@ var app = new Vue({
         }, 500)
     }*/
 });
-
-$(document).ready(function () {
-    $('#accordion').on('hidden.bs.collapse', toggleChevron);
-    $('#accordion').on('shown.bs.collapse', toggleChevron);
-})
-
-function toggleChevron(e) {
-    $(e.target)
-        .prev('.panel-heading')
-        .find("i.indicator")
-        .toggleClass('glyphicon-chevron-down glyphicon-chevron-up');
-}
