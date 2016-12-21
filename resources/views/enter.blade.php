@@ -7,14 +7,6 @@ header('Access-Control-Allow-Origin: *');
     <meta charset="utf-8">
     <title>JS Frontend</title>
     <link rel="stylesheet" href="{{ elixir('css/all.css') }}">
-    <style>
-        .panel-heading {
-            cursor: pointer;
-        }
-        .spacer {
-            margin: 20px 0;
-        }
-    </style>
 </head>
 <body>
 <div class="container" id="app">

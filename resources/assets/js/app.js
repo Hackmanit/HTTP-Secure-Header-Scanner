@@ -43,28 +43,23 @@ var app = new Vue({
             this.show.form = true,
         ]);
     },
+    watch: {
+        toggleScans: function () {
+            // TODO: Per Schleife gescheit machen.
+            this.formRequest.scan.images = this.toggleScans;
+            this.formRequest.scan.frames = this.toggleScans;
+            this.formRequest.scan.area = this.toggleScans;
+            this.formRequest.scan.media = this.toggleScans;
+            this.formRequest.scan.scripts = this.toggleScans;
+            this.formRequest.scan.links = this.toggleScans;
+        }
+    },
     methods: {
         sendRequest () {
             axios.post()
+                .then(function (response) {
+                   // Do cool things
+                });
         },
     }
-    /*
-    methods: {
-        getReport: _.debounce(function() {
-          var app = this;
-          app.message = "Requesting report...",
-          axios.get('http://lednerb.dev/api/v1/analyze?url=' + app.url)
-               .then(function (response) {
-                   app.test = response.data;
-                   response.data.forEach(function (report) {
-                       if (report.status === "success") {
-                           app.message = "Success!";
-                           app.reports.unshift(report);
-                       }
-                       else
-                           app.message = "SHIT!";
-                   });
-              });
-        }, 500)
-    }*/
 });
