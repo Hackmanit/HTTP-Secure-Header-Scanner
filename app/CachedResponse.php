@@ -3,6 +3,7 @@
 namespace App;
 
 use GuzzleHttp\Psr7\Response;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Redis;
 
 /**
@@ -19,12 +20,12 @@ class CachedResponse
     protected $headers;
     protected $body;
 
-    function __construct($id, $url, Response $response)
+    function __construct($id, $url, Collection $headers, $body)
     {
         $this->id = $id;
         $this->url = $url;
-        $this->headers = collect($response->getHeaders());
-        $this->body = $response->getBody()->getContents();
+        $this->headers = $headers;
+        $this->body = $body;
 
         Redis::hset("response", $url, serialize($this));
     }

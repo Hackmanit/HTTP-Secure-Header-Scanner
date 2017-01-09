@@ -12,8 +12,9 @@ var app = new Vue({
     data: {
         toggleScans: true,
         show: {
-            form: false,
-            report: false,
+            load: true,
+            form: null,
+            report: null,
         },
         formRequest: {
             url : 'https://www.hackmanit.de',
@@ -33,6 +34,7 @@ var app = new Vue({
             proxy: '',
             proxyAddress: ''
         },
+        report: "",
     },
 
     mounted() {
@@ -55,10 +57,17 @@ var app = new Vue({
         }
     },
     methods: {
-        sendRequest () {
-            axios.post()
+        sendRequest (event) {
+            event.preventDefault();
+            this.show.form = false;
+            this.show.load = true;
+            console.log(JSON.stringify(this.formRequest.toString()));
+            axios.post("/", this.formRequest)
                 .then(function (response) {
-                   // Do cool things
+                   console.log(response.data);
+                   this.show.report = true;
+
+                   this.report = response.data;
                 });
         },
     }

@@ -2,6 +2,7 @@
 
 namespace App;
 
+use GuzzleHttp\Psr7\Response;
 use Illuminate\Support\Collection;
 use voku\helper\HtmlDomParser;
 use GuzzleHttp\Client;
@@ -14,14 +15,13 @@ class Crawler
     protected $options;
     protected $guzzleOptions;
     protected $whitelist;
-    protected $limit;
 
     protected $toCrawl;
     protected $crawledUrls;
 
-    // TODO: if header is image or pdf, dont crawl this.
     // TODO: Downnload des Reports in einer HTML Datei
     // TODO: feature sitemap.xml einlesen und auswerten.
+    // TODO: analyze SVG for further links
 
     /**
      * Crawler constructor.
@@ -29,20 +29,17 @@ class Crawler
      * @param $mainUrl
      * @param Collection $whitelist
      * @param Collection $options
-     * @param $limit
      * @internal param $url
      */
-    public function __construct($id, $mainUrl, Collection $whitelist, Collection $options = null, $limit = null)
+    public function __construct($id, $mainUrl, Collection $whitelist, Collection $options = null)
     {
         $this->id = $id;
         $this->mainUrl = $mainUrl;
         $this->whitelist = $whitelist;
         $this->options = $options;
 
-        if ($limit === null)
-            $this->limit = env('LIMIT', 100);
-        else
-            $this->limit = $limit;
+        if (! $options->has('limit'))
+            $this->options->put('limit', env('LIMIT', 100));
 
         $this->toCrawl = collect([$mainUrl]);
         $this->crawledUrls = collect();
@@ -64,12 +61,12 @@ class Crawler
                 $extractedLinks = $this->extractLinks($link)->unique();
 
                 // Limit
-                if ( $this->crawledUrls->count() > $this->limit)
+                if ( $this->crawledUrls->count() > $this->options->get('limit'))
                     break;
 
                 foreach ($extractedLinks->diff($this->crawledUrls)->diff($this->toCrawl) as $extractedLink) {
                     // Limit
-                    if( $this->toCrawl->count() + $this->crawledUrls->count() >= $this->limit )
+                    if( $this->toCrawl->count() + $this->crawledUrls->count() >= $this->options->get('limit') )
                         break;
 
                     $this->toCrawl->push($extractedLink)->unique();
@@ -113,14 +110,31 @@ class Crawler
         if ($cached)
             return unserialize($cached);
 
-        $client = new Client([
-            'timeout' => 0
-        ]);
+        $client = new Client();
+        $takeout = new \stdClass;
+        $takeout->body = null;
+        $takeout->headers = null;
+        try {
+            $response = $client->request('GET', $url, [
+                'on_headers' => function (Response $response) use ($url, $takeout) {
 
-        $response = $client->get($url, $this->guzzleOptions->toArray());
-        $response->url = $url;
+                    if (strpos($response->getHeaderLine('Content-Type'), "text/") === false) {
+                        \Log::debug('Not crawled: ' . $url);
+                        $takeout->headers = $response->getHeaders();
+                        throw new \Exception("File is not a text file");
+                    }
+                }
+            ]);
+            $takeout->body = $response->getBody()->getContents();
+            $takeout->headers = $response->getHeaders();
+        }
+        catch (\Exception $e) {
+            // Do nothing here.
+            // If file is not a text file it will not be downloaded and cached.
+        }
 
-        return new CachedResponse($this->id, $url, $response);
+
+        return new CachedResponse($this->id, $url, collect($takeout->headers), $takeout->body);
     }
 
     /**
@@ -129,7 +143,6 @@ class Crawler
      * @param $link
      * @return Collection
      *
-     * TODO: Weitere Elemente
      * Orientation: https://github.com/zaproxy/zaproxy/blob/develop/src/org/zaproxy/zap/spider/parser/SpiderHtmlParser.java
      */
     protected function parseDom($link)
@@ -137,6 +150,8 @@ class Crawler
         $dom = HtmlDomParser::str_get_html($this->getHttpResponse($link)->getBody());
 
         $links = collect();
+
+        // TODO: JSON config zum parsen der Elemente
 
         foreach ($dom->find("a") as $link)
             $links->push($link->href);
@@ -190,30 +205,16 @@ class Crawler
                 return $value;
             })
             ->map(function ($value, $key) use ($scannedUrl) {
-
-                $parsed = parse_url($value);
-                // TODO: switch-case umschreiben
-                switch ($value) {
-                    case strncmp($value, 'http', 4) === 0:
-                        return $this->unparse_url($parsed, $scannedUrl);
-                        break;
-                    case strncmp($value, '//', 2) === 0:
-                        return $this->unparse_url($parsed, $scannedUrl);
-                        break;
-                    case strncmp($value, '/', 1) === 0:
-                        return $this->unparse_url($parsed, $scannedUrl);
-                        break;
-                    case strncmp($value, '../', 3) === 0:
-                        return $this->unparse_url($parsed, $scannedUrl);
-                        break; //parse_url($scannedUrl, PHP_URL_SCHEME) . '://' . parse_url($scannedUrl, PHP_URL_HOST) . substr($value, 3); break;
-                    case strncmp($value, './', 2) === 0:
-                        return $this->unparse_url($parsed, $scannedUrl);
-                        break;
-
-                    default: {
-                        if (strpos($value, ':') === false) // filters mailto:, javascript:, data: etc.
-                            return $this->unparse_url($parsed, $scannedUrl); //parse_url($scannedUrl, PHP_URL_SCHEME) . '://' . parse_url($scannedUrl, PHP_URL_HOST) . '/' . $value;
-                    }
+                if(
+                    (strncmp($value, 'http', 4) === 0)  ||  // http(s) / Ports
+                    (strncmp($value, '//', 2) === 0)    ||  // all protocols / Ports
+                    (strncmp($value, '/', 1) === 0)     ||
+                    (strncmp($value, '../', 3) === 0)   ||
+                    (strncmp($value, './', 2) === 0)    ||
+                    (strpos($value, ':') === false)         // filter mailto:, data:, javascript:
+                ) {
+                    $parsed = parse_url($value);
+                    return $this->unparse_url($parsed, $scannedUrl);
                 }
             })
             // Whitelist-Filter
@@ -243,5 +244,4 @@ class Crawler
         $query = isset($parsed_url['query']) ? '?' . $parsed_url['query'] : '';
         return "$scheme$user$pass$host$port$path$query";
     }
-
 }

@@ -46,13 +46,17 @@ class HeaderController extends Controller
         if ($request->has('doNotCrawl'))
             $options->push('doNotCrawl');
 
+        $options->put('limit', $request->input('limit'));
+
         $id = str_random();
+        // TODO: limit in options
         $this->dispatch(new AnalyzeSite($id, $url, $whiteList, $options, $request->input('limit')));
 
         return redirect()->route('displayReport', $id);
     }
 
     public function displayReport($id) {
+        sleep(5);
         $string = "";
         $count = 1;
         foreach (unserialize(Redis::hget($id, "crawledUrls")) as $link)

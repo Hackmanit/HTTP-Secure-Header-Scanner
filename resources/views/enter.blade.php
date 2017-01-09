@@ -20,10 +20,10 @@ header('Access-Control-Allow-Origin: *');
         </div>
     </div>
 
-    <div class="vertical-center full-height" :class="{ 'animated zoomIn': show.form, 'hidden': !show.form }">
+    <div class="vertical-center full-height" :class="{ 'hidden': show.form === null, 'animated zoomIn': show.form, 'animated zoomOut': !show.form }">
         <div class="col-md-12">
             <h3>Enter your URL</h3>
-            {!! Form::open(['route' => 'requestReport']) !!}
+            {!! Form::open(['route' => 'requestReport', 'v-on:submit' => 'sendRequest']) !!}
             <div class="row">
                 <div class="col-md-11">
                     <input class="form-control" placeholder="https://yoururl.com" v-model="formRequest.url">
@@ -114,6 +114,10 @@ sub2.example.com" class="form-control"></textarea>
             </div>
             {!! Form::close() !!}
         </div>
+    </div>
+
+    <div class="vertical-center full-height" :class="{ 'hidden': show.report === null, 'animated zoomIn': show.report, 'animated zoomOut': !show.report }">
+        @{{ report }}
     </div>
 
 </div>

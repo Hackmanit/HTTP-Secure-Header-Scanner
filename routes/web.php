@@ -19,9 +19,10 @@ Route::get('report/{id}', ['as' => 'displayReport', 'uses' => 'HeaderController@
 
 Route::get('/test', function() {
     $id = str_random();
-    $crawler = new App\Crawler($id, "https://www.hackmanit.de/trainings.html", collect(["hackmanit.de", "www.hackmanit.de"]), collect(['doNotCrawl']), 1000);
+    $crawler = new App\Crawler($id, "https://www.hackmanit.de/", collect(["hackmanit.de", "www.hackmanit.de"]), collect(['images', 'scripts', 'links']), 1000);
     $crawler->extractAllLinks();
-    return $id;
+    dd($crawler);
+
 });
 
 Route::get('/testUnparseUrl', function () {
