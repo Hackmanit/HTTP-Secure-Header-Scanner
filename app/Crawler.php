@@ -151,29 +151,33 @@ class Crawler
 
         $links = collect();
 
-        // TODO: JSON config zum parsen der Elemente
-
-        foreach ($dom->find("a") as $link)
-            $links->push($link->href);
-
-        if ($this->options->contains('images'))
-            foreach ($dom->find("img") as $link)
-                $links->push($link->src);
-        if ($this->options->contains('media'))
-            foreach ($dom->find("video,audio,source") as $link)
-                $links->push($link->src);
-        if ($this->options->contains('links'))
-            foreach ($dom->find("link") as $link)
-                $links->push($link->href);
-        if ($this->options->contains('scripts'))
-            foreach ($dom->find("script") as $link)
-                $links->push($link->src);
-        if ($this->options->contains('area'))
-            foreach ($dom->find("area") as $link)
-                $links->push($link->href);
-        if ($this->options->contains('frames'))
-            foreach ($dom->find("iframe,frame") as $link)
-                $links->push($link->src);
+        if($this->options->has('customJson'))
+            foreach (json_decode($this->options->get('customJson')) as $tag => $attribute)
+                foreach ($dom->find($tag) as $element)
+                    $links->push($element->$attribute);
+        else {
+            if ($this->options->contains("anchors"))
+                foreach ($dom->find("a") as $link)
+                    $links->push($link->href);
+            if ($this->options->contains('images'))
+                foreach ($dom->find("img") as $link)
+                    $links->push($link->src);
+            if ($this->options->contains('media'))
+                foreach ($dom->find("video,audio,source") as $link)
+                    $links->push($link->src);
+            if ($this->options->contains('links'))
+                foreach ($dom->find("link") as $link)
+                    $links->push($link->href);
+            if ($this->options->contains('scripts'))
+                foreach ($dom->find("script") as $link)
+                    $links->push($link->src);
+            if ($this->options->contains('area'))
+                foreach ($dom->find("area") as $link)
+                    $links->push($link->href);
+            if ($this->options->contains('frames'))
+                foreach ($dom->find("iframe,frame") as $link)
+                    $links->push($link->src);
+        }
 
         return $links;
     }

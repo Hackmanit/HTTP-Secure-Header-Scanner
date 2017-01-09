@@ -32,6 +32,8 @@ class ReportRequest extends FormRequest
             'limitOn' => 'boolean',
             'limit' => 'required_with:limitOn|numeric|min:1',
             'doNotCrawl' => 'boolean',
+            'scan.custom' => 'boolean',
+            'scan.customJson' => 'required_with:scan.custom|json'
         ];
     }
 }

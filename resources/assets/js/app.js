@@ -20,12 +20,15 @@ var app = new Vue({
             url : 'https://www.hackmanit.de',
             whitelist: '',
             scan : {
+                anchor: true,
                 images: true,
                 scripts: true,
                 links: true,
                 media: true,
                 area: true,
                 frames: true,
+                custom: false,
+                customJson: ''
             },
             doNotCrawl: false,
             limitOn: false,
@@ -41,6 +44,7 @@ var app = new Vue({
         axios.get('/jsConfig').then(response => [
             this.formRequest.proxyAddress = "http://" + response.data.HOST_IP + ":8888",
             this.formRequest.limit = response.data.LIMIT,
+            this.formRequest.scan.customJson = response.data.CUSTOM_JSON,
             this.show.load = false,
             this.show.form = true,
         ]);
@@ -48,6 +52,7 @@ var app = new Vue({
     watch: {
         toggleScans: function () {
             // TODO: Per Schleife gescheit machen.
+            this.formRequest.scan.anchor = this.toggleScans;
             this.formRequest.scan.images = this.toggleScans;
             this.formRequest.scan.frames = this.toggleScans;
             this.formRequest.scan.area = this.toggleScans;

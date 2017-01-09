@@ -21,7 +21,7 @@ class HeaderController extends Controller
     /**
      * Main function for the routing.
      *
-     * @param Request $request
+     * @param ReportRequest $request
      * @return array
      */
     public function requestReport(ReportRequest $request)
@@ -49,8 +49,8 @@ class HeaderController extends Controller
         $options->put('limit', $request->input('limit'));
 
         $id = str_random();
-        // TODO: limit in options
-        $this->dispatch(new AnalyzeSite($id, $url, $whiteList, $options, $request->input('limit')));
+
+        $this->dispatch(new AnalyzeSite($id, $url, $whiteList, $options));
 
         return redirect()->route('displayReport', $id);
     }
@@ -68,11 +68,21 @@ class HeaderController extends Controller
     public function jsConfig() {
         return [
             'LIMIT' => env("LIMIT"),
-            'HOST_IP' => exec("/sbin/ip route|awk '/default/ { print $3 }'")
+            'HOST_IP' => exec("/sbin/ip route|awk '/default/ { print $3 }'"),
+            'CUSTOM_JSON' => '{
+    "a" : "href",
+    "img": "src",
+    "link": "href",
+    "script": "src",
+    "video": "src",
+    "audio": "src",
+    "source": "src",
+    "area": "href",
+    "iframe": "src",
+    "frame": "src"
+}',
         ];
     }
-
-
 
     /**
      * Creates the report and handles caching.

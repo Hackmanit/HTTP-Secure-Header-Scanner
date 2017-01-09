@@ -1,7 +1,4 @@
-<?php
-header('Access-Control-Allow-Origin: *');
-?>
-        <!DOCTYPE html>
+<!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8">
@@ -41,36 +38,56 @@ sub2.example.com" class="form-control"></textarea>
 
                 </div>
                 <div class="col-md-3">
-                    <div class="checkbox">
-                        <label>
-                            <input type="checkbox" v-model="toggleScans">
-                            Select all
-                        </label>
+                    <div v-show="!formRequest.scan.custom">
+                        <div class="checkbox">
+                            <label>
+                                <input type="checkbox" v-model="toggleScans">
+                                Select all
+                            </label>
+                        </div>
+                        <div class="checkbox">
+                            <label>
+                                <input type="checkbox" v-model="formRequest.scan.anchor">
+                                Include <b>a</b>-Tags
+                            </label>
+                            <br>
+                            <label>
+                                <input type="checkbox" v-model="formRequest.scan.images">
+                                Include <b>img</b>-Tags
+                            </label>
+                            <br>
+                            <label>
+                                <input type="checkbox" v-model="formRequest.scan.scripts">
+                                Include <b>script</b>-Tags
+                            </label>
+                            <br>
+                            <label>
+                                <input type="checkbox" v-model="formRequest.scan.links">
+                                Include <b>link</b>-Tags
+                            </label>
+                            <br>
+                            <label>
+                                <input type="checkbox" v-model="formRequest.scan.media">
+                                Include <b>audio</b>- and <b>video</b>-Tags
+                            </label>
+                            <br>
+                            <label>
+                                <input type="checkbox" v-model="formRequest.scan.area">
+                                Include <b>area</b>-Tags
+                            </label>
+                            <br>
+                            <label>
+                                <input type="checkbox" v-model="formRequest.scan.frames">
+                                Include <b>iframe</b>- and <b>frame</b>-Tags
+                            </label>
+                        </div>
                     </div>
                     <div class="checkbox">
-                        <label>
-                            <input type="checkbox" v-model="formRequest.scan.images">
-                            Include <b>img</b>-Tags
-                        </label>
-                        <label>
-                            <input type="checkbox" v-model="formRequest.scan.scripts">
-                            Include <b>script</b>-Tags
-                        </label>
-                        <label>
-                            <input type="checkbox" v-model="formRequest.scan.links">
-                            Include <b>link</b>-Tags
-                        </label>
-                        <label>
-                            <input type="checkbox" v-model="formRequest.scan.media">
-                            Include <b>audio</b>- and <b>video</b>-Tags
-                        </label>
-                        <label>
-                            <input type="checkbox" v-model="formRequest.scan.area">
-                            Include <b>area</b>-Tags
-                        </label>
-                        <label>
-                            <input type="checkbox" v-model="formRequest.scan.frames">
-                            Include <b>iframe</b>- and <b>frame</b>-Tags
+                        <div class="checkbox full-width" v-show="formRequest.scan.custom">
+                            <textarea name="customJson" rows="6" class="form-control" v-model="formRequest.scan.customJson"></textarea>
+                        </div>
+                        <label class="text-primary">
+                            <input type="checkbox" v-model="formRequest.scan.custom">Custom configuration</span>
                         </label>
                     </div>
                 </div>
