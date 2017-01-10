@@ -51,7 +51,6 @@ var app = new Vue({
     },
     watch: {
         toggleScans: function () {
-            // TODO: Per Schleife gescheit machen.
             this.formRequest.scan.anchor = this.toggleScans;
             this.formRequest.scan.images = this.toggleScans;
             this.formRequest.scan.frames = this.toggleScans;

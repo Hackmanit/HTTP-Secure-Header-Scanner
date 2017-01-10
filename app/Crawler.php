@@ -19,10 +19,6 @@ class Crawler
     protected $toCrawl;
     protected $crawledUrls;
 
-    // TODO: Downnload des Reports in einer HTML Datei
-    // TODO: feature sitemap.xml einlesen und auswerten.
-    // TODO: analyze SVG for further links
-
     /**
      * Crawler constructor.
      * @param $id
