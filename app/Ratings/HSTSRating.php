@@ -38,13 +38,17 @@ class HSTSRating implements Rating {
             $endAge     = strpos($header, ';', $beginAge);
             $maxAge     = substr($header, $beginAge, $endAge - $beginAge);
 
-            if ($maxAge <= 15768000) {
+            if ($maxAge < 15768000) {
                 $this->rating   = 'B';
                 $this->comment  = 'The value for "max-age" is smaller than 6 months.';
             }
-            else {
+            elseif ($maxAge >= 15768000) {
                 $this->rating   = 'A';
                 $this->comment  = 'The value for "max-age" is greater than 6 months.';
+            }
+            else {
+                $this->rating   = 'C';
+                $this->comment  = 'An error occured while checking "max-age".';
             }
         }
 
