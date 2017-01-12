@@ -49,6 +49,6 @@ class CachedResponse
      */
     public function getHeaders()
     {
-        return $this->getHeaders();
+        return $this->headers;
     }
 }
