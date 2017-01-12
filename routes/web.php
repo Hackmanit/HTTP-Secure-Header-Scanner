@@ -22,7 +22,10 @@ Route::get('/test', function() {
     $crawler = new App\Crawler($id, "https://www.hackmanit.de/", collect(["hackmanit.de", "www.hackmanit.de"]), collect(['customJson' => '{"a": "href"}']), 1000);
     $crawler->extractAllLinks();
     dd($crawler);
+});
 
+Route::get('/testHSTS', function() {
+    dd((new App\Ratings\HSTSRating("http://www.hackmanit.de/"))->getRating());
 });
 
 Route::get('/testUnparseUrl', function () {
