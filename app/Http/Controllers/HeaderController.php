@@ -67,7 +67,7 @@ class HeaderController extends Controller
 
     public function jsConfig() {
         return [
-            'LIMIT' => env("LIMIT"),
+            'LIMIT' => env("LIMIT", 1000),
             'HOST_IP' => exec("/sbin/ip route|awk '/default/ { print $3 }'"),
             'CUSTOM_JSON' => '{
     "a" : "href",
@@ -82,41 +82,6 @@ class HeaderController extends Controller
     "frame": "src"
 }',
         ];
-    }
-
-    /**
-     * Creates the report and handles caching.
-     *
-     * @param $url
-     * @param Response $response
-     * @return Report|array
-     * @internal param $GuzzleHttp/Psr7/Response $response
-     */
-    protected function makeReport($url, Response $response)
-    {
-        $report = new Report($response);
-        $report = [
-            "status" => "success",
-            "nonce" => str_random(),
-            "scores" => $report->toJson(),
-            "headers" => $response->getHeaders(),
-            "url" => $url,
-            "date" => date("Y-m-d H:i:s")
-        ];
-
-        Redis::set("report-" . $url, serialize($report));
-        Redis::expire("report-" . $url, env("HOST_CACHE", 10));
-
-
-        return $report;
-    }
-
-    protected function generateReports(Collection $links) {
-        $reports = collect();
-        foreach ($links as $link)
-            $reports->push($this->makeReport($link, $this->getHttpResponse($link)));
-
-        return $reports;
     }
 
 
