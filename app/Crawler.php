@@ -2,10 +2,8 @@
 
 namespace App;
 
-use GuzzleHttp\Psr7\Response;
 use Illuminate\Support\Collection;
 use voku\helper\HtmlDomParser;
-use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Redis;
 
 class Crawler
@@ -78,6 +76,8 @@ class Crawler
                 }
             }
         Redis::hset($this->id, "crawledUrls", serialize($this->crawledUrls));
+
+        return $this->crawledUrls;
     }
 
     /**
@@ -95,45 +95,6 @@ class Crawler
     }
 
     /**
-     * Returns the (cached) GuzzleHttp Response
-     *
-     * @param $url
-     * @return CachedResponse
-     */
-    protected function getHttpResponse($url)
-    {
-        $cached = Redis::hget("response", $url);
-        if ($cached)
-            return unserialize($cached);
-
-        $client = new Client();
-        $takeout = new \stdClass;
-        $takeout->body = null;
-        $takeout->headers = null;
-        try {
-            $response = $client->request('GET', $url, [
-                'on_headers' => function (Response $response) use ($url, $takeout) {
-
-                    if (strpos($response->getHeaderLine('Content-Type'), "text/") === false) {
-                        \Log::debug('Not crawled: ' . $url);
-                        $takeout->headers = $response->getHeaders();
-                        throw new \Exception("File is not a text file");
-                    }
-                }
-            ]);
-            $takeout->body = $response->getBody()->getContents();
-            $takeout->headers = $response->getHeaders();
-        }
-        catch (\Exception $e) {
-            // Do nothing here.
-            // If file is not a text file it will not be downloaded and cached.
-        }
-
-
-        return new CachedResponse($this->id, $url, collect($takeout->headers), $takeout->body);
-    }
-
-    /**
      * Parses the $response with the set $withOptions and returns all links that are found.
      *
      * @param $link
@@ -143,7 +104,7 @@ class Crawler
      */
     protected function parseDom($link)
     {
-        $dom = HtmlDomParser::str_get_html($this->getHttpResponse($link)->getBody());
+        $dom = HtmlDomParser::str_get_html(HTTPResponse::get($link)->getBody());
 
         $links = collect();
 
