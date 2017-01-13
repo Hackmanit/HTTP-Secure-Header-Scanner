@@ -4,18 +4,8 @@ namespace App\Ratings;
 
 use App\HTTPResponse;
 
-class ContentTypeRating implements Rating
+class ContentTypeRating extends Rating
 {
-
-    protected $url;
-    protected $rating;
-    protected $comment;
-
-    public function __construct($url)
-    {
-        $this->url = $url;
-        $this->rate();
-    }
 
     protected function rate()
     {
@@ -79,16 +69,6 @@ class ContentTypeRating implements Rating
     public function getHeader()
     {
         return HTTPResponse::get($this->url)->getHeaders()->get("Content-Type");
-    }
-
-    public function getRating()
-    {
-        return $this->rating;
-    }
-
-    public function getComment()
-    {
-        return $this->comment;
     }
 
 }

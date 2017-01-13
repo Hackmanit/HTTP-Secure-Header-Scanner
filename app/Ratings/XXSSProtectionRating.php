@@ -4,18 +4,8 @@ namespace App\Ratings;
 
 use App\HTTPResponse;
 
-class XXSSProtectionRating implements Rating
+class XXSSProtectionRating extends Rating
 {
-
-    protected $url;
-    protected $rating;
-    protected $comment;
-
-    public function __construct($url)
-    {
-        $this->url = $url;
-        $this->rate();
-    }
 
     protected function rate()
     {
@@ -60,13 +50,4 @@ class XXSSProtectionRating implements Rating
         return HTTPResponse::get($this->url)->getHeaders()->get("X-XSS-Protection");
     }
 
-    public function getRating()
-    {
-        return $this->rating;
-    }
-
-    public function getComment()
-    {
-        return $this->comment;
-    }
 }

@@ -4,17 +4,7 @@ namespace App\Ratings;
 
 use App\HTTPResponse;
 
-class HPKPRating implements Rating {
-
-    protected $url;
-    protected $rating;
-    protected $comment;
-
-    public function __construct($url)
-    {
-        $this->url = $url;
-        $this->rate();
-    }
+class HPKPRating extends Rating {
 
     protected function rate()
     {
@@ -74,15 +64,5 @@ class HPKPRating implements Rating {
     public function getHeader()
     {
         return HTTPResponse::get($this->url)->getHeaders()->get("Public-Key-Pins");
-    }
-
-    public function getRating()
-    {
-        return $this->rating;
-    }
-
-    public function getComment()
-    {
-        return $this->comment;
     }
 }

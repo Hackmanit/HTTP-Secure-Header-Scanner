@@ -2,11 +2,24 @@
 
 namespace App\Ratings;
 
-interface Rating {
-    public function __construct($url);
-    public static function getDescription();
-    public static function getBestPractice();
-    public function getHeader();
-    public function getRating();
-    public function getComment();
+abstract class Rating implements RatingInterface
+{
+    protected $url;
+    protected $rating;
+    protected $comment;
+
+    public function __construct($url)
+    {
+        $this->url = $url;
+        $this->rate();
+    }
+
+    public function getRating() {
+        return $this->rating;
+    }
+
+    public function getComment()
+    {
+        return $this->comment;
+    }
 }

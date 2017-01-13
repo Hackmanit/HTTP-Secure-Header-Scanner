@@ -4,18 +4,8 @@ namespace App\Ratings;
 
 use App\HTTPResponse;
 
-class CSPRating implements Rating
+class CSPRating extends Rating
 {
-
-    protected $url;
-    protected $rating;
-    protected $comment;
-
-    public function __construct($url)
-    {
-        $this->url = $url;
-        $this->rate();
-    }
 
     protected function rate()
     {
@@ -72,15 +62,5 @@ class CSPRating implements Rating
     public function getHeader()
     {
         return HTTPResponse::get($this->url)->getHeaders()->get("Content-Security-Policy");
-    }
-
-    public function getRating()
-    {
-        return $this->rating;
-    }
-
-    public function getComment()
-    {
-        return $this->comment;
     }
 }

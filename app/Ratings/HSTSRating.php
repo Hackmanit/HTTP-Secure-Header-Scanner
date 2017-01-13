@@ -5,17 +5,7 @@ namespace App\Ratings;
 use App\HTTPResponse;
 
 
-class HSTSRating implements Rating {
-
-    protected $url;
-    protected $rating;
-    protected $comment;
-
-    public function __construct($url)
-    {
-        $this->url = $url;
-        $this->rate();
-    }
+class HSTSRating extends Rating {
 
     protected function rate()
     {
@@ -80,14 +70,5 @@ class HSTSRating implements Rating {
     public function getHeader()
     {
         return HTTPResponse::get($this->url)->getHeaders()->get("Strict-Transport-Security");
-    }
-
-    public function getRating() {
-        return $this->rating;
-    }
-
-    public function getComment()
-    {
-        return $this->comment;
     }
 }

@@ -4,18 +4,8 @@ namespace App\Ratings;
 
 use App\HTTPResponse;
 
-class XFrameOptionsRating implements Rating
+class XFrameOptionsRating extends Rating
 {
-
-    protected $url;
-    protected $rating;
-    protected $comment;
-
-    public function __construct($url)
-    {
-        $this->url = $url;
-        $this->rate();
-    }
 
     protected function rate()
     {
@@ -60,15 +50,5 @@ class XFrameOptionsRating implements Rating
     public function getHeader()
     {
         return HTTPResponse::get($this->url)->getHeaders()->get("X-Frame-Options");
-    }
-
-    public function getRating()
-    {
-        return $this->rating;
-    }
-
-    public function getComment()
-    {
-        return $this->comment;
     }
 }
