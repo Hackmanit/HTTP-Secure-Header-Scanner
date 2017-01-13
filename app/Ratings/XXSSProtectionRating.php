@@ -1,0 +1,72 @@
+<?php
+
+namespace App\Ratings;
+
+use App\HTTPResponse;
+
+class XXSSProtectionRating implements Rating
+{
+
+    protected $url;
+    protected $rating;
+    protected $comment;
+
+    public function __construct($url)
+    {
+        $this->url = $url;
+        $this->rate();
+    }
+
+    protected function rate()
+    {
+        $header = $this->getHeader();
+
+        if ($header === null) {
+            $this->rating = 'C';
+            $this->comment = 'X-XSS-Protection header is not set.';
+        } elseif (count($header) > 1) {
+            $this->rating = 'C';
+            $this->comment = 'X-XSS-Protection header is set multiple times.';
+        } else {
+            $header = $header[0];
+
+            $this->rating = 'B';
+            $this->comment = 'X-XSS-Protection header is set.';
+
+            if (strpos($header, 'mode=block') !== false) {
+                $this->rating = 'A';
+                $this->comment = "'mode=block' is activated.";
+            }
+
+        }
+    }
+
+    public static function getDescription()
+    {
+        // OWASP
+        // https://www.owasp.org/index.php/OWASP_Secure_Headers_Project#X-XSS-Protection
+        return 'This header enables the Cross-site scripting (XSS) filter in your browser.';
+    }
+
+    public static function getBestPractice()
+    {
+        // OWASP
+        // https://www.owasp.org/index.php/OWASP_Secure_Headers_Project#xxp
+        return 'X-XSS-Protection: 1; mode=block';
+    }
+
+    public function getHeader()
+    {
+        return HTTPResponse::get($this->url)->getHeaders()->get("X-XSS-Protection");
+    }
+
+    public function getRating()
+    {
+        return $this->rating;
+    }
+
+    public function getComment()
+    {
+        return $this->comment;
+    }
+}
