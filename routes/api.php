@@ -13,15 +13,7 @@ use Illuminate\Http\Request;
 |
 */
 
-// Route::get('/user', function (Request $request) {
-//     return $request->user();
-// })->middleware('auth:api');
-
- Route::group(['prefix' => 'v1'], function () {
-     Route::get('/analyze', 'HeaderController@show');
-     Route::get('/links', 'HeaderController@links');
-     Route::get('/links/optimized', 'HeaderController@linksOptimized');
-     Route::get('/test', function() {
-        return parse_url("javascript:slashdesign.it/test", PHP_URL_HOST);
-     });
- });
+Route::group(['prefix' => 'v1'], function () {
+    Route::get('/rate', 'ApiController@report');
+    // Route::get('/links', 'HeaderController@links');
+});
