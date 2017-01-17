@@ -22,11 +22,12 @@ class ContentTypeRating extends Rating
         else {
             $header = $header[0];
 
-            $this->rating = 'B';
-            $this->comment = 'Charset is set in Content-Type header.';
+            if (stripos($header, 'charset=')) {
+                $this->rating = 'B';
+                $this->comment = 'Charset is set in Content-Type header.';
+            }
 
-
-            if (stripos($header, 'utf-8') !== false) {
+            elseif (stripos($header, 'utf-8') !== false) {
                 $this->rating = 'A';
                 $this->comment = 'Charset is set and follows the best practice.';
             }
