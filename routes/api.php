@@ -15,5 +15,6 @@ use Illuminate\Http\Request;
 
 Route::group(['prefix' => 'v1'], function () {
     Route::get('/rate', 'ApiController@report');
+    Route::get('/siwecos/rate', 'ApiController@siwecosReport');
     // Route::get('/links', 'HeaderController@links');
 });
