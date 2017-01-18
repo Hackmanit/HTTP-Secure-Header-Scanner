@@ -35,37 +35,37 @@ class ApiController extends Controller
 
         $customReport = [
             'checks' => [
-                'ContentType' => [
+                'Content-Type' => [
                     'result' => !(strpos($report->ContentTypeRating->getRating(), 'C') !== false),
                     'comment' => $report->ContentTypeRating->getComment(),
                     'header' => $report->ContentTypeRating->getHeader()
                 ],
-                'ContentSecurityPolicy' => [
+                'Content-Security-Policy' => [
                     'result' => !(strpos($report->ContentSecurityPolicyRating->getRating(), 'C') !== false),
                     'comment' => $report->ContentSecurityPolicyRating->getComment(),
                     'header' => $report->ContentSecurityPolicyRating->getHeader()
                 ],
-                'HttpPublicKeyPinning' => [
+                'Public-Key-Pins' => [
                     'result' => !(strpos($report->HttpPublicKeyPinningRating->getRating(), 'C') !== false),
                     'comment' => $report->HttpPublicKeyPinningRating->getComment(),
                     'header' => $report->HttpPublicKeyPinningRating->getHeader()
                 ],
-                'HttpStrictTransportSecurity' => [
+                'Strict-Transport-Security' => [
                     'result' => !(strpos($report->HttpStrictTransportSecurityRating->getRating(), 'C') !== false),
                     'comment' => $report->HttpStrictTransportSecurityRating->getComment(),
                     'header' => $report->HttpStrictTransportSecurityRating->getHeader()
                 ],
-                'XContentTypeOptions' => [
+                'X-Content-Type-Options' => [
                     'result' => !(strpos($report->XContentTypeOptionsRating->getRating(), 'C') !== false),
                     'comment' => $report->XContentTypeOptionsRating->getComment(),
                     'header' => $report->XContentTypeOptionsRating->getHeader()
                 ],
-                'XFrameOptions' => [
+                'X-Frame-Options' => [
                     'result' => !(strpos($report->XFrameOptionsRating->getRating(), 'C') !== false),
                     'comment' => $report->XFrameOptionsRating->getComment(),
                     'header' => $report->XFrameOptionsRating->getHeader()
                 ],
-                'XXSSProtection' => [
+                'X-Xss-Protection' => [
                     'result' => !(strpos($report->XXSSProtectionRating->getRating(), 'C') !== false),
                     'comment' => $report->XXSSProtectionRating->getComment(),
                     'header' => $report->XXSSProtectionRating->getHeader()
