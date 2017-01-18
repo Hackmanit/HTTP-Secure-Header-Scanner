@@ -14,10 +14,16 @@ abstract class Rating implements RatingInterface, \JsonSerializable
         $this->rate();
     }
 
+    /**
+     * @return string
+     */
     public function getRating() {
         return $this->rating;
     }
 
+    /**
+     * @return string
+     */
     public function getComment()
     {
         return $this->comment;
