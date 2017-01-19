@@ -25,12 +25,12 @@ class HTTPResponse
         $takeout = new \stdClass;
         $takeout->body = null;
         $takeout->headers = null;
+
         try {
             $response = $client->request('GET', $url, [
                 'on_headers' => function (Response $response) use ($url, $takeout) {
 
                     if (strpos($response->getHeaderLine('Content-Type'), "text/") === false) {
-                        \Log::debug('Not crawled: ' . $url);
                         $takeout->headers = $response->getHeaders();
                         throw new \Exception("File is not a text file");
                     }
