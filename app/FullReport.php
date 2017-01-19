@@ -2,17 +2,19 @@
 
 namespace App;
 
-use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Redis;
 
 class FullReport {
 
+    protected $id;
     protected $urls;
     protected $reports;
 
     // TODO: Combine FullReport with Crawler.
-    public function __construct(Collection $urls)
+    public function __construct($id)
     {
-        $this->urls = $urls;
+        $this->id = $id;
+        $this->urls = unserialize(Redis::hget($this->id, 'crawledUrls'));
         $this->doReports();
     }
 
@@ -20,6 +22,8 @@ class FullReport {
      * Generate all $reports
      */
     protected function doReports() {
+        Redis::hset($this->id, 'status', 'processing');
+        \Log::critical($this->urls);
         $this->reports = collect();
         foreach ($this->urls as $url)
             $this->reports->push(new Report($url));
@@ -73,7 +77,7 @@ class FullReport {
         }
 
         return [
-            'id' => 'IrgendeineID',
+            'id' => Redis::hget($this->id, 'status'),
             'rating' => '', // TODO: FullReportRating.
             'Content-Security-Policy' => $ContentSecurityPolicy,
             'Content-Type' => $ContentType,

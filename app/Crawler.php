@@ -48,34 +48,37 @@ class Crawler
 
     public function extractAllLinks()
     {
+        Redis::hset($this->id, 'status', 'crawling');
+
         while ($link = $this->toCrawl->pop()) {
 
-                $this->crawledUrls = $this->crawledUrls->push($link);
+            $this->crawledUrls = $this->crawledUrls->push($link);
 
-                $extractedLinks = $this->extractLinks($link)->unique();
+            $extractedLinks = $this->extractLinks($link)->unique();
 
+            // Limit
+            if ( $this->crawledUrls->count() > $this->options->get('limit'))
+                break;
+
+            foreach ($extractedLinks->diff($this->crawledUrls)->diff($this->toCrawl) as $extractedLink) {
                 // Limit
-                if ( $this->crawledUrls->count() > $this->options->get('limit'))
+                if( $this->toCrawl->count() + $this->crawledUrls->count() >= $this->options->get('limit') )
                     break;
 
-                foreach ($extractedLinks->diff($this->crawledUrls)->diff($this->toCrawl) as $extractedLink) {
-                    // Limit
-                    if( $this->toCrawl->count() + $this->crawledUrls->count() >= $this->options->get('limit') )
-                        break;
-
-                    $this->toCrawl->push($extractedLink)->unique();
-                }
-
-                Redis::hset($this->id, 'amountUrlsToCrawl', $this->toCrawl->count());
-                Redis::hset($this->id, 'amountUrls', $this->crawledUrls->count());
-
-                // Merge the toCrawl list with the crawledUrls if the crawler should only return the links on the $mainUrl
-                if ($this->options->contains('doNotCrawl')) {
-                    $this->crawledUrls = $this->crawledUrls->push($this->toCrawl)->flatten()->unique();
-                    break;
-                }
+                $this->toCrawl->push($extractedLink)->unique();
             }
+
+            Redis::hset($this->id, 'amountUrlsToCrawl', $this->toCrawl->count());
+            Redis::hset($this->id, 'amountUrls', $this->crawledUrls->count());
+
+            // Merge the toCrawl list with the crawledUrls if the crawler should only return the links on the $mainUrl
+            if ($this->options->contains('doNotCrawl')) {
+                $this->crawledUrls = $this->crawledUrls->push($this->toCrawl)->flatten()->unique();
+                break;
+            }
+        }
         Redis::hset($this->id, "crawledUrls", serialize($this->crawledUrls));
+
 
         return $this->crawledUrls;
     }
