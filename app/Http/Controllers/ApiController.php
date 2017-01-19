@@ -2,11 +2,62 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\AnalyzeSite;
 use App\Report;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Redis;
 
 class ApiController extends Controller
 {
+
+    /**
+     * Scan request
+     *
+     * @param Request $request
+     * @return array
+     */
+    public function scan(Request $request) {
+        $this->validate($request, [
+            'site' => 'required|url'
+        ]);
+
+        $id = str_random();
+
+        // TODO: Options via POST Request
+        $this->dispatch(new AnalyzeSite($id, $request->input('site'), collect(['hackmanit.de']), collect(['anchors', 'images', 'links', 'scripts', 'media', 'area', 'frames'])));
+
+        return [
+            'id' => $id,
+            'status' => Redis::hget($id, 'status')
+        ];
+    }
+
+    /**
+     * Get the specific request
+     *
+     * @param Request $request
+     * @return array
+     */
+    public function get(Request $request) {
+        $this->validate($request, [
+            'id' => 'required|string|size:16'
+        ]);
+
+        $id = $request->input('id');
+
+        if (Redis::hget($id, 'status') !== 'finished')
+            return [
+                'id' => $id,
+                'status' => Redis::hget($id, 'status')
+            ];
+
+        return [
+            'id' => $id,
+            'status' => Redis::hget($id, 'status'),
+            'report' => unserialize(Redis::hget($id, 'report'))
+        ];
+
+    }
 
     /**
      * Returns the Report for a single URL.
@@ -38,42 +89,42 @@ class ApiController extends Controller
                 'Content-Type' => [
                     'result' => !(strpos($report->ContentTypeRating->getRating(), 'C') !== false),
                     'comment' => $report->ContentTypeRating->getComment(),
-                    'header' => $report->ContentTypeRating->getHeader()
+                    'directive' => $report->ContentTypeRating->getHeader()
                 ],
                 'Content-Security-Policy' => [
                     'result' => !(strpos($report->ContentSecurityPolicyRating->getRating(), 'C') !== false),
                     'comment' => $report->ContentSecurityPolicyRating->getComment(),
-                    'header' => $report->ContentSecurityPolicyRating->getHeader()
+                    'directive' => $report->ContentSecurityPolicyRating->getHeader()
                 ],
                 'Public-Key-Pins' => [
                     'result' => !(strpos($report->HttpPublicKeyPinningRating->getRating(), 'C') !== false),
                     'comment' => $report->HttpPublicKeyPinningRating->getComment(),
-                    'header' => $report->HttpPublicKeyPinningRating->getHeader()
+                    'directive' => $report->HttpPublicKeyPinningRating->getHeader()
                 ],
                 'Strict-Transport-Security' => [
                     'result' => !(strpos($report->HttpStrictTransportSecurityRating->getRating(), 'C') !== false),
                     'comment' => $report->HttpStrictTransportSecurityRating->getComment(),
-                    'header' => $report->HttpStrictTransportSecurityRating->getHeader()
+                    'directive' => $report->HttpStrictTransportSecurityRating->getHeader()
                 ],
                 'X-Content-Type-Options' => [
                     'result' => !(strpos($report->XContentTypeOptionsRating->getRating(), 'C') !== false),
                     'comment' => $report->XContentTypeOptionsRating->getComment(),
-                    'header' => $report->XContentTypeOptionsRating->getHeader()
+                    'directive' => $report->XContentTypeOptionsRating->getHeader()
                 ],
                 'X-Frame-Options' => [
                     'result' => !(strpos($report->XFrameOptionsRating->getRating(), 'C') !== false),
                     'comment' => $report->XFrameOptionsRating->getComment(),
-                    'header' => $report->XFrameOptionsRating->getHeader()
+                    'directive' => $report->XFrameOptionsRating->getHeader()
                 ],
                 'X-Xss-Protection' => [
                     'result' => !(strpos($report->XXSSProtectionRating->getRating(), 'C') !== false),
                     'comment' => $report->XXSSProtectionRating->getComment(),
-                    'header' => $report->XXSSProtectionRating->getHeader()
+                    'directive' => $report->XXSSProtectionRating->getHeader()
                 ]
             ]
         ];
 
-        return $customReport;
+        return response()->json($customReport);
     }
 
     /**
