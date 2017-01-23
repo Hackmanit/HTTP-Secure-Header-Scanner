@@ -28,6 +28,13 @@ class HTTPResponse
 
         try {
             $response = $client->request('GET', $url, [
+                // User-Agent because some sites (e.g. facebook) do not return all headers if the user-agent is missing or Guzzle
+                'headers' => [
+                    'User-Agent' => 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 Safari/537.36',
+                    ],
+                //'proxy' => 'http://172.18.0.1:8080',
+                'verify' => false,
+
                 'on_headers' => function (Response $response) use ($url, $takeout) {
 
                     if (strpos($response->getHeaderLine('Content-Type'), "text/") === false) {
@@ -41,6 +48,7 @@ class HTTPResponse
         } catch (\Exception $e) {
             // Do nothing here.
             // If file is not a text file it will not be downloaded and cached.
+            \Log::critical("Error: " . $e);
         }
 
         return new CachedResponse($url, collect($takeout->headers), $takeout->body);
