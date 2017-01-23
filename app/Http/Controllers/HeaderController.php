@@ -9,12 +9,15 @@ use Illuminate\Support\Facades\Redis;
 class HeaderController extends Controller
 {
 
+    /**
+     * Return frontend.
+     */
     public function index() {
         return view('enter');
     }
 
     /**
-     * Main function for the routing.
+     * Requesting a Report.
      *
      * @param ReportRequest $request
      * @return array
@@ -50,6 +53,7 @@ class HeaderController extends Controller
         return redirect()->route('displayReport', $id);
     }
 
+    // TODO: This... thing.
     public function displayReport($id) {
         sleep(5);
         $string = "";
@@ -60,6 +64,11 @@ class HeaderController extends Controller
         return  $string . '<br><br><a href="/">Back</a>';
     }
 
+    /**
+     * jsConfig for the frontend.
+     *
+     * @return array with settings.
+     */
     public function jsConfig() {
         return [
             'LIMIT' => env("LIMIT", 1000),
