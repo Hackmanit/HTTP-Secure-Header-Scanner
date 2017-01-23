@@ -6,7 +6,6 @@ use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Redis;
 
-// To use: $response = HTTPResponse::get($url);
 class HTTPResponse
 {
     /**
@@ -36,10 +35,8 @@ class HTTPResponse
                 'verify' => false,
 
                 'on_headers' => function (Response $response) use ($url, $takeout) {
-
-                    if (strpos($response->getHeaderLine('Content-Type'), "text/") === false) {
-                        $takeout->headers = $response->getHeaders();
-                        throw new \Exception("File is not a text file");
+                    if ($response->getHeaderLine('Content-Length') > 1024*10) {
+                        throw new \Exception('The file is too big!');
                     }
                 }
             ]);
@@ -48,7 +45,7 @@ class HTTPResponse
         } catch (\Exception $e) {
             // Do nothing here.
             // If file is not a text file it will not be downloaded and cached.
-            \Log::critical("Error: " . $e);
+            \Log::debug("Error: " . $e);
         }
 
         return new CachedResponse($url, collect($takeout->headers), $takeout->body);
