@@ -2,14 +2,12 @@
 
 namespace App\Ratings;
 
-use App\HTTPResponse;
-
 class XXSSProtectionRating extends Rating
 {
 
     protected function rate()
     {
-        $header = $this->getHeader();
+        $header = $this->getHeader('x-xss-protection');
 
         if ($header === null) {
             $this->rating = 'C';
@@ -44,10 +42,4 @@ class XXSSProtectionRating extends Rating
         // https://www.owasp.org/index.php/OWASP_Secure_Headers_Project#xxp
         return 'X-XSS-Protection: 1; mode=block';
     }
-
-    public function getHeader()
-    {
-        return HTTPResponse::get($this->url)->getHeaders()->get("X-XSS-Protection");
-    }
-
 }

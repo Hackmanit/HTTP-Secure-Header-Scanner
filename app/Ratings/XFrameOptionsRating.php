@@ -2,14 +2,12 @@
 
 namespace App\Ratings;
 
-use App\HTTPResponse;
-
 class XFrameOptionsRating extends Rating
 {
 
     protected function rate()
     {
-        $header = $this->getHeader();
+        $header = $this->getHeader('x-frame-options');
 
         if ($header === null) {
             $this->rating   = 'C';
@@ -45,10 +43,5 @@ class XFrameOptionsRating extends Rating
     {
         // Hackmanit
         return 'Best Practice is to set this header accordingly to your needs. Do not use "allow-from: *".';
-    }
-
-    public function getHeader()
-    {
-        return HTTPResponse::get($this->url)->getHeaders()->get("X-Frame-Options");
     }
 }

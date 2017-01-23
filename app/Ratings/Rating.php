@@ -2,6 +2,8 @@
 
 namespace App\Ratings;
 
+use App\HTTPResponse;
+
 abstract class Rating implements RatingInterface, \JsonSerializable
 {
     protected $url;
@@ -27,6 +29,17 @@ abstract class Rating implements RatingInterface, \JsonSerializable
     public function getComment()
     {
         return $this->comment;
+    }
+
+    /**
+     * @param $lowercaseHeader string header name in lowercase
+     * @return array
+     */
+    public function getHeader($lowercaseHeader)
+    {
+        return HTTPResponse::get($this->url)->getHeaders()->mapWithKeys(function( $value, $key ) {
+            return [strtolower($key) => $value];
+        })->get($lowercaseHeader, []);
     }
 
     /**

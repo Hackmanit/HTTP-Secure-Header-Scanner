@@ -2,13 +2,11 @@
 
 namespace App\Ratings;
 
-use App\HTTPResponse;
-
 class HPKPRating extends Rating {
 
     protected function rate()
     {
-        $header = $this->getHeader();
+        $header = $this->getHeader('public-key-pins');
 
         if ($header === null) {
             $this->rating   = 'C';
@@ -59,10 +57,5 @@ class HPKPRating extends Rating {
         // OWASP Secure Headers Prorject
         // https://www.owasp.org/index.php/OWASP_Secure_Headers_Project#hpkp
         return 'Public-Key-Pins "pin-sha256=\"<HASH>\"; pin-sha256=\"<HASH>\"; max-age=2592000; includeSubDomains"';
-    }
-
-    public function getHeader()
-    {
-        return HTTPResponse::get($this->url)->getHeaders()->get("Public-Key-Pins");
     }
 }

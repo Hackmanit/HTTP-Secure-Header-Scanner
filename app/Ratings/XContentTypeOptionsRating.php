@@ -2,14 +2,12 @@
 
 namespace App\Ratings;
 
-use App\HTTPResponse;
-
 class XContentTypeOptionsRating extends Rating
 {
 
     protected function rate()
     {
-        $header = $this->getHeader();
+        $header = $this->getHeader('x-content-type-options');
 
         if ($header === null) {
             $this->rating = 'C';
@@ -44,10 +42,4 @@ class XContentTypeOptionsRating extends Rating
         https://www.owasp.org/index.php/OWASP_Secure_Headers_Project#xcto
         return 'X-Content-Type-Options: nosniff';
     }
-
-    public function getHeader()
-    {
-        return HTTPResponse::get($this->url)->getHeaders()->get("X-Content-Type-Options");
-    }
-
 }

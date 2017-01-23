@@ -2,14 +2,12 @@
 
 namespace App\Ratings;
 
-use App\HTTPResponse;
-
 class CSPRating extends Rating
 {
 
     protected function rate()
     {
-        $header = $this->getHeader();
+        $header = $this->getHeader('content-security-policy');
 
         if ($header === null) {
             $this->rating   = 'C';
@@ -39,7 +37,7 @@ class CSPRating extends Rating
         }
 
         // Check if legacy header is available
-        if (HTTPResponse::get($this->url)->getHeaders()->get("X-Content-Security-Policy") !== null) {
+        if (count($this->getHeader("x-content-security-policy")) > 0) {
             $this->comment .= '\n' . 'The legacy header X-Content-Security-Policy (that is only used for IE11 with CSP v.1) is set. The new and standardized header is Content-Security-Policy.';
         }
     }
@@ -59,8 +57,4 @@ class CSPRating extends Rating
         return "Best Practice is to use the CSP with default-src 'none' and without any 'unsafe-eval' or 'unsafe-inline'";
     }
 
-    public function getHeader()
-    {
-        return HTTPResponse::get($this->url)->getHeaders()->get("Content-Security-Policy");
-    }
 }

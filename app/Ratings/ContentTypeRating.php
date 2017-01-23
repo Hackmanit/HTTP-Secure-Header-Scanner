@@ -2,14 +2,12 @@
 
 namespace App\Ratings;
 
-use App\HTTPResponse;
-
 class ContentTypeRating extends Rating
 {
 
     protected function rate()
     {
-        $header = $this->getHeader();
+        $header = $this->getHeader('content-type');
 
         if ($header === null) {
             $this->rating = 'C';
@@ -20,6 +18,9 @@ class ContentTypeRating extends Rating
             $this->comment = 'Content-Type header is set multiple times.';
         }
         else {
+            $this->rating = 'C';
+            $this->comment = 'Content-Type header is set without the charset.';
+
             $header = $header[0];
 
             if (stripos($header, 'charset=')) {
@@ -65,11 +66,6 @@ class ContentTypeRating extends Rating
         // W3C
         // https://www.w3.org/International/articles/http-charset/index.en
         return 'Content-Type: text/html; charset=utf-8';
-    }
-
-    public function getHeader()
-    {
-        return HTTPResponse::get($this->url)->getHeaders()->get("Content-Type");
     }
 
 }
