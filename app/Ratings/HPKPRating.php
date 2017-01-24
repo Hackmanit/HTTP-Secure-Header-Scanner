@@ -19,12 +19,17 @@ class HPKPRating extends Rating {
         }
 
         else {
-            $header = $header[0];
+            try {
+                $originalHeader = $header;
+                $header = $header[0];
 
-            $beginAge   = strpos($header, 'max-age=') + 8;
-            $endAge     = strpos($header, ';', $beginAge);
-            $maxAge     = substr($header, $beginAge, $endAge - $beginAge);
-
+                $beginAge = strpos( $header, 'max-age=' ) + 8;
+                $endAge = strpos( $header, ';', $beginAge );
+                $maxAge = substr( $header, $beginAge, $endAge - $beginAge );
+            }
+            catch(\Exception $e) {
+                dd( $originalHeader );
+            }
             if ($maxAge < 1296000) {
                 $this->rating   = 'B';
                 $this->comment  = 'The keys are pinned for less then 15 days.';

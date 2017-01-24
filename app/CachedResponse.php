@@ -18,12 +18,14 @@ class CachedResponse
     protected $url;
     protected $headers;
     protected $body;
+    protected $statusCode;
 
-    function __construct($url, Collection $headers, $body)
+    function __construct($url, Collection $headers, $body, $statusCode = null)
     {
         $this->url = $url;
         $this->headers = $headers;
         $this->body = $body;
+        $this->statusCode = $statusCode;
 
         Redis::hset("response", $url, serialize($this));
     }
@@ -50,5 +52,12 @@ class CachedResponse
     public function getHeaders()
     {
         return $this->headers;
+    }
+
+    /**
+     * @return int
+     */
+    public function getStatusCode () {
+        return $this->statusCode;
     }
 }

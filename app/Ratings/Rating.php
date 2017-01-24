@@ -37,9 +37,13 @@ abstract class Rating implements RatingInterface, \JsonSerializable
      */
     public function getHeader($lowercaseHeader)
     {
-        return HTTPResponse::get($this->url)->getHeaders()->mapWithKeys(function( $value, $key ) {
-            return [strtolower($key) => $value];
-        })->get($lowercaseHeader, []);
+        $cachedResponse = (new HTTPResponse($this->url))->get();
+        if($cachedResponse)
+            return $cachedResponse->getHeaders()->mapWithKeys(function( $value, $key ) {
+                return [strtolower($key) => $value];
+                })->get($lowercaseHeader);
+
+        return false;
     }
 
     /**
