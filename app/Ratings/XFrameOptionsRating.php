@@ -11,23 +11,23 @@ class XFrameOptionsRating extends Rating
 
         if ($header === null) {
             $this->rating   = 'C';
-            $this->comment  = 'X-Frame-Options header is not set.';
+            $this->comment  = __('The header is not set.');
         }
 
         elseif (count($header) > 1) {
             $this->rating   = 'C';
-            $this->comment  = 'X-Frame-Options header is set multiple times.';
+            $this->comment  = __('The header is set multiple times.');
         }
 
         else {
             $header = $header[0];
 
             $this->rating   = 'A';
-            $this->comment  = 'X-Frame-Options header is set and does not contain any wildcard.';
+            $this->comment  = __('The header is set and does not contain any wildcard.');
 
             if (strpos($header, '*') !== false) {
                 $this->rating   = 'C';
-                $this->comment  = 'Header contains a wildcard and is thereby useless.';
+                $this->comment  = __('The header contains wildcards and is thereby useless.');
             }
         }
     }
@@ -36,12 +36,14 @@ class XFrameOptionsRating extends Rating
     {
         // OWASP Secure Headers Project
         // https://www.owasp.org/index.php/OWASP_Secure_Headers_Project#X-Frame-Options
+        // TODO: Translate
         return 'X-Frame-Options response header improve the protection of web applications against Clickjacking. It declares a policy communicated from a host to the client browser on whether the browser must not display the transmitted content in frames of other web pages.';
     }
 
     public static function getBestPractice()
     {
         // Hackmanit
+        // TODO: Check and Translate
         return 'Best Practice is to set this header accordingly to your needs. Do not use "allow-from: *".';
     }
 }

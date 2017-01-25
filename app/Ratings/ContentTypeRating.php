@@ -11,33 +11,35 @@ class ContentTypeRating extends Rating
 
         if ($header === null) {
             $this->rating = 'C';
-            $this->comment = 'Content-Type header is not set.';
+            $this->comment  = __('The header is not set.');
         }
+
         elseif (count($header) > 1) {
             $this->rating = 'C';
-            $this->comment = 'Content-Type header is set multiple times.';
+            $this->comment  = __('The header is set multiple times.');
         }
+
         else {
             $this->rating = 'C';
-            $this->comment = 'Content-Type header is set without the charset.';
+            $this->comment = __('The header is set without the charset.');
 
             $header = $header[0];
 
-            if (stripos($header, 'charset=')) {
+            if (stripos($header, 'charset=') !== false) {
                 $this->rating = 'B';
-                $this->comment = 'Charset is set in Content-Type header.';
+                $this->comment = __('The header is set with the charset.');
             }
 
             elseif (stripos($header, 'utf-8') !== false) {
                 $this->rating = 'A';
-                $this->comment = 'Charset is set and follows the best practice.';
+                $this->comment = __('The header is set with the charset and follows the best practice.');
             }
 
             // HASEGAWA
             // http://openmya.hacker.jp/hasegawa/public/20071107/s6/h6.html?file=datae.txt
             elseif (stripos($header, 'utf8') !== false) {
                 $this->rating = 'C';
-                $this->comment = 'The given charset is wrong and thereby ineffective. The correct writing is: charset=utf-8';
+                $this->comment = __('The given charset is wrong and thereby ineffective.') . __('The correct writing is: charset=utf-8');
             }
             elseif (
                 (stripos($header, 'Windows-31J') !== false) ||
@@ -48,7 +50,7 @@ class ContentTypeRating extends Rating
                 (stripos($header, 'jis') !== false)
             ) {
                 $this->rating = 'C';
-                $this->comment = 'The given charset is wrong and thereby ineffective. Best practice is: charset=utf-8';
+                $this->comment = __('The given charset is wrong and thereby ineffective.') . __('Best practice is: charset=utf-8');
             }
 
         }
@@ -58,7 +60,8 @@ class ContentTypeRating extends Rating
     {
         // W3C
         // https://www.w3.org/International/articles/http-charset/index.en
-        return 'When a server sends a document to a user agent (eg. a browser) it also sends information in the Content-Type field of the accompanying HTTP header about what type of data format this is. This information is expressed using a MIME type label. Documents transmitted with HTTP that are of type text, such as text/html, text/plain, etc., can send a charset parameter in the HTTP header to specify the character encoding of the document.';
+        // TODO: Translate
+        return __('When a server sends a document to a user agent (eg. a browser) it also sends information in the Content-Type field of the accompanying HTTP header about what type of data format this is. This information is expressed using a MIME type label. Documents transmitted with HTTP that are of type text, such as text/html, text/plain, etc., can send a charset parameter in the HTTP header to specify the character encoding of the document.');
     }
 
     public static function getBestPractice()

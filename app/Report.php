@@ -51,7 +51,7 @@ class Report
     protected function doSiteRating()
     {
         $this->siteRating = 'C';
-        $this->comment = 'The site is insecure.';
+        $this->comment = __('This site is insecure.');
 
         /*
          * Criteria for H
@@ -68,7 +68,7 @@ class Report
             (strpos($this->XXSSProtectionRating->getRating()             , 'A')  !== false)
         ) {
             $this->siteRating = 'H';
-            $this->comment = 'WOHA! Great work! Everything is perfect!';
+            $this->comment = 'WOHA! Great work! Everything is perfect!'; // TODO
         }
 
         /*
@@ -83,7 +83,7 @@ class Report
             (strpos($this->XFrameOptionsRating->getRating()              , 'A')  !== false)
         ) {
             $this->siteRating = 'A';
-            $this->comment = 'The site is secure.';
+            $this->comment = __('This site is secure.');
 
         }
 
@@ -98,7 +98,7 @@ class Report
             (strpos($this->XFrameOptionsRating->getRating(), 'A') !== false)
         ) {
             $this->siteRating = 'B';
-            $this->comment = 'The site is secure.';
+            $this->comment = __('This site is secure.');
         }
     }
 

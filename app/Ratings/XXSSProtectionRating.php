@@ -11,19 +11,23 @@ class XXSSProtectionRating extends Rating
 
         if ($header === null) {
             $this->rating = 'C';
-            $this->comment = 'X-XSS-Protection header is not set.';
-        } elseif (count($header) > 1) {
+            $this->comment  = __('The header is not set.');
+        }
+
+        elseif (count($header) > 1) {
             $this->rating = 'C';
-            $this->comment = 'X-XSS-Protection header is set multiple times.';
-        } else {
+            $this->comment  = __('The header is set multiple times.');
+        }
+
+        else {
             $header = $header[0];
 
             $this->rating = 'B';
-            $this->comment = 'X-XSS-Protection header is set.';
+            $this->comment = __('The header is set correctly.');
 
             if (strpos($header, 'mode=block') !== false) {
                 $this->rating = 'A';
-                $this->comment = "'mode=block' is activated.";
+                $this->comment = __('"mode=block" is activated.');
             }
 
         }
@@ -33,6 +37,7 @@ class XXSSProtectionRating extends Rating
     {
         // OWASP
         // https://www.owasp.org/index.php/OWASP_Secure_Headers_Project#X-XSS-Protection
+        // TODO: Translate
         return 'This header enables the Cross-site scripting (XSS) filter in your browser.';
     }
 
