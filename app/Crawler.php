@@ -107,7 +107,7 @@ class Crawler
      */
     protected function parseDom($link)
     {
-        $dom = HtmlDomParser::str_get_html(HTTPResponse::get($link)->getBody());
+        $dom = HtmlDomParser::str_get_html((new HTTPResponse($link))->getBody());
 
         $links = collect();
 
