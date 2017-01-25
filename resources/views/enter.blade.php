@@ -20,7 +20,8 @@
     <div class="vertical-center full-height" :class="{ 'hidden': show.form === null, 'animated zoomIn': show.form, 'animated zoomOut': !show.form }">
         <div class="col-md-12">
             <h3>Enter your URL</h3>
-            {!! Form::open(['route' => 'requestReport', 'v-on:submit' => 'sendRequest']) !!}
+            <form action="{{ route("requestReport") }}" v-on:submit="sendRequest">
+            {{ csrf_field() }}
             <div class="row">
                 <div class="col-md-11">
                     <input class="form-control" placeholder="https://yoururl.com" v-model="formRequest.url">
@@ -129,7 +130,7 @@ sub2.example.com" class="form-control"></textarea>
             <div class="row">
 
             </div>
-            {!! Form::close() !!}
+            </form>
         </div>
     </div>
 

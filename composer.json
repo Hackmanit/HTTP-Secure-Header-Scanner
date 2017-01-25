@@ -6,11 +6,10 @@
     "type": "project",
     "require": {
         "php": ">=5.6.4",
-        "laravel/framework": "5.3.*",
+        "laravel/framework": "5.4.*",
         "predis/predis": "^1.1",
         "guzzlehttp/guzzle": "^6.2",
-        "voku/simple_html_dom": "^1.5",
-        "laravelcollective/html": "^5.3.0"
+        "voku/simple_html_dom": "^1.5"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",
