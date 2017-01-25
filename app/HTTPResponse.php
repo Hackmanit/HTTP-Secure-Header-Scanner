@@ -71,4 +71,13 @@ class HTTPResponse
 
         return $this->return;
     }
+
+    /**
+     * Helper wrapper for the CachedResponse getBody method.
+     * @return string
+     */
+    public function getBody() {
+        return $this->get()->getBody();
+    }
+
 }
