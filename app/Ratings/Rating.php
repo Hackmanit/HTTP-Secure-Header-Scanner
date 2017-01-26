@@ -10,6 +10,10 @@ abstract class Rating implements RatingInterface, \JsonSerializable
     protected $rating;
     protected $comment;
 
+    /**
+     * Rating constructor.
+     * @param $url
+     */
     public function __construct($url)
     {
         $this->url = $url;
