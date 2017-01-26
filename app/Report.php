@@ -26,9 +26,15 @@ class Report
     public function __construct($url)
     {
         $this->url = $url;
-        $this->doRatings();
-        $this->doSiteRating();
-        $this->status = 'success';
+
+        if ((new HTTPResponse($this->url))->get() === null) {
+            $this->status = "error";
+        }
+        else {
+            $this->doRatings();
+            $this->doSiteRating();
+            $this->status = 'success';
+        }
     }
 
     /**

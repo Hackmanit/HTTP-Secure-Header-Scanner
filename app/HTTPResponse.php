@@ -2,6 +2,7 @@
 
 namespace App;
 
+use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Redis;
@@ -64,7 +65,6 @@ class HTTPResponse
             else
                 $this->return = null;
         } catch (\Exception $e) {
-            \Log::alert($e);
             $this->return =  null;
         }
 
@@ -78,6 +78,10 @@ class HTTPResponse
      */
     public function getBody() {
         return $this->get()->getBody();
+    }
+
+    public static function checkConnection($url) {
+
     }
 
 }
