@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <title>JS Frontend</title>
-    <link rel="stylesheet" href="{{ elixir('css/all.css') }}">
+    <link rel="stylesheet" href="{{ mix('/css/app.css') }}">
 </head>
 <body>
 <div class="container" id="app">
@@ -139,6 +139,6 @@ sub2.example.com" class="form-control"></textarea>
     </div>
 
 </div>
-<script src="{{ elixir('js/app.js') }}"></script>
+<script src="{{ mix('/js/app.js') }}"></script>
 </body>
 </html>
