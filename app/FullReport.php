@@ -4,13 +4,18 @@ namespace App;
 
 use Illuminate\Support\Facades\Redis;
 
+/**
+ * Only runs as a background job. See Jobs/AnalyzeSite.
+ *
+ * Class FullReport
+ * @package App
+ */
 class FullReport {
 
     protected $id;
     protected $urls;
     protected $reports;
 
-    // TODO: Combine FullReport with Crawler.
     public function __construct($id)
     {
         $this->id = $id;
@@ -23,10 +28,14 @@ class FullReport {
      */
     protected function doReports() {
         Redis::hset($this->id, 'status', 'processing');
-        \Log::critical($this->urls);
+
         $this->reports = collect();
-        foreach ($this->urls as $url)
+        foreach ($this->urls as $url) {
             $this->reports->push(new Report($url));
+            \Log::debug("Pushed " . $url);
+        }
+
+        Redis::hset($this->id, 'reports', $this->reports);
     }
 
     /**
@@ -46,34 +55,38 @@ class FullReport {
 
         /** @var Report $report */
         foreach ($this->reports as $report) {
-            $ContentSecurityPolicy->push([
-                'url' => $report->url,
-                'rating' => $report->ContentSecurityPolicyRating->getRating()
-            ]);
-            $ContentType->push([
-                'url' => $report->url,
-                'rating' => $report->ContentTypeRating->getRating()
-            ]);
-            $StrictTransportSecurity->push([
-                'url' => $report->url,
-                'rating' => $report->HttpStrictTransportSecurityRating->getRating()
-            ]);
-            $PublicKeyPins->push([
-                'url' => $report->url,
-                'rating' => $report->HttpPublicKeyPinningRating->getRating()
-            ]);
-            $XContentTypeOptions->push([
-                'url' => $report->url,
-                'rating' => $report->XContentTypeOptionsRating->getRating()
-            ]);
-            $XFrameOptions->push([
-                'url' => $report->url,
-                'rating' => $report->XFrameOptionsRating->getRating()
-            ]);
-            $XXSSProtection->push([
-                'url' => $report->url,
-                'rating' => $report->XXSSProtectionRating->getRating()
-            ]);
+
+            if ($report->status == 'success') {
+
+                $ContentSecurityPolicy->push([
+                    'url' => $report->url,
+                    'rating' => $report->ContentSecurityPolicyRating->getRating()
+                ]);
+                $ContentType->push([
+                    'url' => $report->url,
+                    'rating' => $report->ContentTypeRating->getRating()
+                ]);
+                $StrictTransportSecurity->push([
+                    'url' => $report->url,
+                    'rating' => $report->HttpStrictTransportSecurityRating->getRating()
+                ]);
+                $PublicKeyPins->push([
+                    'url' => $report->url,
+                    'rating' => $report->HttpPublicKeyPinningRating->getRating()
+                ]);
+                $XContentTypeOptions->push([
+                    'url' => $report->url,
+                    'rating' => $report->XContentTypeOptionsRating->getRating()
+                ]);
+                $XFrameOptions->push([
+                    'url' => $report->url,
+                    'rating' => $report->XFrameOptionsRating->getRating()
+                ]);
+                $XXSSProtection->push([
+                    'url' => $report->url,
+                    'rating' => $report->XXSSProtectionRating->getRating()
+                ]);
+            }
         }
 
         return [

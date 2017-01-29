@@ -33,7 +33,7 @@ class ReportRequest extends FormRequest
             'limit' => 'required_with:limitOn|numeric|min:1',
             'doNotCrawl' => 'boolean',
             'scan.custom' => 'boolean',
-            'scan.customJson' => 'required_with:scan.custom|json'
+            'scan.customJson' => 'required_with:scan.custom'
         ];
     }
 }

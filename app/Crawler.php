@@ -48,39 +48,30 @@ class Crawler
 
     public function extractAllLinks()
     {
+        // Set status to "crawling"
         Redis::hset($this->id, 'status', 'crawling');
 
-        while ($link = $this->toCrawl->pop()) {
-
-            $this->crawledUrls = $this->crawledUrls->push($link);
+        // Idee, wenn foreach durch lief, starte erneut mti while
+        $run = true;
+        while ($run) {
+            $link = $this->toCrawl->pop();
+            $this->crawledUrls->push($link);
 
             $extractedLinks = $this->extractLinks($link)->unique();
 
-            // Limit
-            if ( $this->crawledUrls->count() > $this->options->get('limit'))
-                break;
-
-            foreach ($extractedLinks->diff($this->crawledUrls)->diff($this->toCrawl) as $extractedLink) {
-                // Limit
-                if( $this->toCrawl->count() + $this->crawledUrls->count() >= $this->options->get('limit') )
-                    break;
-
-                $this->toCrawl->push($extractedLink)->unique();
+            foreach ($extractedLinks as $extractedLink) {
+                if ((! $this->toCrawl->contains($extractedLink)) && (! $this->crawledUrls->contains($extractedLink))) {
+                    $this->toCrawl->push($extractedLink);
+                }
             }
 
-            Redis::hset($this->id, 'amountUrlsToCrawl', $this->toCrawl->count());
-            Redis::hset($this->id, 'amountUrls', $this->crawledUrls->count());
+            if ($this->toCrawl->count() == 0)
+                $run = false;
 
-            // Merge the toCrawl list with the crawledUrls if the crawler should only return the links on the $mainUrl
-            if ($this->options->contains('doNotCrawl')) {
-                $this->crawledUrls = $this->crawledUrls->push($this->toCrawl)->flatten()->unique();
-                break;
-            }
+            Redis::hset($this->id, "crawledUrls", serialize($this->crawledUrls));
         }
+
         Redis::hset($this->id, "crawledUrls", serialize($this->crawledUrls));
-
-
-        return $this->crawledUrls;
     }
 
     /**
@@ -107,36 +98,38 @@ class Crawler
      */
     protected function parseDom($link)
     {
-        $dom = HtmlDomParser::str_get_html((new HTTPResponse($link))->getBody());
-
+        $response = (new HTTPResponse($link))->get();
         $links = collect();
+        if($response != null) {
+            $dom = HtmlDomParser::str_get_html($response->getBody());
 
-        if($this->options->has('customJson'))
-            foreach (json_decode($this->options->get('customJson')) as $tag => $attribute)
-                foreach ($dom->find($tag) as $element)
-                    $links->push($element->$attribute);
-        else {
-            if ($this->options->contains("anchors"))
-                foreach ($dom->find("a") as $link)
-                    $links->push($link->href);
-            if ($this->options->contains('images'))
-                foreach ($dom->find("img") as $link)
-                    $links->push($link->src);
-            if ($this->options->contains('media'))
-                foreach ($dom->find("video,audio,source") as $link)
-                    $links->push($link->src);
-            if ($this->options->contains('links'))
-                foreach ($dom->find("link") as $link)
-                    $links->push($link->href);
-            if ($this->options->contains('scripts'))
-                foreach ($dom->find("script") as $link)
-                    $links->push($link->src);
-            if ($this->options->contains('area'))
-                foreach ($dom->find("area") as $link)
-                    $links->push($link->href);
-            if ($this->options->contains('frames'))
-                foreach ($dom->find("iframe,frame") as $link)
-                    $links->push($link->src);
+            if($this->options->has('customJson'))
+                foreach (json_decode($this->options->get('customJson')) as $tag => $attribute)
+                    foreach ($dom->find($tag) as $element)
+                        $links->push($element->$attribute);
+            else {
+                if ($this->options->contains("anchors"))
+                    foreach ($dom->find("a") as $link)
+                        $links->push($link->href);
+                if ($this->options->contains('images'))
+                    foreach ($dom->find("img") as $link)
+                        $links->push($link->src);
+                if ($this->options->contains('media'))
+                    foreach ($dom->find("video,audio,source") as $link)
+                        $links->push($link->src);
+                if ($this->options->contains('links'))
+                    foreach ($dom->find("link") as $link)
+                        $links->push($link->href);
+                if ($this->options->contains('scripts'))
+                    foreach ($dom->find("script") as $link)
+                        $links->push($link->src);
+                if ($this->options->contains('area'))
+                    foreach ($dom->find("area") as $link)
+                        $links->push($link->href);
+                if ($this->options->contains('frames'))
+                    foreach ($dom->find("iframe,frame") as $link)
+                        $links->push($link->src);
+            }
         }
 
         return $links;
@@ -207,5 +200,11 @@ class Crawler
         if (strncmp($path, "/", 1) !== 0) $path = "/" . $path;
         $query = isset($parsed_url['query']) ? '?' . $parsed_url['query'] : '';
         return "$scheme$user$pass$host$port$path$query";
+    }
+
+    function updateCrawlingStats ()
+    {
+        Redis::hset($this->id, 'amountUrlsToCrawl', $this->toCrawl->count());
+        Redis::hset($this->id, 'amountUrls', $this->crawledUrls->count());
     }
 }

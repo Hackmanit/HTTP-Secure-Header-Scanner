@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use function GuzzleHttp\json_decode;
+use Illuminate\Http\Request;
 use App\Http\Requests\ReportRequest;
 use App\Jobs\AnalyzeSite;
 use Illuminate\Support\Facades\Redis;
@@ -22,7 +24,7 @@ class HeaderController extends Controller
      * @param ReportRequest $request
      * @return array
      */
-    public function requestReport(ReportRequest $request)
+    public function requestReport(Request $request)
     {
         $url = $request->input('url');
         if (substr($url, -1) !== '/')
@@ -50,18 +52,27 @@ class HeaderController extends Controller
 
         $this->dispatch(new AnalyzeSite($id, $url, $whiteList, $options));
 
-        return redirect()->route('displayReport', $id);
+        return redirect()->to('/' . $id);
+        return ["id" => $id];
     }
 
     // TODO: This... thing.
-    public function displayReport($id) {
-        sleep(5);
-        $string = "";
-        $count = 1;
-        foreach (unserialize(Redis::hget($id, "crawledUrls")) as $link)
-            $string .= $count++ . ' | ' . $link . "<br>";
 
-        return  $string . '<br><br><a href="/">Back</a>';
+    /**
+     * @param $id
+     * @var \App\Report $report
+     */
+    public function displayReport($id) {
+
+        $fullReport = unserialize(Redis::hget($id, "reports"));
+
+        /**
+         * @var \App\Report $report
+         */
+        foreach ($fullReport as $report)
+            echo $report->getUrl() . "<br>";
+
+
     }
 
     /**

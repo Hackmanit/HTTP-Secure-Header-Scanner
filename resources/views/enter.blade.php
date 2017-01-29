@@ -20,7 +20,7 @@
     <div class="vertical-center full-height" :class="{ 'hidden': show.form === null, 'animated zoomIn': show.form, 'animated zoomOut': !show.form }">
         <div class="col-md-12">
             <h3>Enter your URL</h3>
-            <form action="{{ route("requestReport") }}" v-on:submit="sendRequest">
+            <form action="{{ route("requestReport") }}" method="post" v-on:submit="sendRequest">
             {{ csrf_field() }}
             <div class="row">
                 <div class="col-md-11">
@@ -134,7 +134,9 @@ sub2.example.com" class="form-control"></textarea>
         </div>
     </div>
 
-    <div class="vertical-center full-height" :class="{ 'hidden': show.report === null, 'animated zoomIn': show.report, 'animated zoomOut': !show.report }">
+    {{--<div class="vertical-center full-height" :class="{ 'hidden': show.report === null, 'animated zoomIn': show.report, 'animated zoomOut': !show.report }">--}}
+    <div class="vertical-center full-height" >
+
         @{{ report }}
     </div>
 

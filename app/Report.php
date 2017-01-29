@@ -23,12 +23,21 @@ class Report
     public $siteRating = 'C';
     public $comment = '';
 
+    public $ContentSecurityPolicyRating       = null;
+    public $ContentTypeRating                 = null;
+    public $HttpPublicKeyPinningRating        = null;
+    public $HttpStrictTransportSecurityRating = null;
+    public $XContentTypeOptionsRating         = null;
+    public $XFrameOptionsRating               = null;
+    public $XXSSProtectionRating              = null;
+
     public function __construct($url)
     {
         $this->url = $url;
 
         if ((new HTTPResponse($this->url))->get() === null) {
             $this->status = "error";
+            \Log::alert("error");
         }
         else {
             $this->doRatings();

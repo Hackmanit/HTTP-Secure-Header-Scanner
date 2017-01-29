@@ -11214,39 +11214,50 @@ var app = new Vue({
             proxy: '',
             proxyAddress: ''
         },
-        report: ""
+        report: {
+            'id': null,
+            'status': null,
+            'data': null
+        }
     },
 
     mounted: function mounted() {
-        var _this = this;
-
         axios.get('/jsConfig').then(function (response) {
-            return [_this.formRequest.proxyAddress = "http://" + response.data.HOST_IP + ":8888", _this.formRequest.limit = response.data.LIMIT, _this.formRequest.scan.customJson = response.data.CUSTOM_JSON, _this.show.load = false, _this.show.form = true];
+            return [app.formRequest.proxyAddress = "http://" + response.data.HOST_IP + ":8080", app.formRequest.limit = response.data.LIMIT, app.formRequest.scan.customJson = response.data.CUSTOM_JSON, app.show.load = false, app.show.form = true];
         });
     },
 
     watch: {
         toggleScans: function toggleScans() {
-            this.formRequest.scan.anchor = this.toggleScans;
-            this.formRequest.scan.images = this.toggleScans;
-            this.formRequest.scan.frames = this.toggleScans;
-            this.formRequest.scan.area = this.toggleScans;
-            this.formRequest.scan.media = this.toggleScans;
-            this.formRequest.scan.scripts = this.toggleScans;
-            this.formRequest.scan.links = this.toggleScans;
+            app.formRequest.scan.anchor = app.toggleScans;
+            app.formRequest.scan.images = app.toggleScans;
+            app.formRequest.scan.frames = app.toggleScans;
+            app.formRequest.scan.area = app.toggleScans;
+            app.formRequest.scan.media = app.toggleScans;
+            app.formRequest.scan.scripts = app.toggleScans;
+            app.formRequest.scan.links = app.toggleScans;
         }
     },
     methods: {
+        // Send the request and save the returning report.id
         sendRequest: function sendRequest(event) {
-            event.preventDefault();
-            this.show.form = false;
-            this.show.load = true;
-            console.log(JSON.stringify(this.formRequest.toString()));
-            axios.post("/", this.formRequest).then(function (response) {
-                console.log(response.data);
-                this.show.report = true;
+            // event.preventDefault();
+            app.show.form = false;
+            app.show.load = true;
 
-                this.report = response.data;
+            axios.post("/", app.formRequest).then(function (response) {
+                console.log(response.data);
+                app.report.id = response.data.id;
+
+                app.getReport();
+            }).catch(function (error) {
+                console.log(error.response.data);
+            });
+        },
+        getReport: function getReport() {
+            axios.get("/" + app.report.id).then(function (response) {
+                console.log(response.data);
+                app.report.data = response.data;
             });
         }
     }
