@@ -65,7 +65,7 @@ class ApiController extends Controller
      * @param Request $request (GET parameter "site")
      * @return Report
      */
-    public function report(Request $request) {
+    public function rate(Request $request) {
         $this->validate($request, [
             'site' => 'required|url'
         ]);
