@@ -20,6 +20,11 @@ abstract class Rating implements RatingInterface, \JsonSerializable
         $this->rate();
     }
 
+    public function getHeader($header)
+    {
+        return (new HTTPResponse($this->url))->header($header);
+    }
+
     /**
      * @return string
      */
@@ -33,21 +38,6 @@ abstract class Rating implements RatingInterface, \JsonSerializable
     public function getComment()
     {
         return $this->comment;
-    }
-
-    /**
-     * @param $lowercaseHeader string header name in lowercase
-     * @return array
-     */
-    public function getHeader($lowercaseHeader)
-    {
-        $cachedResponse = (new HTTPResponse($this->url))->get();
-        if($cachedResponse)
-            return $cachedResponse->getHeaders()->mapWithKeys(function( $value, $key ) {
-                return [strtolower($key) => $value];
-                })->get($lowercaseHeader);
-
-        return false;
     }
 
     /**
