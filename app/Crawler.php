@@ -51,9 +51,7 @@ class Crawler
         // Set status to "crawling"
         Redis::hset($this->id, 'status', 'crawling');
 
-        // Idee, wenn foreach durch lief, starte erneut mti while
-        $run = true;
-        while ($run) {
+        while ($this->toCrawl->count() > 0) {
             $link = $this->toCrawl->pop();
             $this->crawledUrls->push($link);
 
@@ -65,8 +63,7 @@ class Crawler
                 }
             }
 
-            if ($this->toCrawl->count() == 0)
-                $run = false;
+            $this->updateCrawlingStats();
 
             Redis::hset($this->id, "crawledUrls", serialize($this->crawledUrls));
         }
