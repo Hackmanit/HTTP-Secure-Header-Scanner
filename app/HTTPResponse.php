@@ -3,12 +3,12 @@
 namespace App;
 
 use GuzzleHttp\Client;
-use Illuminate\Support\Facades\Redis;
 
 class HTTPResponse
 {
     protected $url;
     protected $response = null;
+    public $body = null;
 
     function __construct($url)
     {
@@ -21,9 +21,9 @@ class HTTPResponse
      */
     public function get()
     {
-        //$cached = Redis::hget("response", $this->url);
-        //if ($cached)
-          //  return unserialize($cached);
+//        $cached = Redis::hget("response", $this->url);
+//        if ($cached)
+//          return unserialize($cached);
 
         try {
             $this->response = $this->client()->get( $this->url, [
@@ -76,14 +76,14 @@ class HTTPResponse
     }
 
     /**
-     * @param $lowercaseHeader string header name in lowercase
+     * @param $name string header name in lowercase
      * @return array
      */
-    public function header($lowercaseHeader)
+    public function header($name)
     {
         return $this->headers()->mapWithKeys(function( $value, $key ) {
             return [strtolower($key) => $value];
-        })->get($lowercaseHeader);
+        })->get(strtolower($name));
     }
 
     /**

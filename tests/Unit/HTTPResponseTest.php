@@ -39,7 +39,7 @@ class HTTPResponseTest extends TestCase
         $mock = new MockHandler( [
             new Response( 200, [
                 'Strict-Transport-Security' => 'max-age=60; includeSubDomains',
-                'X-Contnent-Type-Options' => 'nosniff',
+                'X-Content-Type-Options' => 'nosniff',
             ] )
         ] );
         $this->getHTTPResponseMockForTesting($mock);
@@ -56,7 +56,7 @@ class HTTPResponseTest extends TestCase
             ] ),
             new Response( 200, [
                 'Strict-Transport-Security' => 'max-age=60; includeSubDomains',
-                'X-Contnent-Type-Options' => 'nosniff',
+                'X-Content-Type-Options' => 'nosniff',
             ] )
         ] );
         $this->getHTTPResponseMockForTesting($mock);
@@ -78,6 +78,50 @@ class HTTPResponseTest extends TestCase
         $this->assertEquals("max-age=60; includeSubDomains", $header[0]);
     }
 
+    /** @test */
+    public function the_HTTPResponse_class_returns_the_correct_headers_case_insensitive() {
+        $mock = new MockHandler( [
+            new Response( 200, ['X-XSS-PROTECTION' => '1; mode=block'] ),
+            new Response( 200, ['X-Xss-Protection' => '1; mode=block'] ),
+            new Response( 200, ['x-xss-protection' => '1; mode=block'] )
+        ] );
+        $this->getHTTPResponseMockForTesting($mock);
+
+        $header = $this->response->header("X-XSS-PROTECTION");
+        $this->assertEquals("1; mode=block", $header[0]);
+
+        $header = $this->response->header("X-Xss-Protection");
+        $this->assertEquals("1; mode=block", $header[0]);
+
+        $header = $this->response->header("x-xss-protection");
+        $this->assertEquals("1; mode=block", $header[0]);
+    }
+
+    /** @test */
+    public function the_HTTPResponse_class_delivers_the_correct_site_body()
+    {
+        $sampleBody = file_get_contents(base_path() . "/tests/Unit/example.org.html");
+        $mock = new MockHandler( [
+            new Response( 200, ['X-XSS-PROTECTION' => '1; mode=block'], $sampleBody)
+        ] );
+        $this->getHTTPResponseMockForTesting($mock);
+
+        $this->assertEquals($sampleBody, $this->response->body());
+    }
+
+    /** @test */
+    public function the_HTTPResponse_class_delivers_the_correct_site_body_after_a_redirect()
+    {
+        $sampleBody = file_get_contents(base_path() . "/tests/Unit/example.org.html");
+        $mock = new MockHandler( [
+            new Response( 301, ['Location' => 'http://followMe']),
+            new Response( 200, ['X-XSS-PROTECTION' => '1; mode=block'], $sampleBody)
+        ] );
+        $this->getHTTPResponseMockForTesting($mock);
+
+        $this->assertEquals($sampleBody, $this->response->body());
+    }
+
     /**
      * This method sets and activates the GuzzleHttp Mocking functionality.
      * @param $mock MockHandler to setup the expected responses
@@ -85,7 +129,7 @@ class HTTPResponseTest extends TestCase
     protected function getHTTPResponseMockForTesting($mock) {
         $handler = HandlerStack::create( $mock );
         $this->response = Mockery::mock( 'App\HTTPResponse[client]', ["http://testdomain"] );
-        $this->response->shouldReceive( "client" )->once()->andReturn( new Client( ["handler" => $handler] ) );
+        $this->response->shouldReceive( "client" )->andReturn( new Client( ["handler" => $handler] ) );
     }
 
 
