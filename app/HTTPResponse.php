@@ -7,26 +7,33 @@ use GuzzleHttp\Client;
 class HTTPResponse
 {
     protected $url;
+    protected $client;
     protected $response = null;
-    public $body = null;
 
-    function __construct($url)
+    function __construct($url, Client $client = null)
     {
         $this->url = $url;
+        $this->client = $client;
+
+        if ($client === null)
+            $this->client = new Client();
+
+        $this->response = $this->saveResponse();
     }
 
     /**
      * Returns the (cached) GuzzleHttp Response
      *
      */
-    public function get()
+    protected function saveResponse()
     {
+        $response = null;
 //        $cached = Redis::hget("response", $this->url);
 //        if ($cached)
 //          return unserialize($cached);
 
         try {
-            $this->response = $this->client()->get( $this->url, [
+            $response = $this->client->get( $this->url, [
                 // User-Agent because some sites (e.g. facebook) do not return all headers if the user-agent is missing or Guzzle
                 'headers' => [
                     'User-Agent' => 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:40.0) Gecko/20100101 Firefox/40.1',
@@ -39,7 +46,7 @@ class HTTPResponse
             \Log::critical( $exception );
         }
 
-        return $this->response;
+        return $response;
     }
 
     /**
@@ -51,20 +58,11 @@ class HTTPResponse
     }
 
     /**
-     * This function gets overwritten at the phpunit tests
-     * @return Client
-     */
-    public function client()
-    {
-        return new Client();
-    }
-
-    /**
      * @return int HTTP Status Code
      */
     public function statusCode()
     {
-        return $this->get()->getStatusCode();
+        return $this->response->getStatusCode();
     }
 
     /**
@@ -72,7 +70,7 @@ class HTTPResponse
      */
     public function headers()
     {
-        return collect($this->get()->getHeaders());
+        return collect($this->response->getHeaders());
     }
 
     /**
@@ -91,7 +89,7 @@ class HTTPResponse
      */
     public function body()
     {
-        return $this->get()->getBody();
+        return $this->response->getBody()->getContents();
     }
 
 }

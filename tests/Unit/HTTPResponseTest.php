@@ -18,13 +18,16 @@ class HTTPResponseTest extends TestCase
 {
     public function tearDown()
     {
+        parent::tearDown();
         Mockery::close();
     }
 
     /** @test */
     public function a_http_response_has_an_url()
     {
-        $response = $this->getMockedHTTPResponse([]);
+        $response = $this->getMockedHTTPResponse([
+            new Response( 200 ),
+        ]);
         $this->assertEquals( "http://testdomain", $response->url() );
     }
 

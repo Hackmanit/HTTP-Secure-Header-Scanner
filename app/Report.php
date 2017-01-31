@@ -3,6 +3,7 @@
 namespace App;
 
 use App\Ratings;
+use GuzzleHttp\Client;
 
 /**
  * Returns a Report / Rating for the given URL.
@@ -22,6 +23,7 @@ class Report
     public $status = 'error';
     public $siteRating = 'C';
     public $comment = '';
+    protected $guzzleClient;
 
     public $ContentSecurityPolicyRating       = null;
     public $ContentTypeRating                 = null;
@@ -34,16 +36,9 @@ class Report
     public function __construct($url)
     {
         $this->url = $url;
-
-        if ((new HTTPResponse($this->url))->get() === null) {
-            $this->status = "error";
-            \Log::alert("error");
-        }
-        else {
-            $this->doRatings();
-            $this->doSiteRating();
-            $this->status = 'success';
-        }
+        $this->doRatings();
+        $this->doSiteRating();
+        $this->status = 'success';
     }
 
     /**
@@ -51,13 +46,13 @@ class Report
      */
     protected function doRatings()
     {
-        $this->ContentSecurityPolicyRating       = new Ratings\CSPRating( $this->url );
-        $this->ContentTypeRating                 = new Ratings\ContentTypeRating( $this->url );
-        $this->HttpPublicKeyPinningRating        = new Ratings\HPKPRating( $this->url );
-        $this->HttpStrictTransportSecurityRating = new Ratings\HSTSRating( $this->url );
-        $this->XContentTypeOptionsRating         = new Ratings\XContentTypeOptionsRating( $this->url );
-        $this->XFrameOptionsRating               = new Ratings\XFrameOptionsRating( $this->url );
-        $this->XXSSProtectionRating              = new Ratings\XXSSProtectionRating( $this->url );
+        $this->ContentSecurityPolicyRating       = new Ratings\CSPRating( $this->url, $this->guzzleClient);
+        $this->ContentTypeRating                 = new Ratings\ContentTypeRating( $this->url, $this->guzzleClient );
+        $this->HttpPublicKeyPinningRating        = new Ratings\HPKPRating( $this->url, $this->guzzleClient );
+        $this->HttpStrictTransportSecurityRating = new Ratings\HSTSRating( $this->url, $this->guzzleClient );
+        $this->XContentTypeOptionsRating         = new Ratings\XContentTypeOptionsRating( $this->url, $this->guzzleClient );
+        $this->XFrameOptionsRating               = new Ratings\XFrameOptionsRating( $this->url, $this->guzzleClient );
+        $this->XXSSProtectionRating              = new Ratings\XXSSProtectionRating( $this->url, $this->guzzleClient );
     }
 
     /**

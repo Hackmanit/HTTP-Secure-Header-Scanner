@@ -71,6 +71,10 @@ class HeaderController extends Controller
          */
         foreach ($fullReport as $report)
             echo $report->getUrl() . "<br>";
+            echo $report->getUrl() . "<br>";
+            echo $report->getUrl() . "<br>";
+            echo $report->getUrl() . "<br>";
+            echo $report->getUrl() . "<br>";
 
 
     }

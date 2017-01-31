@@ -2,6 +2,7 @@
 
 namespace App;
 
+use GuzzleHttp\Client;
 use Illuminate\Support\Collection;
 use voku\helper\HtmlDomParser;
 use Illuminate\Support\Facades\Redis;
@@ -10,6 +11,7 @@ class Crawler
 {
     protected $id;
     protected $mainUrl;
+    protected $client;
     protected $options;
     protected $guzzleOptions;
     protected $whitelist;
@@ -23,12 +25,16 @@ class Crawler
      * @param $mainUrl
      * @param Collection $whitelist
      * @param Collection $options
+     * @param Client $client
      * @internal param $url
      */
-    public function __construct($id, $mainUrl, Collection $whitelist, Collection $options = null)
+    public function __construct($id, $mainUrl, Collection $whitelist, Collection $options = null, Client $client = null)
     {
         $this->id = $id;
         $this->mainUrl = $mainUrl;
+        $this->client = $client;
+        if ( $client === null )
+            $this->client = new Client();
         $this->whitelist = $whitelist;
         $this->options = $options;
 
@@ -37,12 +43,6 @@ class Crawler
 
         $this->toCrawl = collect([$mainUrl]);
         $this->crawledUrls = collect();
-
-        $this->guzzleOptions = collect(['http_errors' => true]);
-        if ($this->options->contains('ignoreTLS'))
-            $this->guzzleOptions->put('verify', false);
-        if ($this->options->has('proxy'))
-            $this->guzzleOptions->put('proxy', $this->options->get('proxy'));
 
     }
 
@@ -69,6 +69,8 @@ class Crawler
         }
 
         Redis::hset($this->id, "crawledUrls", serialize($this->crawledUrls));
+
+        return $this->crawledUrls;
     }
 
     /**
@@ -77,7 +79,7 @@ class Crawler
      * @param $link
      * @return Collection
      */
-    protected function extractLinks($link)
+    public function extractLinks($link)
     {
         $parsedUrls = $this->parseDom($link);
         $optimizedUrls = $this->optimizeUrls($link, $parsedUrls);
@@ -95,10 +97,10 @@ class Crawler
      */
     protected function parseDom($link)
     {
-        $response = (new HTTPResponse($link))->get();
+        $body = (new HTTPResponse($link, $this->client))->body();
         $links = collect();
-        if($response != null) {
-            $dom = HtmlDomParser::str_get_html($response->getBody());
+        if($body  != null) {
+            $dom = HtmlDomParser::str_get_html($body);
 
             if($this->options->has('customJson'))
                 foreach (json_decode($this->options->get('customJson')) as $tag => $attribute)

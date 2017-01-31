@@ -3,26 +3,37 @@
 namespace App\Ratings;
 
 use App\HTTPResponse;
+use GuzzleHttp\Client;
 
 abstract class Rating implements RatingInterface, \JsonSerializable
 {
     protected $url;
+    protected $response;
     protected $rating;
     protected $comment;
 
     /**
      * Rating constructor.
      * @param $url
+     * @param Client $client
      */
-    public function __construct($url)
+    public function __construct($url, Client $client = null)
     {
         $this->url = $url;
+        if ($client === null)
+            $client = new Client();
+
+        $this->response = new HTTPResponse($this->url, $client);
         $this->rate();
+    }
+
+    public function url() {
+        return $this->url;
     }
 
     public function getHeader($header)
     {
-        return (new HTTPResponse($this->url))->header($header);
+        return $this->response->header($header);
     }
 
     /**
