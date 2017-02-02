@@ -9,6 +9,8 @@ class CSPRating extends Rating
     {
         $header = $this->getHeader('content-security-policy');
 
+        $this->rating = 'C';
+
         if ($header === null) {
             $this->rating   = 'C';
             $this->comment  = __('The header is not set.');
@@ -22,7 +24,7 @@ class CSPRating extends Rating
         else {
             $header = $header[0];
 
-            if (strpos($header, 'unsafe-inline') !== false && strpos($header, 'unsafe-eval') !== false) {
+            if (strpos($header, 'unsafe-inline') !== false || strpos($header, 'unsafe-eval') !== false) {
                 $this->rating   = 'C';
                 $this->comment  = __('The Header contains "unsafe-inline" or "unsafe-eval" directives.');
             }
