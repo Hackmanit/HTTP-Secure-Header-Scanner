@@ -32,18 +32,18 @@ class Crawler
     {
         $this->id = $id;
         $this->mainUrl = $mainUrl;
+        $this->whitelist = $whitelist;
+        $this->whitelist->push(strtolower(parse_url($mainUrl, PHP_URL_HOST)));
+        $this->options = $options;
         $this->client = $client;
         if ( $client === null )
             $this->client = new Client();
-        $this->whitelist = $whitelist;
-        $this->options = $options;
 
         if (! $options->has('limit'))
             $this->options->put('limit', env('LIMIT', 100));
 
         $this->toCrawl = collect([$mainUrl]);
         $this->crawledUrls = collect();
-
     }
 
     public function extractAllLinks()
@@ -102,10 +102,11 @@ class Crawler
         if($body  != null) {
             $dom = HtmlDomParser::str_get_html($body);
 
-            if($this->options->has('customJson'))
-                foreach (json_decode($this->options->get('customJson')) as $tag => $attribute)
-                    foreach ($dom->find($tag) as $element)
-                        $links->push($element->$attribute);
+            if($this->options->has('customJson')) {
+                foreach (json_decode( $this->options->get( 'customJson' ) ) as $tag => $attribute)
+                    foreach ($dom->find( $tag ) as $element)
+                        $links->push( $element->$attribute );
+            }
             else {
                 if ($this->options->contains("anchors"))
                     foreach ($dom->find("a") as $link)
@@ -129,9 +130,9 @@ class Crawler
                     foreach ($dom->find("iframe,frame") as $link)
                         $links->push($link->src);
             }
+            return $links;
         }
-
-        return $links;
+        return null;
     }
 
     /**

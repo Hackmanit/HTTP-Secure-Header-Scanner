@@ -1,0 +1,86 @@
+<html>
+<head>
+    <title>Testfile for Testing purposes</title>
+</head>
+<body>
+    <h3>ParseDom</h3>
+    <!-- Normal anchor tag -->
+    <a href="impressum.html">Relative path without ./</a>
+    <a href="./same-as-above.html">Relative path same level</a>
+    <a href="./deeper/one-level-deep.html">Relative path one level deeper</a>
+    <a href="./now/its/going/very/deep/">Relative path very deep without file</a>
+    <a href="../higher/one-level-higher.html">Relative path one level higher</a>
+    <a href="../../../../very-high.html">Relative path very high</a>
+    <a href="../otherFolder/file.html">Relative path higher -> folder</a>
+    <a href="http://testdomain/absolute/path/to/file.html">Absolute path</a>
+
+    <!-- Images -->
+    <img src="image.png" alt="">
+    <img src="./relativeImage.jpg" alt="">
+    <img src="http://testdomain/absolute/image.gif" alt="">
+
+    <img src="http://wiki.selfhtml.org/images/5/5e/Karte-deutschland-sw.jpg" width="690" height="582" alt="Karte" usemap="#Landkarte">
+
+    <!-- Area -->
+    <map name="Landkarte">
+        <area shape="rect" coords="11,10,80,46"
+              href="http://www.testdomain/koblenz.de/" alt="Koblenz" title="Koblenz">
+        <area shape="rect" coords="97,77,175,116"
+              href="http://www.testdomain/wiesbaden.de/" alt="Wiesbaden" title="Wiesbaden">
+        <area shape="rect" coords="112,119,176,152"
+              href="http://www.testdomain/mainz.de/" alt="Mainz" title="Mainz">
+        <area shape="rect" coords="183,68,266,118"
+              href="http://www.testdomain/frankfurt.de/" alt="Frankfurt" title="Frankfurt">
+        <area shape="rect" coords="106,229,208,270"
+              href="http://www.testdomain/mannheim.de/" alt="Mannheim" title="Mannheim">
+        <area shape="rect" coords="180,271,270,308"
+              href="http://www.testdomain/heidelberg.de/" alt="Heidelberg" title="Heidelberg">
+        <area shape="rect" coords="388,162,460,201"
+              href="http://www.testdomain/wuerzburg.de/" alt="Würzburg" title="Würzburg">
+        <area shape="rect" coords="535,132,622,169"
+              href="http://www.testdomain/bamberg.de/" alt="Bamberg" title="Bamberg">
+        <area shape="rect" coords="565,252,667,294"
+              href="http://www.testdomain/nuernberg.de/" alt="Nürnberg" title="Nürnberg">
+        <area shape="rect" coords="97,366,207,406"
+              href="http://www.testdomain/karlsruhe.de/" alt="Karlsruhe" title="Karlsruhe">
+        <area shape="rect" coords="269,331,350,374"
+              href="http://www.testdomain/heilbronn.de/" alt="Heilbronn" title="Heilbronn">
+        <area shape="rect" coords="258,437,342,480"
+              href="http://www.testdomain/stuttgart.de/" alt="Stuttgart" title="Stuttgart">
+        <area shape="rect" coords="402,527,464,569"
+              href="http://www.testdomain/ulm.de/" alt="Ulm" title="Ulm">
+        <area shape="rect" coords="548,539,618,581"
+              href="http://www.testdomain/augsburg.de/" alt="Augsburg" title="Augsburg">
+        <area shape="poly" coords="143,578,200,408,156,410,131,411,94,440,45,580"
+              href="http://www.testdomain/baden-aktuell.de/" alt="Baden" title="Baden">
+    </map>
+
+    <!-- Media -->
+    <audio src="sound.mp3"></audio>
+    <audio>
+        <source src="alternate1.mp4">
+        <source src="alternate2.ogg">
+    </audio>
+    <video src="video.webm"></video>
+    <video>
+        <source src="alternate3.webm">
+        <source src="alternate4.mpg">
+    </video>
+
+    <!-- Scripts -->
+    <script>
+        document.writeln("No URL but boolean return value");
+    </script>
+    <script src="special.js"></script>
+    <script src="http://external-other-domain.org/sample.js"></script>
+
+    <!-- Frames -->
+    <iframe src="demo_iframe.htm" name="iframe_a"></iframe>
+
+    <frameset cols="25%,50%,25%">
+        <frame src="frame_a.htm">
+        <frame src="frame_b.htm">
+        <frame src="frame_c.htm">
+    </frameset>
+</body>
+</html>

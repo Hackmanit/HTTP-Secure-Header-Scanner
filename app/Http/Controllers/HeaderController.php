@@ -31,8 +31,7 @@ class HeaderController extends Controller
             $url = $url . '/';
 
         // whitelist
-        $whiteList = collect(strtolower(parse_url($url, PHP_URL_HOST)));
-        $whiteList->push(explode("\n", $request->input('whitelist')))->flatten();
+        $whiteList = collect(explode("\n", $request->input('whitelist')))->flatten();
 
         // Set options for crawler
         $options = collect([]);
