@@ -23,6 +23,11 @@ class HSTSRating extends Rating {
 
             $beginAge   = strpos($header, 'max-age=') + 8;
             $endAge     = strpos($header, ';', $beginAge);
+
+            // if there is no semicolon | max-age=300
+            if ( $endAge === false)
+                $endAge = strlen($header);
+
             $maxAge     = substr($header, $beginAge, $endAge - $beginAge);
 
             if ($maxAge < 15768000) {
