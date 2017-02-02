@@ -170,6 +170,10 @@ class Crawler
                     (strncmp($value, './', 2) === 0)    ||
                     (strpos($value, ':') === false)         // filter mailto:, data:, javascript:
                 ) {
+                    // Removes leading ./
+                    if (strncmp($value, './', 2) === 0)
+                        $value = substr($value, 2);
+
                     $parsed = parse_url($value);
                     return $this->unparse_url($parsed, $scannedUrl);
                 }
