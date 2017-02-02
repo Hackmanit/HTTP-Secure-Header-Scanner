@@ -9,8 +9,6 @@ class CSPRating extends Rating
     {
         $header = $this->getHeader('content-security-policy');
 
-        $this->rating = 'C';
-
         if ($header === null) {
             $this->rating   = 'C';
             $this->comment  = __('The header is not set.');

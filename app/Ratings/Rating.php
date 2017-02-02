@@ -9,8 +9,8 @@ abstract class Rating implements RatingInterface, \JsonSerializable
 {
     protected $url;
     protected $response;
-    protected $rating;
-    protected $comment;
+    protected $rating = 'C';
+    protected $comment = '';
 
     /**
      * Rating constructor.
