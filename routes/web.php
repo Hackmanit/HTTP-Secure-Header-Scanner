@@ -11,8 +11,8 @@
 |
 */
 
-Route::get('/', 'HeaderController@index');
-Route::post('/', 'HeaderController@requestReport')->name("requestReport");
-Route::get('/jsConfig', 'HeaderController@jsConfig');
+Route::get('/', 'FrontendController@index');
+Route::post('/', 'FrontendController@requestReport')->name("requestReport");
+Route::get('/jsConfig', 'FrontendController@jsConfig');
 
-Route::get('/{id}', 'HeaderController@displayReport');
+Route::get('/{id}', 'FrontendController@displayReport');

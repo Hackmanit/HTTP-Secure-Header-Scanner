@@ -10,12 +10,15 @@ use Illuminate\Support\Facades\Redis;
 
 class FrontendController extends Controller
 {
-
     /**
      * Return frontend.
      */
     public function index() {
         return view('enter');
+    }
+
+    public function noCrawling(ReportRequest $request) {
+        // TODO: implement this ?
     }
 
     /**
@@ -52,7 +55,6 @@ class FrontendController extends Controller
         $this->dispatch(new AnalyzeSite($id, $url, $whiteList, $options));
 
         return redirect()->to('/' . $id);
-        return ["id" => $id];
     }
 
     // TODO: This... thing.
