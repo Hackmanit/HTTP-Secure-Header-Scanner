@@ -8,7 +8,7 @@ use App\Http\Requests\ReportRequest;
 use App\Jobs\AnalyzeSite;
 use Illuminate\Support\Facades\Redis;
 
-class HeaderController extends Controller
+class FrontendController extends Controller
 {
 
     /**

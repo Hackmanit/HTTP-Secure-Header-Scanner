@@ -7,61 +7,30 @@ use GuzzleHttp\Client;
 
 /**
  * Returns a Report / Rating for the given URL.
- *
- * @property Ratings\ContentTypeRating ContentTypeRating
- * @property Ratings\CSPRating ContentSecurityPolicyRating
- * @property Ratings\HPKPRating HttpPublicKeyPinningRating
- * @property Ratings\HSTSRating HttpStrictTransportSecurityRating
- * @property Ratings\XContentTypeOptionsRating XContentTypeOptionsRating
- * @property Ratings\XFrameOptionsRating XFrameOptionsRating
- * @property Ratings\XXSSProtectionRating XXSSProtectionRating
  */
 class Report
 {
 
-    public $url = null;
-    public $status = 'error';
-    public $siteRating = 'C';
-    public $comment = '';
-    protected $guzzleClient;
-
-    public $ContentSecurityPolicyRating       = null;
-    public $ContentTypeRating                 = null;
-    public $HttpPublicKeyPinningRating        = null;
-    public $HttpStrictTransportSecurityRating = null;
-    public $XContentTypeOptionsRating         = null;
-    public $XFrameOptionsRating               = null;
-    public $XXSSProtectionRating              = null;
+    public $url;
+    public $siteRating = null;
+    public $comment = null;
 
     public function __construct($url)
     {
         $this->url = $url;
-        $this->doRatings();
-        $this->doSiteRating();
-        $this->status = 'success';
-    }
-
-    /**
-     * Rate the specific headers.
-     */
-    protected function doRatings()
-    {
-        $this->ContentSecurityPolicyRating       = new Ratings\CSPRating( $this->url, $this->guzzleClient);
-        $this->ContentTypeRating                 = new Ratings\ContentTypeRating( $this->url, $this->guzzleClient );
-        $this->HttpPublicKeyPinningRating        = new Ratings\HPKPRating( $this->url, $this->guzzleClient );
-        $this->HttpStrictTransportSecurityRating = new Ratings\HSTSRating( $this->url, $this->guzzleClient );
-        $this->XContentTypeOptionsRating         = new Ratings\XContentTypeOptionsRating( $this->url, $this->guzzleClient );
-        $this->XFrameOptionsRating               = new Ratings\XFrameOptionsRating( $this->url, $this->guzzleClient );
-        $this->XXSSProtectionRating              = new Ratings\XXSSProtectionRating( $this->url, $this->guzzleClient );
     }
 
     /**
      * Rate the site's security.
+     *
+     * TODO: Trigger rate at another place and set it to protected. (constructor does not work if you want it mockable)
+     *
      */
-    protected function doSiteRating()
+    public function rate()
     {
+        // Standard is insecure.
         $this->siteRating = 'C';
-        $this->comment = __('This site is insecure.');
+        $this->comment = __("This site is insecure.");
 
         /*
          * Criteria for H
@@ -69,13 +38,13 @@ class Report
          * All Ratings with grade A
          */
         if (
-            (strpos($this->ContentSecurityPolicyRating->getRating()      , 'A')  !== false) &&
-            (strpos($this->ContentTypeRating->getRating()                , 'A')  !== false) &&
-            (strpos($this->HttpPublicKeyPinningRating->getRating()       , 'A')  !== false) &&
-            (strpos($this->HttpStrictTransportSecurityRating->getRating(), 'A')  !== false) &&
-            (strpos($this->XContentTypeOptionsRating->getRating()        , 'A')  !== false) &&
-            (strpos($this->XFrameOptionsRating->getRating()              , 'A')  !== false) &&
-            (strpos($this->XXSSProtectionRating->getRating()             , 'A')  !== false)
+            (strpos($this->getContentSecurityPolicyRating()      , 'A')  !== false) &&
+            (strpos($this->getContentTypeRating()                , 'A')  !== false) &&
+            (strpos($this->getHttpPublicKeyPinningRating()       , 'A')  !== false) &&
+            (strpos($this->getHttpStrictTransportSecurityRating(), 'A')  !== false) &&
+            (strpos($this->getXContentTypeOptionsRating()        , 'A')  !== false) &&
+            (strpos($this->getXFrameOptionsRating()              , 'A')  !== false) &&
+            (strpos($this->getXXSSProtectionRating()             , 'A')  !== false)
         ) {
             $this->siteRating = 'H';
             $this->comment = 'WOHA! Great work! Everything is perfect!'; // TODO
@@ -85,12 +54,12 @@ class Report
          * Criteria for A
          */
         elseif (
-            (strpos($this->HttpStrictTransportSecurityRating->getRating(), 'A')  !== false) &&
-            (strpos($this->XXSSProtectionRating->getRating()             , 'A')  !== false) &&
-            ((strpos($this->ContentSecurityPolicyRating->getRating(), 'B')  !== false) || (strpos($this->ContentSecurityPolicyRating->getRating(), 'A')  !== false)) &&
-            (strpos($this->ContentTypeRating->getRating()                , 'A')  !== false) &&
-            (strpos($this->XContentTypeOptionsRating->getRating()        , 'A')  !== false) &&
-            (strpos($this->XFrameOptionsRating->getRating()              , 'A')  !== false)
+            (strpos($this->getHttpStrictTransportSecurityRating(), 'A')  !== false) &&
+            (strpos($this->getXXSSProtectionRating()             , 'A')  !== false) &&
+            ((strpos($this->getContentSecurityPolicyRating(), 'B')  !== false) || (strpos($this->getContentSecurityPolicyRating(), 'A')  !== false)) &&
+            (strpos($this->getContentTypeRating()                , 'A')  !== false) &&
+            (strpos($this->getXContentTypeOptionsRating()        , 'A')  !== false) &&
+            (strpos($this->getXFrameOptionsRating()              , 'A')  !== false)
         ) {
             $this->siteRating = 'A';
             $this->comment = __('This site is secure.');
@@ -101,19 +70,59 @@ class Report
          * Criteria for B
          */
         elseif (
-            ((strpos($this->HttpStrictTransportSecurityRating->getRating(), 'B')  !== false) || (strpos($this->HttpStrictTransportSecurityRating->getRating(), 'A')  !== false)) &&
-            ((strpos($this->ContentSecurityPolicyRating->getRating(), 'B')  !== false) || (strpos($this->ContentSecurityPolicyRating->getRating(), 'A')  !== false)) &&
-            ((strpos($this->ContentTypeRating->getRating(), 'B') !== false) || (strpos($this->ContentTypeRating->getRating(), 'A') !== false)) &&
-            (strpos($this->XContentTypeOptionsRating->getRating(), 'A')  !== false) &&
-            (strpos($this->XFrameOptionsRating->getRating(), 'A') !== false)
+            ((strpos($this->getHttpStrictTransportSecurityRating(), 'B')  !== false) || (strpos($this->getHttpStrictTransportSecurityRating(), 'A')  !== false)) &&
+            ((strpos($this->getContentSecurityPolicyRating(), 'B')  !== false) || (strpos($this->getContentSecurityPolicyRating(), 'A')  !== false)) &&
+            ((strpos($this->getContentTypeRating(), 'B') !== false) || (strpos($this->getContentTypeRating(), 'A') !== false)) &&
+            (strpos($this->getXContentTypeOptionsRating(), 'A')  !== false) &&
+            (strpos($this->getXFrameOptionsRating(), 'A') !== false)
         ) {
             $this->siteRating = 'B';
             $this->comment = __('This site is secure.');
         }
+
+        return $this;
     }
 
     public function __toString()
     {
         return json_encode($this, JSON_PRETTY_PRINT);
     }
+
+    public function getContentSecurityPolicyRating()
+    {
+        var_dump("CSP Rating triggered");
+        return (new Ratings\CSPRating($this->url))->getRating();
+    }
+
+    public function getContentTypeRating()
+    {
+        return (new Ratings\ContentTypeRating($this->url))->getRating();
+    }
+
+    public function getHttpPublicKeyPinningRating()
+    {
+        return (new Ratings\HPKPRating($this->url))->getRating();
+    }
+
+    public function getHttpStrictTransportSecurityRating()
+    {
+        return (new Ratings\HSTSRating($this->url))->getRating();
+    }
+
+    public function getXContentTypeOptionsRating()
+    {
+        return (new Ratings\XContentTypeOptionsRating($this->url))->getRating();
+    }
+
+    public function getXFrameOptionsRating()
+    {
+        return (new Ratings\XFrameOptionsRating($this->url))->getRating();
+    }
+
+    public function getXXSSProtectionRating()
+    {
+        return (new Ratings\XXSSProtectionRating($this->url))->getRating();
+    }
+
+
 }
