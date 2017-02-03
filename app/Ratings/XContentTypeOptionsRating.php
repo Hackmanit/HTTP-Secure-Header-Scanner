@@ -23,11 +23,11 @@ class XContentTypeOptionsRating extends Rating
             $header = $header[0];
 
             $this->rating = 'C';
-            $this->comment = __('The Header is not set correctly.');
+            $this->comment = __('The header is not set correctly.');
 
             if (strpos($header, 'nosniff') !== false) {
                 $this->rating = 'A';
-                $this->comment = __('The Header is set correctly.');
+                $this->comment = __('The header is set correctly.');
             }
 
         }
