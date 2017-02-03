@@ -3,6 +3,8 @@
 namespace App;
 
 use GuzzleHttp\Client;
+use GuzzleHttp\HandlerStack;
+use Kevinrob\GuzzleCache\CacheMiddleware;
 
 class HTTPResponse
 {
@@ -15,8 +17,15 @@ class HTTPResponse
         $this->url = $url;
         $this->client = $client;
 
-        if ($client === null)
-            $this->client = new Client();
+        if ($client === null) {
+            /**
+             * The $stack enables caching for the network traffic
+             * BEST THANKS AND WISHES TO @Kevinrob for guzzle-cache-middleware
+             */
+            $stack = HandlerStack::create();
+            $stack->push(new CacheMiddleware(), 'cache');
+            $this->client = new Client(['handler' => $stack]);
+        }
 
         $this->response = $this->saveResponse();
     }
@@ -28,9 +37,6 @@ class HTTPResponse
     protected function saveResponse()
     {
         $response = null;
-//        $cached = Redis::hget("response", $this->url);
-//        if ($cached)
-//          return unserialize($cached);
 
         try {
             $response = $this->client->get( $this->url, [

@@ -7,17 +7,14 @@ use Illuminate\Foundation\Testing\WithoutMiddleware;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 
-class ExampleTest extends TestCase
+class FrontendTest extends TestCase
 {
-    /**
-     * A basic test example.
-     *
-     * @return void
-     */
-    public function testBasicTest()
+    /** @test */
+    public function user_can_access_the_frontend()
     {
         $response = $this->get('/');
 
         $response->assertStatus(200);
+        $response->assertSee("Enter your URL");
     }
 }

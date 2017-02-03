@@ -8,7 +8,11 @@ use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Response;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Redis;
+use Kevinrob\GuzzleCache\CacheMiddleware;
+use Kevinrob\GuzzleCache\Storage\LaravelCacheStorage;
+use Kevinrob\GuzzleCache\Strategy\PrivateCacheStrategy;
 use Mockery;
 use ReflectionClass;
 use Tests\TestCase;
@@ -33,7 +37,7 @@ class CrawlerTest extends TestCase
         ]);
 
         $crawler = new Crawler("testID", "http://testdomain", collect(), collect(['anchors']), $client);
-        $parseDom = new \ReflectionMethod("App\Crawler", "parseDom");
+        $parseDom = new \ReflectionMethod(Crawler::class, "parseDom");
         $parseDom->setAccessible(true);
 
         $this->assertEquals(8, $parseDom->invoke($crawler, "http://testdomain")->count());
@@ -48,7 +52,7 @@ class CrawlerTest extends TestCase
         ]);
 
         $crawler = new Crawler("testID", "http://testdomain", collect(), collect(['images']), $client);
-        $parseDom = new \ReflectionMethod("App\Crawler", "parseDom");
+        $parseDom = new \ReflectionMethod(Crawler::class, "parseDom");
         $parseDom->setAccessible(true);
 
         $this->assertEquals(4, $parseDom->invoke($crawler, "http://testdomain")->count());
@@ -63,7 +67,7 @@ class CrawlerTest extends TestCase
         ]);
 
         $crawler = new Crawler("testID", "http://testdomain", collect(), collect(['area']), $client);
-        $parseDom = new \ReflectionMethod("App\Crawler", "parseDom");
+        $parseDom = new \ReflectionMethod(Crawler::class, "parseDom");
         $parseDom->setAccessible(true);
         $links = $parseDom->invoke($crawler, "http://testdomain");
 
@@ -79,7 +83,7 @@ class CrawlerTest extends TestCase
         ]);
 
         $crawler = new Crawler("testID", "http://testdomain", collect(), collect(['media']), $client);
-        $parseDom = new \ReflectionMethod("App\Crawler", "parseDom");
+        $parseDom = new \ReflectionMethod(Crawler::class, "parseDom");
         $parseDom->setAccessible(true);
         $links = $parseDom->invoke($crawler, "http://testdomain");
 
@@ -95,7 +99,7 @@ class CrawlerTest extends TestCase
         ]);
 
         $crawler = new Crawler("testID", "http://testdomain", collect(), collect(['scripts']), $client);
-        $parseDom = new \ReflectionMethod("App\Crawler", "parseDom");
+        $parseDom = new \ReflectionMethod(Crawler::class, "parseDom");
         $parseDom->setAccessible(true);
         $links = $parseDom->invoke($crawler, "http://testdomain");
 
@@ -111,7 +115,7 @@ class CrawlerTest extends TestCase
         ]);
 
         $crawler = new Crawler("testID", "http://testdomain", collect(), collect(['frames']), $client);
-        $parseDom = new \ReflectionMethod("App\Crawler", "parseDom");
+        $parseDom = new \ReflectionMethod(Crawler::class, "parseDom");
         $parseDom->setAccessible(true);
         $links = $parseDom->invoke($crawler, "http://testdomain");
 
@@ -127,7 +131,7 @@ class CrawlerTest extends TestCase
         ]);
 
         $crawler = new Crawler("testID", "http://testdomain", collect(), collect(['anchors', 'images', 'area', 'media', 'scripts', 'frames']), $client);
-        $parseDom = new \ReflectionMethod("App\Crawler", "parseDom");
+        $parseDom = new \ReflectionMethod(Crawler::class, "parseDom");
         $parseDom->setAccessible(true);
         $links = $parseDom->invoke($crawler, "http://testdomain");
 
@@ -199,7 +203,20 @@ class CrawlerTest extends TestCase
      */
     public function crawler_crawls_the_live_hackmanit_site_and_gets_more_than_10_anchor_links()
     {
-        $crawler = new Crawler('hackmanitID', 'https://www.hackmanit.de', collect(['hackmanit.de']), collect(['anchors']));
+        //
+        $handler = HandlerStack::create();
+        $handler->push(
+            new CacheMiddleware(
+                new PrivateCacheStrategy(
+                    new LaravelCacheStorage(
+                        Cache::store('redis')
+                    )
+                )
+            ),
+            'cache'
+        );
+        $client = new Client( ["handler" => $handler] );
+        $crawler = new Crawler('hackmanitID', 'https://www.hackmanit.de', collect(['hackmanit.de']), collect(['anchors']), $client);
 
         $links = $crawler->extractAllLinks();
 
@@ -225,7 +242,7 @@ class CrawlerTest extends TestCase
      */
     protected function getOptimizedUrls(Collection $links) {
         $crawler = new Crawler("testID", "http://testdomain", collect(), collect());
-        $optimizeUrls = new \ReflectionMethod("App\Crawler", "optimizeUrls");
+        $optimizeUrls = new \ReflectionMethod(Crawler::class, "optimizeUrls");
         $optimizeUrls->setAccessible(true);
 
         return $optimizeUrls->invokeArgs($crawler, [ "http://testdomain", $links ]);
