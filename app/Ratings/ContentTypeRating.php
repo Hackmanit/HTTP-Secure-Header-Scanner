@@ -30,7 +30,7 @@ class ContentTypeRating extends Rating
                 $this->comment = __('The header is set with the charset.');
             }
 
-            elseif (stripos($header, 'utf-8') !== false) {
+            if (stripos($header, 'charset=utf-8') !== false) {
                 $this->rating = 'A';
                 $this->comment = __('The header is set with the charset and follows the best practice.');
             }
