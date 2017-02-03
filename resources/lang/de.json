@@ -17,9 +17,10 @@
   "The header is \"unsafe-\" free and includes \"default-src 'none'\"" : "Der Header ist frei von \"unsafe-\"-Direktiven und hat \"default-src 'none'\" gesetzt.",
   "The legacy header \"X-Content-Security-Policy\" (that is only used for IE11 with CSP v.1) is set. The new and standardized header is Content-Security-Policy." : "Der veraltete Header X-Content-Security-Policy (nur vom IE11 mit CSP v.1 genutzt) ist gesetzt. Der neue und standardisierte Header ist \"Content-Security-Policy\"",
 
-  "The keys are pinned for less then 15 days." : "Die Schlüssel sind für weniger als 15 Tage gepinnt.",
+  "The keys are pinned for less than 15 days." : "Die Schlüssel sind für weniger als 15 Tage gepinnt.",
   "The keys are pinned for more than 15 days." : "Die Schlüssel sind fpr mehr als 15 Tage gepinnt.",
   "An error occured while checking \"max-age\"." : "Ein Fehler trat während der Überprüfung von \"max-age\" auf.",
+  "A report-uri is set." : "Eine report-uri ist gesetzt.",
   "\"includeSubDomains\" is set." : "\"includeSubDomains\" ist gesetzt.",
   "\"preload\" is set." : "\"preload\" ist gesetzt.",
   "\"mode=block\" is activated." : "\"mode=block\" ist aktiviert.",

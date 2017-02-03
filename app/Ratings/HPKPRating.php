@@ -23,11 +23,15 @@ class HPKPRating extends Rating {
 
             $beginAge = strpos( $header, 'max-age=' ) + 8;
             $endAge = strpos( $header, ';', $beginAge );
+            // if there is no semicolon | max-age=300
+            if ( $endAge === false)
+                $endAge = strlen($header);
+
             $maxAge = substr( $header, $beginAge, $endAge - $beginAge );
 
             if ($maxAge < 1296000) {
                 $this->rating   = 'B';
-                $this->comment  = __('The keys are pinned for less then 15 days.');
+                $this->comment  = __('The keys are pinned for less than 15 days.');
             }
             elseif ($maxAge >= 1296000) {
                 $this->rating   = 'A';
@@ -41,6 +45,11 @@ class HPKPRating extends Rating {
             if (strpos($header, 'includeSubDomains') !== false) {
                 $this->rating   .= '+';
                 $this->comment  .= '\n' . __('"includeSubDomains" is set.');
+            }
+
+            if (strpos($header, 'report-uri') !== false) {
+                $this->rating   .= '+';
+                $this->comment  .= '\n' . __('A report-uri is set.');
             }
         }
     }
