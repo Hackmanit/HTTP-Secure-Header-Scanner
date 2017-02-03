@@ -27,7 +27,7 @@ class XXSSProtectionRating extends Rating
 
             if (strpos($header, 'mode=block') !== false) {
                 $this->rating = 'A';
-                $this->comment = __('"mode=block" is activated.');
+                $this->comment .= "\n" . __('"mode=block" is activated.');
             }
 
         }
