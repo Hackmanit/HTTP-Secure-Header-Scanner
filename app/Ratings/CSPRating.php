@@ -24,7 +24,7 @@ class CSPRating extends Rating
 
             if (strpos($header, 'unsafe-inline') !== false || strpos($header, 'unsafe-eval') !== false) {
                 $this->rating   = 'C';
-                $this->comment  = __('The Header contains "unsafe-inline" or "unsafe-eval" directives.');
+                $this->comment  = __('The header contains "unsafe-inline" or "unsafe-eval" directives.');
             }
             elseif (strpos($header, 'unsafe-inline') === false && strpos($header, 'unsafe-eval') === false && strpos($header, "default-src 'none'") === false) {
                 $this->rating   = 'B';

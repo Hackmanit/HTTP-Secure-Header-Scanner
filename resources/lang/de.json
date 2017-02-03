@@ -12,7 +12,7 @@
   "The correct writing is: charset=utf-8" : "Die korrekte Schreibweise ist: charset=utf-8",
   "Best practice is: charset=utf-8" : "Die Empfehlung ist: charset=utf-8",
 
-  "The Header contains \"unsafe-inline\" or \"unsafe-eval\" directives." : "Der Header enthält \"unsafe-inline\" oder \"unsafe-eval\" Direktiven.",
+  "The header contains \"unsafe-inline\" or \"unsafe-eval\" directives." : "Der Header enthält \"unsafe-inline\" oder \"unsafe-eval\" Direktiven.",
   "The header is free of any \"unsafe-\" directives." : "Der Header ist frei von \"unsafe-\"-Direktiven.",
   "The header is \"unsafe-\" free and includes \"default-src 'none'\"" : "Der Header ist frei von \"unsafe-\"-Direktiven und hat \"default-src 'none'\" gesetzt.",
   "The legacy header \"X-Content-Security-Policy\" (that is only used for IE11 with CSP v.1) is set. The new and standardized header is Content-Security-Policy." : "Der veraltete Header X-Content-Security-Policy (nur vom IE11 mit CSP v.1 genutzt) ist gesetzt. Der neue und standardisierte Header ist \"Content-Security-Policy\"",
@@ -28,8 +28,8 @@
   "The value for \"max-age\" is smaller than 6 months." : "Der Wert für \"max-age\" ist kleiner als 6 Monate.",
   "The value for \"max-age\" is greater than 6 months." : "Der Wert für \"max-age\" ist  größer als 6 Monate.",
 
-  "The Header is not set correctly." : "Der Header ist nicht korrekt gesetzt.",
-  "The Header is set correctly." : "Der Header ist korrekt gesetzt.",
+  "The header is not set correctly." : "Der Header ist nicht korrekt gesetzt.",
+  "The header is set correctly." : "Der Header ist korrekt gesetzt.",
 
   "The header is set and does not contain any wildcard." : "Der Header ist gesetzt und enthält keine Wildcards",
   "The header contains wildcards and is thereby useless." : "Der Header enthält Wildcards und ist dadurch unwirksam."

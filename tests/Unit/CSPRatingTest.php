@@ -42,7 +42,7 @@ class CSPRatingTest extends TestCase
         $rating = new CSPRating("http://testdomain", $client);
 
         $this->assertEquals("C", $rating->getRating());
-        $this->assertEquals('The Header contains "unsafe-inline" or "unsafe-eval" directives.', $rating->getComment());
+        $this->assertEquals('The header contains "unsafe-inline" or "unsafe-eval" directives.', $rating->getComment());
     }
 
     /** @test */
@@ -56,7 +56,7 @@ class CSPRatingTest extends TestCase
         $rating = new CSPRating("http://testdomain", $client);
 
         $this->assertEquals("C", $rating->getRating());
-        $this->assertEquals('The Header contains "unsafe-inline" or "unsafe-eval" directives.', $rating->getComment());
+        $this->assertEquals('The header contains "unsafe-inline" or "unsafe-eval" directives.', $rating->getComment());
     }
 
     /** @test */
