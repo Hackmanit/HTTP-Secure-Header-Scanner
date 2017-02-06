@@ -11190,8 +11190,7 @@ var app = new Vue({
         toggleScans: true,
         show: {
             load: true,
-            form: null,
-            report: null
+            form: null
         },
         formRequest: {
             url: 'https://www.hackmanit.de',
@@ -11238,29 +11237,7 @@ var app = new Vue({
             app.formRequest.scan.links = app.toggleScans;
         }
     },
-    methods: {
-        // Send the request and save the returning report.id
-        sendRequest: function sendRequest(event) {
-            // event.preventDefault();
-            app.show.form = false;
-            app.show.load = true;
-
-            axios.post("/", app.formRequest).then(function (response) {
-                console.log(response.data);
-                app.report.id = response.data.id;
-
-                app.getReport();
-            }).catch(function (error) {
-                console.log(error.response.data);
-            });
-        },
-        getReport: function getReport() {
-            axios.get("/" + app.report.id).then(function (response) {
-                console.log(response.data);
-                app.report.data = response.data;
-            });
-        }
-    }
+    methods: {}
 });
 
 /***/ }),

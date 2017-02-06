@@ -14,11 +14,7 @@ class FrontendController extends Controller
      * Return frontend.
      */
     public function index() {
-        return view('enter');
-    }
-
-    public function noCrawling(ReportRequest $request) {
-        // TODO: implement this ?
+        return view('start');
     }
 
     /**
@@ -27,7 +23,7 @@ class FrontendController extends Controller
      * @param ReportRequest $request
      * @return array
      */
-    public function requestReport(Request $request)
+    public function requestReport(ReportRequest $request)
     {
         $url = $request->input('url');
         if (substr($url, -1) !== '/')
@@ -52,12 +48,10 @@ class FrontendController extends Controller
 
         $id = str_random();
 
-        $this->dispatch(new AnalyzeSite($id, $url, $whiteList, $options));
+        dispatch(new AnalyzeSite($id, $url, $whiteList, $options));
 
         return redirect()->to('/' . $id);
     }
-
-    // TODO: This... thing.
 
     /**
      * @param $id
@@ -65,18 +59,7 @@ class FrontendController extends Controller
      */
     public function displayReport($id) {
 
-        $fullReport = unserialize(Redis::hget($id, "reports"));
-
-        /**
-         * @var \App\Report $report
-         */
-        foreach ($fullReport as $report)
-            echo $report->getUrl() . "<br>";
-            echo $report->getUrl() . "<br>";
-            echo $report->getUrl() . "<br>";
-            echo $report->getUrl() . "<br>";
-            echo $report->getUrl() . "<br>";
-
+        return Redis::hget($id, "fullreport");
 
     }
 

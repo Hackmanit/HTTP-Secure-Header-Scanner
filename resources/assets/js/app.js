@@ -7,7 +7,6 @@ var app = new Vue({
         show: {
             load: true,
             form: null,
-            report: null,
         },
         formRequest: {
             url : 'https://www.hackmanit.de',
@@ -58,30 +57,6 @@ var app = new Vue({
         }
     },
     methods: {
-        // Send the request and save the returning report.id
-        sendRequest (event) {
-           // event.preventDefault();
-            app.show.form = false;
-            app.show.load = true;
 
-            axios.post("/", app.formRequest)
-                .then(function (response)  {
-                   console.log(response.data);
-                   app.report.id = response.data.id;
-
-                   app.getReport();
-                })
-                .catch( error => {
-                    console.log(error.response.data)
-                });
-        },
-
-        getReport() {
-            axios.get("/" + app.report.id)
-                .then(function (response) {
-                    console.log(response.data);
-                    app.report.data = response.data;
-                });
-        }
     }
 });
