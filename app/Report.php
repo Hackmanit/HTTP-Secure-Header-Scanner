@@ -3,14 +3,12 @@
 namespace App;
 
 use App\Ratings;
-use GuzzleHttp\Client;
 
 /**
  * Returns a Report / Rating for the given URL.
  */
 class Report
 {
-
     public $url;
     public $siteRating = null;
     public $comment = null;
@@ -46,7 +44,7 @@ class Report
             (strpos($this->getXFrameOptionsRating()              , 'A')  !== false) &&
             (strpos($this->getXXSSProtectionRating()             , 'A')  !== false)
         ) {
-            $this->siteRating = 'H';
+            $this->siteRating = 'A++';
             $this->comment = 'WOHA! Great work! Everything is perfect!'; // TODO
         }
 
@@ -90,7 +88,6 @@ class Report
 
     public function getContentSecurityPolicyRating()
     {
-        var_dump("CSP Rating triggered");
         return (new Ratings\CSPRating($this->url))->getRating();
     }
 

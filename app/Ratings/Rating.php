@@ -20,8 +20,6 @@ abstract class Rating implements RatingInterface, \JsonSerializable
     public function __construct($url, Client $client = null)
     {
         $this->url = $url;
-        if ($client === null)
-            $client = new Client();
 
         $this->response = new HTTPResponse($this->url, $client);
         $this->rate();
