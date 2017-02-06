@@ -2,6 +2,7 @@
 
 namespace App;
 
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Redis;
 
 /**
@@ -16,34 +17,23 @@ class FullReport {
     protected $urls;
     protected $reports;
 
-    public function __construct($id)
+    public function __construct($id, Collection $urls)
     {
         $this->id = $id;
-        $this->urls = unserialize(Redis::hget($this->id, 'crawledUrls'));
-        $this->doReports();
+        $this->urls = $urls;
     }
 
     /**
      * Generate all $reports
      */
-    protected function doReports() {
+    public function rate() {
         Redis::hset($this->id, 'status', 'processing');
 
+        // Generate Reports
         $this->reports = collect();
         foreach ($this->urls as $url) {
             $this->reports->push(new Report($url));
-            \Log::debug("Pushed " . $url);
         }
-
-        Redis::hset($this->id, 'reports', $this->reports);
-    }
-
-    /**
-     * Return the FullReport
-     *
-     * @return array
-     */
-    public function get() {
 
         $ContentSecurityPolicy = collect();
         $ContentType = collect();
@@ -55,43 +45,45 @@ class FullReport {
 
         /** @var Report $report */
         foreach ($this->reports as $report) {
-
-            if ($report->status == 'success') {
-
-                $ContentSecurityPolicy->push([
-                    'url' => $report->url,
-                    'rating' => $report->ContentSecurityPolicyRating->getRating()
-                ]);
-                $ContentType->push([
-                    'url' => $report->url,
-                    'rating' => $report->ContentTypeRating->getRating()
-                ]);
-                $StrictTransportSecurity->push([
-                    'url' => $report->url,
-                    'rating' => $report->HttpStrictTransportSecurityRating->getRating()
-                ]);
-                $PublicKeyPins->push([
-                    'url' => $report->url,
-                    'rating' => $report->HttpPublicKeyPinningRating->getRating()
-                ]);
-                $XContentTypeOptions->push([
-                    'url' => $report->url,
-                    'rating' => $report->XContentTypeOptionsRating->getRating()
-                ]);
-                $XFrameOptions->push([
-                    'url' => $report->url,
-                    'rating' => $report->XFrameOptionsRating->getRating()
-                ]);
-                $XXSSProtection->push([
-                    'url' => $report->url,
-                    'rating' => $report->XXSSProtectionRating->getRating()
-                ]);
-            }
+            $report = $report->rate();
+            $ContentSecurityPolicy->push([
+                'url' => $report->url,
+                'rating' => $report->getContentSecurityPolicyRating()
+            ]);
+            $ContentType->push([
+                'url' => $report->url,
+                'rating' => $report->getContentTypeRating()
+            ]);
+            $StrictTransportSecurity->push([
+                'url' => $report->url,
+                'rating' => $report->getHttpStrictTransportSecurityRating()
+            ]);
+            $PublicKeyPins->push([
+                'url' => $report->url,
+                'rating' => $report->getHttpPublicKeyPinningRating()
+            ]);
+            $XContentTypeOptions->push([
+                'url' => $report->url,
+                'rating' => $report->getXContentTypeOptionsRating()
+            ]);
+            $XFrameOptions->push([
+                'url' => $report->url,
+                'rating' => $report->getXFrameOptionsRating()
+            ]);
+            $XXSSProtection->push([
+                'url' => $report->url,
+                'rating' => $report->getXXSSProtectionRating()
+            ]);
         }
 
-        return [
-            'id' => Redis::hget($this->id, 'status'),
-            'rating' => '', // TODO: FullReportRating.
+        // TODO: FullReportRating ? Webapp rating is worst header rating?
+
+
+        // Structure the returned values
+        $return = collect([
+            'id' => $this->id,
+            'status' => Redis::hget($this->id, 'status'),
+            'rating' => 'B',
             'Content-Security-Policy' => $ContentSecurityPolicy,
             'Content-Type' => $ContentType,
             'Strict-Transport-Security' => $StrictTransportSecurity,
@@ -99,7 +91,10 @@ class FullReport {
             'X-Content-Type-Options' => $XContentTypeOptions,
             'X-Frame-Options' => $XFrameOptions,
             'X-Xss-Protection' => $XXSSProtection
-        ];
+        ]);
+        Redis::hset($this->id, "fullreport", $return);
+        return $return;
+
     }
 
 }
