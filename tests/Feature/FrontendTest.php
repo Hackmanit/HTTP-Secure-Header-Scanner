@@ -2,6 +2,8 @@
 
 namespace Tests\Feature;
 
+use App\Jobs\AnalyzeSite;
+use Illuminate\Support\Facades\Queue;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithoutMiddleware;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
@@ -16,5 +18,17 @@ class FrontendTest extends TestCase
 
         $response->assertStatus(200);
         $response->assertSee("Enter your URL");
+    }
+
+    /** @test */
+    public function user_sends_a_scan_request_via_the_frontend_and_the_a_new_job_gets_dispatched_to_the_queue() {
+        Queue::fake();
+
+        $response = $this->post("/", [
+            "url" => "https://www.hackmanit.de",
+            "scan" => ["anchor"]
+        ]);
+
+        Queue::assertPushed(AnalyzeSite::class);
     }
 }

@@ -16,15 +16,11 @@ class AnalyzeSite implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    protected $id;
+    public $id;
     protected $url;
+    protected $whitelist;
     protected $options;
     protected $crawler;
-    protected $fullReport;
-    /**
-     * @var Collection
-     */
-    private $whitelist;
 
     /**
      * Create a new job instance.
@@ -52,10 +48,6 @@ class AnalyzeSite implements ShouldQueue
     {
         $crawler = new Crawler($this->id, $this->url, $this->whitelist, $this->options);
         $links = $crawler->extractAllLinks();                  // Sets status to "crawling"
-        // TODO: Redis extracted links
-
         $fullReport = new FullReport($this->id, $links);      // Sets status to "processing"
-        Redis::hset($this->id, 'reports', serialize($fullReport->rate()));
-        Redis::hset($this->id, 'status', 'finished');
     }
 }

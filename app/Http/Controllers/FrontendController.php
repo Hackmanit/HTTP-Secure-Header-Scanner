@@ -30,7 +30,11 @@ class FrontendController extends Controller
             $url = $url . '/';
 
         // whitelist
-        $whiteList = collect(explode("\n", $request->input('whitelist')))->flatten();
+        $whiteList = collect(explode("\n", $request->input('whitelist')))->flatten()->filter(function ($value) {
+            if ($value !== null && $value != "")
+                return true;
+            return false;
+        });
 
         // Set options for crawler
         $options = collect([]);

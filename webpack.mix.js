@@ -11,10 +11,7 @@ const { mix } = require('laravel-mix');
  |
  */
 
-mix.js('resources/assets/js/app.js', 'public/js')
+mix.js('resources/assets/js/start.js', 'public/js')
+   .js('resources/assets/js/report.js', 'public/js')
    .sass('resources/assets/sass/app.scss', 'public/css')
-   /*.combine([
-       'node_modules/animate.css/animate.min.css',
-       'public/css/app.css'
-    ], 'public/css/app.css') */
-    .version();
+   .version();

@@ -28,16 +28,16 @@ class Crawler
      * @param Client $client
      * @internal param $url
      */
-    public function __construct($id, $mainUrl, Collection $whitelist, Collection $options = null, Client $client = null)
+    public function __construct($id, $mainUrl, Collection $whitelist = null, Collection $options = null, Client $client = null)
     {
         $this->id = $id;
         $this->mainUrl = $mainUrl;
         $this->whitelist = $whitelist;
+        if ($this->whitelist === null)
+            $this->whitelist = collect();
         $this->whitelist->push(strtolower(parse_url($mainUrl, PHP_URL_HOST)));
         $this->options = $options;
         $this->client = $client;
-        if ( $client === null )
-            $this->client = new Client();
 
         if (! $options->has('limit'))
             $this->options->put('limit', env('LIMIT', 100));
@@ -56,19 +56,12 @@ class Crawler
             $this->crawledUrls->push($link);
 
             $extractedLinks = $this->extractLinks($link)->unique();
-
             foreach ($extractedLinks as $extractedLink) {
                 if ((! $this->toCrawl->contains($extractedLink)) && (! $this->crawledUrls->contains($extractedLink))) {
                     $this->toCrawl->push($extractedLink);
                 }
             }
-
-            $this->updateCrawlingStats();
-
-            Redis::hset($this->id, "crawledUrls", serialize($this->crawledUrls));
         }
-
-        Redis::hset($this->id, "crawledUrls", serialize($this->crawledUrls));
 
         return $this->crawledUrls;
     }
@@ -83,7 +76,6 @@ class Crawler
     {
         $parsedUrls = $this->parseDom($link);
         $optimizedUrls = $this->optimizeUrls($link, $parsedUrls);
-
         return $optimizedUrls;
     }
 
@@ -97,10 +89,11 @@ class Crawler
      */
     protected function parseDom($link)
     {
-        $body = (new HTTPResponse($link, $this->client))->body();
+        $response = new HTTPResponse($link, $this->client);
         $links = collect();
-        if($body  != null) {
-            $dom = HtmlDomParser::str_get_html($body);
+        if($response  != null) {
+
+            $dom = HtmlDomParser::str_get_html($response->body());
 
             if($this->options->has('customJson')) {
                 foreach (json_decode( $this->options->get( 'customJson' ) ) as $tag => $attribute)
@@ -108,25 +101,25 @@ class Crawler
                         $links->push( $element->$attribute );
             }
             else {
-                if ($this->options->contains("anchors"))
-                    foreach ($dom->find("a") as $link)
-                        $links->push($link->href);
-                if ($this->options->contains('images'))
+                if ($this->options->contains("anchor"))
+                    foreach ($dom->find( "a" ) as $link)
+                        $links->push( $link->href );
+                if ($this->options->contains('image'))
                     foreach ($dom->find("img") as $link)
                         $links->push($link->src);
                 if ($this->options->contains('media'))
                     foreach ($dom->find("video,audio,source") as $link)
                         $links->push($link->src);
-                if ($this->options->contains('links'))
+                if ($this->options->contains('link'))
                     foreach ($dom->find("link") as $link)
                         $links->push($link->href);
-                if ($this->options->contains('scripts'))
+                if ($this->options->contains('script'))
                     foreach ($dom->find("script") as $link)
                         $links->push($link->src);
                 if ($this->options->contains('area'))
                     foreach ($dom->find("area") as $link)
                         $links->push($link->href);
-                if ($this->options->contains('frames'))
+                if ($this->options->contains('frame'))
                     foreach ($dom->find("iframe,frame") as $link)
                         $links->push($link->src);
             }
@@ -206,9 +199,4 @@ class Crawler
         return "$scheme$user$pass$host$port$path$query";
     }
 
-    function updateCrawlingStats ()
-    {
-        Redis::hset($this->id, 'amountUrlsToCrawl', $this->toCrawl->count());
-        Redis::hset($this->id, 'amountUrls', $this->crawledUrls->count());
-    }
 }

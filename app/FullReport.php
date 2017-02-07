@@ -83,7 +83,7 @@ class FullReport {
         $return = collect([
             'id' => $this->id,
             'status' => Redis::hget($this->id, 'status'),
-            'rating' => 'B',
+            'rating' => 'B', // TODO: Rating
             'Content-Security-Policy' => $ContentSecurityPolicy,
             'Content-Type' => $ContentType,
             'Strict-Transport-Security' => $StrictTransportSecurity,
@@ -93,8 +93,8 @@ class FullReport {
             'X-Xss-Protection' => $XXSSProtection
         ]);
         Redis::hset($this->id, "fullreport", $return);
+        Redis::hset($this->id, 'reports', serialize($this->reports));
+        Redis::hset($this->id, 'status', 'finished');
         return $return;
-
     }
-
 }

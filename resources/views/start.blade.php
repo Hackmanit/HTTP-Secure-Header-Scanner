@@ -58,22 +58,22 @@ sub2.example.com" class="form-control"></textarea>
                             </div>
                             <div class="checkbox">
                                 <label>
-                                    <input type="checkbox" name="scan[]" name="anchor" v-model="formRequest.scan.anchor">
+                                    <input type="checkbox" name="scan[]" value="anchor" v-model="formRequest.scan.anchor">
                                     Include <b>a</b>-Tags
                                 </label>
                                 <br>
                                 <label>
-                                    <input type="checkbox" name="scan[]" value="images" v-model="formRequest.scan.images">
+                                    <input type="checkbox" name="scan[]" value="image" v-model="formRequest.scan.image">
                                     Include <b>img</b>-Tags
                                 </label>
                                 <br>
                                 <label>
-                                    <input type="checkbox" name="scan[]" value="scripts" v-model="formRequest.scan.scripts">
+                                    <input type="checkbox" name="scan[]" value="script" v-model="formRequest.scan.script">
                                     Include <b>script</b>-Tags
                                 </label>
                                 <br>
                                 <label>
-                                    <input type="checkbox" name="scan[]" value="links" v-model="formRequest.scan.links">
+                                    <input type="checkbox" name="scan[]" value="link" v-model="formRequest.scan.link">
                                     Include <b>link</b>-Tags
                                 </label>
                                 <br>
@@ -88,7 +88,7 @@ sub2.example.com" class="form-control"></textarea>
                                 </label>
                                 <br>
                                 <label>
-                                    <input type="checkbox" name="scan[]" value="frames" v-model="formRequest.scan.frames">
+                                    <input type="checkbox" name="scan[]" value="frame" v-model="formRequest.scan.frame">
                                     Include <b>iframe</b>- and <b>frame</b>-Tags
                                 </label>
                             </div>
@@ -144,6 +144,6 @@ sub2.example.com" class="form-control"></textarea>
         </div>
     </div>
 </div>
-<script src="{{ mix('/js/app.js') }}"></script>
+<script src="{{ mix('/js/start.js') }}"></script>
 </body>
 </html>

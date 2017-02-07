@@ -36,7 +36,7 @@ class CrawlerTest extends TestCase
             new Response(200, [], $sampleBody),
         ]);
 
-        $crawler = new Crawler("testID", "http://testdomain", collect(), collect(['anchors']), $client);
+        $crawler = new Crawler("testID", "http://testdomain", collect(), collect(['anchor']), $client);
         $parseDom = new \ReflectionMethod(Crawler::class, "parseDom");
         $parseDom->setAccessible(true);
 
@@ -51,7 +51,7 @@ class CrawlerTest extends TestCase
             new Response(200, [], $sampleBody),
         ]);
 
-        $crawler = new Crawler("testID", "http://testdomain", collect(), collect(['images']), $client);
+        $crawler = new Crawler("testID", "http://testdomain", collect(), collect(['image']), $client);
         $parseDom = new \ReflectionMethod(Crawler::class, "parseDom");
         $parseDom->setAccessible(true);
 
@@ -98,7 +98,7 @@ class CrawlerTest extends TestCase
             new Response(200, [], $sampleBody),
         ]);
 
-        $crawler = new Crawler("testID", "http://testdomain", collect(), collect(['scripts']), $client);
+        $crawler = new Crawler("testID", "http://testdomain", collect(), collect(['script']), $client);
         $parseDom = new \ReflectionMethod(Crawler::class, "parseDom");
         $parseDom->setAccessible(true);
         $links = $parseDom->invoke($crawler, "http://testdomain");
@@ -114,7 +114,7 @@ class CrawlerTest extends TestCase
             new Response(200, [], $sampleBody),
         ]);
 
-        $crawler = new Crawler("testID", "http://testdomain", collect(), collect(['frames']), $client);
+        $crawler = new Crawler("testID", "http://testdomain", collect(), collect(['frame']), $client);
         $parseDom = new \ReflectionMethod(Crawler::class, "parseDom");
         $parseDom->setAccessible(true);
         $links = $parseDom->invoke($crawler, "http://testdomain");
@@ -130,7 +130,7 @@ class CrawlerTest extends TestCase
             new Response(200, [], $sampleBody),
         ]);
 
-        $crawler = new Crawler("testID", "http://testdomain", collect(), collect(['anchors', 'images', 'area', 'media', 'scripts', 'frames']), $client);
+        $crawler = new Crawler("testID", "http://testdomain", collect(), collect(['anchor', 'image', 'area', 'media', 'script', 'frame']), $client);
         $parseDom = new \ReflectionMethod(Crawler::class, "parseDom");
         $parseDom->setAccessible(true);
         $links = $parseDom->invoke($crawler, "http://testdomain");
@@ -192,13 +192,13 @@ class CrawlerTest extends TestCase
             new Response(200, [], $sampleBody),
         ]);
 
-        $crawler = new Crawler('testId', 'https://testdomain', collect([ 'www.testdomain' ]), collect(['anchors', "images", "area", "media", "scripts", "frames"]), $client);
+        $crawler = new Crawler('testId', 'https://testdomain', collect([ 'www.testdomain' ]), collect(['anchor', "image", "area", "media", "script", "frame"]), $client);
         $links = $crawler->extractLinks("http://testdomain");
 
         $this->assertCount(38, $links);
     }
 
-    /** @ test
+    /** @test
      * LIVE TEST --- just fix the annotation
      */
     public function crawler_crawls_the_live_hackmanit_site_and_gets_more_than_10_anchor_links()
@@ -216,7 +216,7 @@ class CrawlerTest extends TestCase
             'cache'
         );
         $client = new Client( ["handler" => $handler] );
-        $crawler = new Crawler('hackmanitID', 'https://www.hackmanit.de', collect(['hackmanit.de']), collect(['anchors']), $client);
+        $crawler = new Crawler('hackmanitID', 'https://www.hackmanit.de', collect(['hackmanit.de']), collect(['anchor']), $client);
 
         $links = $crawler->extractAllLinks();
 

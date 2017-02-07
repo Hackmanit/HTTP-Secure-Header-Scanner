@@ -9,16 +9,16 @@ var app = new Vue({
             form: null,
         },
         formRequest: {
-            url : 'https://www.hackmanit.de',
+            url : '',
             whitelist: '',
             scan : {
                 anchor: true,
-                images: true,
-                scripts: true,
-                links: true,
+                image: true,
+                script: true,
+                link: true,
                 media: true,
                 area: true,
-                frames: true,
+                frame: true,
                 custom: false,
                 customJson: ''
             },
@@ -48,15 +48,12 @@ var app = new Vue({
     watch: {
         toggleScans: function () {
             app.formRequest.scan.anchor = app.toggleScans;
-            app.formRequest.scan.images = app.toggleScans;
-            app.formRequest.scan.frames = app.toggleScans;
+            app.formRequest.scan.image = app.toggleScans;
+            app.formRequest.scan.frame = app.toggleScans;
             app.formRequest.scan.area = app.toggleScans;
             app.formRequest.scan.media = app.toggleScans;
-            app.formRequest.scan.scripts = app.toggleScans;
-            app.formRequest.scan.links = app.toggleScans;
+            app.formRequest.scan.script = app.toggleScans;
+            app.formRequest.scan.link = app.toggleScans;
         }
-    },
-    methods: {
-
     }
 });
