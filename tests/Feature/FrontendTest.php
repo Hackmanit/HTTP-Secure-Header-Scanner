@@ -31,4 +31,6 @@ class FrontendTest extends TestCase
 
         Queue::assertPushed(AnalyzeSite::class);
     }
+
+    // TODO: Test custom json element-attribute pairs to crawl
 }

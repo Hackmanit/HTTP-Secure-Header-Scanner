@@ -48,6 +48,8 @@ class AnalyzeSite implements ShouldQueue
     {
         $crawler = new Crawler($this->id, $this->url, $this->whitelist, $this->options);
         $links = $crawler->extractAllLinks();                  // Sets status to "crawling"
-        $fullReport = new FullReport($this->id, $links);      // Sets status to "processing"
+        $fullReport = (new FullReport($this->id, $links))->rate();      // Sets status to "processing"
+        Redis::hset($this->id, "fullreport", serialize($fullReport));
+        Redis::hset($this->id, 'status', 'finished');
     }
 }

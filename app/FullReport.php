@@ -92,9 +92,7 @@ class FullReport {
             'X-Frame-Options' => $XFrameOptions,
             'X-Xss-Protection' => $XXSSProtection
         ]);
-        Redis::hset($this->id, "fullreport", $return);
-        Redis::hset($this->id, 'reports', serialize($this->reports));
-        Redis::hset($this->id, 'status', 'finished');
+
         return $return;
     }
 }
