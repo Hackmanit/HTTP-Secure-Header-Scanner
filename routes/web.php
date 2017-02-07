@@ -16,3 +16,4 @@ Route::post('/', 'FrontendController@requestReport')->name("requestReport");
 Route::get('/jsConfig', 'FrontendController@jsConfig');
 
 Route::get('/{id}', 'FrontendController@displayReport');
+Route::get('/{id}/details', 'FrontendController@retrieveReport');

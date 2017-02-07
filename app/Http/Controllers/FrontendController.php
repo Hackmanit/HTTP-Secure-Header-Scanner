@@ -51,7 +51,7 @@ class FrontendController extends Controller
         $options->put('limit', $request->input('limit'));
 
         $id = str_random();
-
+        Redis::hset($id, "url", $url);
         dispatch(new AnalyzeSite($id, $url, $whiteList, $options));
 
         return redirect()->to('/' . $id);
@@ -59,12 +59,12 @@ class FrontendController extends Controller
 
     /**
      * @param $id
-     * @var \App\Report $report
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function displayReport($id) {
 
-        return Redis::hget($id, "fullreport");
-
+        $url = Redis::hget($id, "url");
+        return view("report", [ "url" => $url]);
     }
 
     /**
@@ -88,6 +88,20 @@ class FrontendController extends Controller
                 "iframe" => "src",
                 "frame" => "src"
             ]
+        ];
+    }
+
+    /**
+     * The report site asks every x seconds for this report if the status != finished.
+     *
+     * @param $id
+     * @return mixed
+     */
+    public function retrieveReport($id) {
+        return [
+            "id" => $id,
+            "status" => Redis::hget($id, "status"),
+            "fullreport" => json_decode(Redis::hget($id, "fullreport")),
         ];
     }
 }
