@@ -63,7 +63,7 @@
 /******/ 	__webpack_require__.p = "./";
 
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 36);
+/******/ 	return __webpack_require__(__webpack_require__.s = 39);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -40156,7 +40156,7 @@ module.exports = function(module) {
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__components_ReportAccordionPanel_vue__ = __webpack_require__(46);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__components_ReportAccordionPanel_vue__ = __webpack_require__(37);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__components_ReportAccordionPanel_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__components_ReportAccordionPanel_vue__);
 __webpack_require__(28);
 
@@ -40171,7 +40171,8 @@ var app = new Vue({
             load: true,
             report: null
         },
-        fullreport: {}
+        fullreport: {},
+        headerRatings: {}
     },
 
     methods: {
@@ -40186,7 +40187,7 @@ var app = new Vue({
                 this.show.report = true;
 
                 this.fullreport = response.data.fullreport;
-                console.log(response.data);
+                this.headerRatings = response.data.headerRatings;
             } else setTimeout(app.getReportDetails, 5000);
         }
     },
@@ -40199,121 +40200,6 @@ var app = new Vue({
 /* 34 */,
 /* 35 */,
 /* 36 */
-/***/ (function(module, exports, __webpack_require__) {
-
-module.exports = __webpack_require__(33);
-
-
-/***/ }),
-/* 37 */,
-/* 38 */,
-/* 39 */,
-/* 40 */,
-/* 41 */,
-/* 42 */,
-/* 43 */,
-/* 44 */,
-/* 45 */,
-/* 46 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var __vue_exports__, __vue_options__
-var __vue_styles__ = {}
-
-/* script */
-__vue_exports__ = __webpack_require__(48)
-
-/* template */
-var __vue_template__ = __webpack_require__(47)
-__vue_options__ = __vue_exports__ = __vue_exports__ || {}
-if (
-  typeof __vue_exports__.default === "object" ||
-  typeof __vue_exports__.default === "function"
-) {
-if (Object.keys(__vue_exports__).some(function (key) { return key !== "default" && key !== "__esModule" })) {console.error("named exports are not supported in *.vue files.")}
-__vue_options__ = __vue_exports__ = __vue_exports__.default
-}
-if (typeof __vue_options__ === "function") {
-  __vue_options__ = __vue_options__.options
-}
-__vue_options__.__file = "/var/www/resources/assets/js/components/ReportAccordionPanel.vue"
-if(typeof __vue_options__.name === "undefined") {
-  __vue_options__.name = "ReportAccordionPanel"
-}__vue_options__.render = __vue_template__.render
-__vue_options__.staticRenderFns = __vue_template__.staticRenderFns
-
-/* hot reload */
-if (false) {(function () {
-  var hotAPI = require("vue-hot-reload-api")
-  hotAPI.install(require("vue"), false)
-  if (!hotAPI.compatible) return
-  module.hot.accept()
-  if (!module.hot.data) {
-    hotAPI.createRecord("data-v-57e0a1e4", __vue_options__)
-  } else {
-    hotAPI.reload("data-v-57e0a1e4", __vue_options__)
-  }
-})()}
-if (__vue_options__.functional && typeof __vue_template__ !== "undefined") {console.error("[vue-loader] ReportAccordionPanel.vue: functional components are not supported with templates, they should use render functions.")}
-
-module.exports = __vue_exports__
-
-
-/***/ }),
-/* 47 */
-/***/ (function(module, exports, __webpack_require__) {
-
-module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
-  return _c('div', {
-    attrs: {
-      "id": "panelRoot"
-    }
-  }, [_c('div', {
-    staticClass: "panel panel-default"
-  }, [_c('div', {
-    staticClass: "panel-heading",
-    attrs: {
-      "role": "tab",
-      "id": 'heading' + _vm.header
-    }
-  }, [_c('h4', {
-    staticClass: "panel-title"
-  }, [_c('a', {
-    attrs: {
-      "role": "button",
-      "data-toggle": "collapse",
-      "data-parent": "#accordion",
-      "href": '#collapse' + _vm.header,
-      "aria-expanded": "false",
-      "aria-controls": 'collapse' + _vm.header
-    }
-  }, [_vm._v("\n                    " + _vm._s(_vm.header) + "\n                ")])])]), _vm._v(" "), _c('div', {
-    staticClass: "panel-collapse collapse",
-    attrs: {
-      "id": 'collapse' + _vm.header,
-      "role": "tabpanel",
-      "aria-labelledby": 'heading' + _vm.header
-    }
-  }, [_c('div', {
-    staticClass: "panel-body"
-  }, [_c('table', {
-    staticClass: "table table-hover"
-  }, [_vm._m(0), _vm._v(" "), _vm._l((_vm.fullreport[_vm.header]), function(site) {
-    return _c('tr', [_c('td', [_vm._v(_vm._s(site.rating))]), _vm._v(" "), _c('td', [_vm._v(_vm._s(site.url))])])
-  })], 2)])])])])
-},staticRenderFns: [function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
-  return _c('tr', [_c('th', [_vm._v("Rating")]), _vm._v(" "), _c('th', [_vm._v("Site")])])
-}]}
-module.exports.render._withStripped = true
-if (false) {
-  module.hot.accept()
-  if (module.hot.data) {
-     require("vue-hot-reload-api").rerender("data-v-57e0a1e4", module.exports)
-  }
-}
-
-/***/ }),
-/* 48 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -40349,18 +40235,126 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
 
 /* harmony default export */ __webpack_exports__["default"] = {
     name: 'panelRoot',
-    props: ['header', 'fullreport'],
-
-    data: function data() {
-        return {
-            random: "string",
-            randomLink: "#" + this.random
-        };
-    }
+    props: ['header', 'fullreport', 'rating']
 };
+
+/***/ }),
+/* 37 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var __vue_exports__, __vue_options__
+var __vue_styles__ = {}
+
+/* script */
+__vue_exports__ = __webpack_require__(36)
+
+/* template */
+var __vue_template__ = __webpack_require__(38)
+__vue_options__ = __vue_exports__ = __vue_exports__ || {}
+if (
+  typeof __vue_exports__.default === "object" ||
+  typeof __vue_exports__.default === "function"
+) {
+if (Object.keys(__vue_exports__).some(function (key) { return key !== "default" && key !== "__esModule" })) {console.error("named exports are not supported in *.vue files.")}
+__vue_options__ = __vue_exports__ = __vue_exports__.default
+}
+if (typeof __vue_options__ === "function") {
+  __vue_options__ = __vue_options__.options
+}
+__vue_options__.__file = "/var/www/resources/assets/js/components/ReportAccordionPanel.vue"
+if(typeof __vue_options__.name === "undefined") {
+  __vue_options__.name = "ReportAccordionPanel"
+}__vue_options__.render = __vue_template__.render
+__vue_options__.staticRenderFns = __vue_template__.staticRenderFns
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-57e0a1e4", __vue_options__)
+  } else {
+    hotAPI.reload("data-v-57e0a1e4", __vue_options__)
+  }
+})()}
+if (__vue_options__.functional && typeof __vue_template__ !== "undefined") {console.error("[vue-loader] ReportAccordionPanel.vue: functional components are not supported with templates, they should use render functions.")}
+
+module.exports = __vue_exports__
+
+
+/***/ }),
+/* 38 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('div', {
+    attrs: {
+      "id": "panelRoot"
+    }
+  }, [_c('div', {
+    staticClass: "panel panel-default"
+  }, [_c('div', {
+    staticClass: "panel-heading",
+    attrs: {
+      "role": "tab",
+      "id": 'heading' + _vm.header
+    }
+  }, [_c('h4', {
+    staticClass: "panel-title"
+  }, [_c('span', {
+    staticClass: "label label-default"
+  }, [_vm._v(_vm._s(_vm.rating[_vm.header]))]), _vm._v(" "), _c('a', {
+    attrs: {
+      "role": "button",
+      "data-toggle": "collapse",
+      "data-parent": "#accordion",
+      "href": '#collapse' + _vm.header,
+      "aria-expanded": "false",
+      "aria-controls": 'collapse' + _vm.header
+    }
+  }, [_vm._v("\n                    " + _vm._s(_vm.header) + "\n                ")])])]), _vm._v(" "), _c('div', {
+    staticClass: "panel-collapse collapse",
+    attrs: {
+      "id": 'collapse' + _vm.header,
+      "role": "tabpanel",
+      "aria-labelledby": 'heading' + _vm.header
+    }
+  }, [_c('div', {
+    staticClass: "panel-body"
+  }, [_c('table', {
+    staticClass: "table table-hover"
+  }, [_vm._m(0), _vm._v(" "), _vm._l((_vm.fullreport[_vm.header]), function(site) {
+    return _c('tr', [_c('td', [_c('span', {
+      staticClass: "label label-default"
+    }, [_vm._v(_vm._s(site.rating))])]), _vm._v(" "), _c('td', [_c('a', {
+      attrs: {
+        "href": '/single?url=' + site.url
+      }
+    }, [_vm._v(_vm._s(site.url))])])])
+  })], 2)])])])])
+},staticRenderFns: [function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('tr', [_c('th', [_vm._v("Rating")]), _vm._v(" "), _c('th', [_vm._v("Site")])])
+}]}
+module.exports.render._withStripped = true
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+     require("vue-hot-reload-api").rerender("data-v-57e0a1e4", module.exports)
+  }
+}
+
+/***/ }),
+/* 39 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = __webpack_require__(33);
+
 
 /***/ })
 /******/ ]);

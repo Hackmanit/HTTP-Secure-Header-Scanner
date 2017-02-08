@@ -11,9 +11,8 @@ var app = new Vue({
             load: true,
             report: null,
         },
-        fullreport: {
-
-        },
+        fullreport: {},
+        headerRatings: {},
     },
 
     methods: {
@@ -29,7 +28,7 @@ var app = new Vue({
                 this.show.report = true;
 
                 this.fullreport = response.data.fullreport;
-                console.log(response.data);
+                this.headerRatings = response.data.headerRatings;
             }
             else
                 setTimeout(app.getReportDetails, 5000);

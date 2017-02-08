@@ -187,7 +187,7 @@ class Crawler
      */
     function unparse_url($parsed_url, $scanned_url)
     {
-        $scheme = isset($parsed_url['scheme']) ? $parsed_url['scheme'] . '://' : 'http://';
+        $scheme = isset($parsed_url['scheme']) ? $parsed_url['scheme'] . '://' : strtolower(parse_url($this->mainUrl, PHP_URL_SCHEME)) . "://";
         $host = isset($parsed_url['host']) ? strtolower($parsed_url['host']) : strtolower(parse_url($scanned_url, PHP_URL_HOST));
         $port = isset($parsed_url['port']) ? ':' . $parsed_url['port'] : '';
         $user = isset($parsed_url['user']) ? $parsed_url['user'] : '';

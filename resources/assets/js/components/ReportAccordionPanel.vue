@@ -3,6 +3,7 @@
         <div class="panel panel-default">
             <div class="panel-heading" role="tab" :id="'heading' + header">
                 <h4 class="panel-title">
+                    <span class="label label-default">{{ rating[header] }}</span>
                     <a role="button" data-toggle="collapse" data-parent="#accordion" :href="'#collapse' + header" aria-expanded="false" :aria-controls="'collapse' + header">
                         {{ header }}
                     </a>
@@ -18,8 +19,8 @@
                         </tr>
 
                         <tr v-for='site in fullreport[ header ]'>
-                            <td>{{ site.rating }}</td>
-                            <td>{{ site.url }}</td>
+                            <td><span class="label label-default">{{ site.rating }}</span></td>
+                            <td><a :href="'/single?url=' + site.url">{{ site.url }}</a></td>
                         </tr>
                     </table>
 
@@ -32,13 +33,6 @@
 <script>
     export default {
         name: 'panelRoot',
-        props: [ 'header', 'fullreport' ],
-
-        data() {
-            return {
-                random: "string",
-                randomLink: "#" + this.random,
-            }
-        }
+        props: [ 'header', 'fullreport', 'rating' ],
     }
 </script>

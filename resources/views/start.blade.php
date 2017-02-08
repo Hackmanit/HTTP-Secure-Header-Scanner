@@ -12,7 +12,7 @@
         @foreach($errors->all() as $error)
             <div class="alert alert-danger animated fadeInDown" role="alert">
                 <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <strong>Fehler!</strong> {{ $error }}
+                <strong>Error!</strong> {{ $error }}
             </div>
         @endforeach
     @endif
@@ -29,6 +29,7 @@
 
     <div class="vertical-center full-height" :class="{ 'hidden': show.form === null, 'animated zoomIn': show.form, 'animated zoomOut': !show.form }">
         <div class="col-md-12">
+            <h1>HTTP Secure Header Scanner</h1>
             <h3>Enter your URL</h3>
             <form action="{{ route("requestReport") }}" method="post">
                 {{ csrf_field() }}

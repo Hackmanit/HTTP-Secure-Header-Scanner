@@ -12,7 +12,7 @@
         @foreach($errors->all() as $error)
             <div class="alert alert-danger animated fadeInDown" role="alert">
                 <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <strong>Fehler!</strong> {{ $error }}
+                <strong>Error!</strong> {{ $error }}
             </div>
         @endforeach
     @endif
@@ -27,11 +27,9 @@
     </div>
 
     <div v-show="show.report" class="animated zoomIn">
-        <div class="row">
-            <div class="col-md-push-1 col-md-2">
 
-            </div>
-            <div class="col-md-8">
+        <div class="row">
+            <div class="col-md-push-2 col-md-8">
                 <h2>Report for: {{ $url }}</h2>
             </div>
         </div>
@@ -39,15 +37,15 @@
 
         </div>
         <div class="row">
-            <div class="col-md-10 col-md-push-1">
+            <div class="col-md-8 col-md-push-2">
                 <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
-                    <ReportAccordionPanel :fullreport="fullreport" header="Content-Security-Policy"></ReportAccordionPanel>
-                    <ReportAccordionPanel :fullreport="fullreport" header="Content-Type"></ReportAccordionPanel>
-                    <ReportAccordionPanel :fullreport="fullreport" header="Public-Key-Pins"></ReportAccordionPanel>
-                    <ReportAccordionPanel :fullreport="fullreport" header="Strict-Transport-Security"></ReportAccordionPanel>
-                    <ReportAccordionPanel :fullreport="fullreport" header="X-Content-Type-Options"></ReportAccordionPanel>
-                    <ReportAccordionPanel :fullreport="fullreport" header="X-Frame-Options"></ReportAccordionPanel>
-                    <ReportAccordionPanel :fullreport="fullreport" header="X-Xss-Protection"></ReportAccordionPanel>
+                    <ReportAccordionPanel :fullreport="fullreport" :rating="headerRatings" header="Content-Security-Policy"></ReportAccordionPanel>
+                    <ReportAccordionPanel :fullreport="fullreport" :rating="headerRatings" header="Content-Type"></ReportAccordionPanel>
+                    <ReportAccordionPanel :fullreport="fullreport" :rating="headerRatings" header="Public-Key-Pins"></ReportAccordionPanel>
+                    <ReportAccordionPanel :fullreport="fullreport" :rating="headerRatings" header="Strict-Transport-Security"></ReportAccordionPanel>
+                    <ReportAccordionPanel :fullreport="fullreport" :rating="headerRatings" header="X-Content-Type-Options"></ReportAccordionPanel>
+                    <ReportAccordionPanel :fullreport="fullreport" :rating="headerRatings" header="X-Frame-Options"></ReportAccordionPanel>
+                    <ReportAccordionPanel :fullreport="fullreport" :rating="headerRatings" header="X-Xss-Protection"></ReportAccordionPanel>
 
                 </div>
             </div>
