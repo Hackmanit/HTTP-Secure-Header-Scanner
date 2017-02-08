@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use function GuzzleHttp\json_decode;
 use Illuminate\Http\Request;
 use App\Http\Requests\ReportRequest;
 use App\Jobs\AnalyzeSite;
@@ -101,7 +100,7 @@ class FrontendController extends Controller
         return [
             "id" => $id,
             "status" => Redis::hget($id, "status"),
-            "fullreport" => json_decode(Redis::hget($id, "fullreport")),
+            "fullreport" => unserialize(Redis::hget($id, "fullreport")),
         ];
     }
 }
