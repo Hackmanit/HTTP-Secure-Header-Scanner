@@ -82,7 +82,6 @@ class FullReport {
         // Structure the returned values
         $return = collect([
             'id' => $this->id,
-            'status' => Redis::hget($this->id, 'status'),
             'rating' => 'B', // TODO: Rating
             'Content-Security-Policy' => $ContentSecurityPolicy,
             'Content-Type' => $ContentType,
