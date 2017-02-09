@@ -40172,7 +40172,8 @@ var app = new Vue({
             report: null
         },
         fullreport: {},
-        headerRatings: {}
+        headerRatings: {},
+        amountUrlsChecked: 0
     },
 
     methods: {
@@ -40187,6 +40188,7 @@ var app = new Vue({
                 this.show.report = true;
 
                 this.fullreport = response.data.fullreport;
+                this.amountUrlsChecked = response.data.fullreport["Strict-Transport-Security"].length;
                 this.headerRatings = response.data.headerRatings;
             } else setTimeout(app.getReportDetails, 5000);
         }
@@ -40204,6 +40206,7 @@ var app = new Vue({
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+//
 //
 //
 //

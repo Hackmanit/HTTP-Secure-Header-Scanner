@@ -31,6 +31,15 @@
         <div class="row">
             <div class="col-md-push-2 col-md-8">
                 <h2>Report for: {{ $url }}</h2>
+                <div class="row">
+                    <div class="col-md-2"><span class="label label-success report-label">B</span></div>
+                    <div class="col-md-10">
+
+                        <h4>This site is secure.</h4>
+
+                        @{{ amountUrlsChecked  }} URLs checked
+                    </div>
+                </div>
             </div>
         </div>
         <div class="row">

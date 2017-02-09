@@ -101,14 +101,18 @@ class FrontendController extends Controller
      * @return mixed
      */
     public function retrieveReport($id) {
+        $furtherInformation = array();
         $fullreport = unserialize(Redis::hget($id, "fullreport"));
 
-        return [
+        if($fullreport !== false) {
+            $furtherInformation["headerRatings"] = $this->getOverallHeaderRatings( $fullreport );
+        }
+
+        return array_merge([
             "id" => $id,
             "status" => Redis::hget($id, "status"),
             "fullreport" => $fullreport,
-            "headerRatings" => $this->getOverallHeaderRatings($fullreport)
-        ];
+        ], $furtherInformation);
     }
 
     public function singleReport(Request $request) {

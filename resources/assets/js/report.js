@@ -13,6 +13,7 @@ var app = new Vue({
         },
         fullreport: {},
         headerRatings: {},
+        amountUrlsChecked: 0,
     },
 
     methods: {
@@ -28,6 +29,7 @@ var app = new Vue({
                 this.show.report = true;
 
                 this.fullreport = response.data.fullreport;
+                this.amountUrlsChecked = response.data.fullreport["Strict-Transport-Security"].length;
                 this.headerRatings = response.data.headerRatings;
             }
             else
