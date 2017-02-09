@@ -89,53 +89,46 @@ class ApiController extends Controller
         ]);
 
         $report = new Report($request->input('site'));
-        if($report->status == "success") {
-            $customReport = [
+        return  [
                 'checks' => [
                     'Content-Type' => [
-                        'result' => !(strpos( $report->ContentTypeRating->getRating(), 'C' ) !== false),
-                        'comment' => $report->ContentTypeRating->getComment(),
-                        'directive' => $report->ContentTypeRating->getHeader( 'content-type' )
+                        'result' => !(strpos( $report->getRating("content-type"), 'C' ) !== false),
+                        'comment' => $report->getComment("content-type"),
+                        'directive' => $report->getHeader( 'content-type' )
                     ],
                     'Content-Security-Policy' => [
-                        'result' => !(strpos( $report->ContentSecurityPolicyRating->getRating(), 'C' ) !== false),
-                        'comment' => $report->ContentSecurityPolicyRating->getComment(),
-                        'directive' => $report->ContentSecurityPolicyRating->getHeader( 'content-security-policy' )
+                        'result' => !(strpos( $report->getRating("content-security-policy"), 'C' ) !== false),
+                        'comment' => $report->getComment("content-security-policy"),
+                        'directive' => $report->getHeader( 'content-security-policy' )
                     ],
                     'Public-Key-Pins' => [
-                        'result' => !(strpos( $report->HttpPublicKeyPinningRating->getRating(), 'C' ) !== false),
-                        'comment' => $report->HttpPublicKeyPinningRating->getComment(),
-                        'directive' => $report->HttpPublicKeyPinningRating->getHeader( 'public-key-pins' )
+                        'result' => !(strpos( $report->getRating("public-key-pins"), 'C' ) !== false),
+                        'comment' => $report->getComment("public-key-pins"),
+                        'directive' => $report->getHeader( 'public-key-pins' )
                     ],
                     'Strict-Transport-Security' => [
-                        'result' => !(strpos( $report->HttpStrictTransportSecurityRating->getRating(), 'C' ) !== false),
-                        'comment' => $report->HttpStrictTransportSecurityRating->getComment(),
-                        'directive' => $report->HttpStrictTransportSecurityRating->getHeader( 'strict-transport-security' )
+                        'result' => !(strpos( $report->getRating("strict-transport-security"), 'C' ) !== false),
+                        'comment' => $report->getComment("strict-transport-security"),
+                        'directive' => $report->getHeader( 'strict-transport-security' )
                     ],
                     'X-Content-Type-Options' => [
-                        'result' => !(strpos( $report->XContentTypeOptionsRating->getRating(), 'C' ) !== false),
-                        'comment' => $report->XContentTypeOptionsRating->getComment(),
-                        'directive' => $report->XContentTypeOptionsRating->getHeader( 'x-content-type-options' )
+                        'result' => !(strpos( $report->getRating("x-content-type-options"), 'C' ) !== false),
+                        'comment' => $report->getComment("x-content-type-options"),
+                        'directive' => $report->getHeader( 'x-content-type-options' )
                     ],
                     'X-Frame-Options' => [
-                        'result' => !(strpos( $report->XFrameOptionsRating->getRating(), 'C' ) !== false),
-                        'comment' => $report->XFrameOptionsRating->getComment(),
-                        'directive' => $report->XFrameOptionsRating->getHeader( 'x-frame-options' )
+                        'result' => !(strpos( $report->getRating("x-frame-options"), 'C' ) !== false),
+                        'comment' => $report->getComment("x-frame-options"),
+                        'directive' => $report->getHeader( 'x-frame-options' )
                     ],
                     'X-Xss-Protection' => [
-                        'result' => !(strpos( $report->XXSSProtectionRating->getRating(), 'C' ) !== false),
-                        'comment' => $report->XXSSProtectionRating->getComment(),
-                        'directive' => $report->XXSSProtectionRating->getHeader( 'x-xss-protection' )
+                        'result' => !(strpos( $report->getRating("x-xss-protection"), 'C' ) !== false),
+                        'comment' => $report->getComment("x-xss-protection"),
+                        'directive' => $report->getHeader( 'x-xss-protection' )
                     ]
                 ]
             ];
 
-            return response()->json( $customReport );
-        }
-
-        return response()->json( [
-            "status" => "error"
-        ]);
     }
 
     /**

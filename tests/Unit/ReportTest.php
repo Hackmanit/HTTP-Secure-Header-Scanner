@@ -15,13 +15,13 @@ class ReportTest extends TestCase
     {
         $mock = Mockery::mock(Report::class, ["http://testdomain"])->makePartial();
 
-        $mock->shouldReceive("getContentSecurityPolicyRating")->andReturn("");
-        $mock->shouldReceive("getContentTypeRating")->andReturn("");
-        $mock->shouldReceive("getHttpPublicKeyPinningRating")->andReturn("");
-        $mock->shouldReceive("getHttpStrictTransportSecurityRating")->andReturn("");
-        $mock->shouldReceive("getXContentTypeOptionsRating")->andReturn("");
-        $mock->shouldReceive("getXFrameOptionsRating")->andReturn("");
-        $mock->shouldReceive("getXXSSProtectionRating")->andReturn("");
+        $mock->shouldReceive("getRating")->with("content-security-policy")->andReturn("");
+        $mock->shouldReceive("getRating")->with("content-type")->andReturn("");
+        $mock->shouldReceive("getRating")->with("public-key-pins")->andReturn("");
+        $mock->shouldReceive("getRating")->with("strict-transport-security")->andReturn("");
+        $mock->shouldReceive("getRating")->with("x-content-type-options")->andReturn("");
+        $mock->shouldReceive("getRating")->with("x-frame-options")->andReturn("");
+        $mock->shouldReceive("getRating")->with("x-xss-protection")->andReturn("");
 
         $this->assertEquals("C", $mock->rate()->siteRating);
     }
@@ -31,13 +31,13 @@ class ReportTest extends TestCase
     {
         $mock = Mockery::mock(Report::class, ["http://testdomain"])->makePartial();
 
-        $mock->shouldReceive("getContentSecurityPolicyRating")->andReturn("C");
-        $mock->shouldReceive("getContentTypeRating")->andReturn("C");
-        $mock->shouldReceive("getHttpPublicKeyPinningRating")->andReturn("C");
-        $mock->shouldReceive("getHttpStrictTransportSecurityRating")->andReturn("C");
-        $mock->shouldReceive("getXContentTypeOptionsRating")->andReturn("C");
-        $mock->shouldReceive("getXFrameOptionsRating")->andReturn("C");
-        $mock->shouldReceive("getXXSSProtectionRating")->andReturn("C");
+        $mock->shouldReceive("getRating")->with("content-security-policy")->andReturn("C");
+        $mock->shouldReceive("getRating")->with("content-type")->andReturn("C");
+        $mock->shouldReceive("getRating")->with("public-key-pins")->andReturn("C");
+        $mock->shouldReceive("getRating")->with("strict-transport-security")->andReturn("C");
+        $mock->shouldReceive("getRating")->with("x-content-type-options")->andReturn("C");
+        $mock->shouldReceive("getRating")->with("x-frame-options")->andReturn("C");
+        $mock->shouldReceive("getRating")->with("x-xss-protection")->andReturn("C");
 
         $this->assertEquals("C", $mock->rate()->siteRating);
     }
@@ -47,13 +47,13 @@ class ReportTest extends TestCase
     {
         $mock = Mockery::mock(Report::class, ["http://testdomain"])->makePartial();
 
-        $mock->shouldReceive("getContentSecurityPolicyRating")->andReturn("A");
-        $mock->shouldReceive("getContentTypeRating")->andReturn("A");
-        $mock->shouldReceive("getHttpPublicKeyPinningRating")->andReturn("A");
-        $mock->shouldReceive("getHttpStrictTransportSecurityRating")->andReturn("A");
-        $mock->shouldReceive("getXContentTypeOptionsRating")->andReturn("A");
-        $mock->shouldReceive("getXFrameOptionsRating")->andReturn("A");
-        $mock->shouldReceive("getXXSSProtectionRating")->andReturn("A");
+        $mock->shouldReceive("getRating")->with("content-security-policy")->andReturn("A");
+        $mock->shouldReceive("getRating")->with("content-type")->andReturn("A");
+        $mock->shouldReceive("getRating")->with("public-key-pins")->andReturn("A");
+        $mock->shouldReceive("getRating")->with("strict-transport-security")->andReturn("A");
+        $mock->shouldReceive("getRating")->with("x-content-type-options")->andReturn("A");
+        $mock->shouldReceive("getRating")->with("x-frame-options")->andReturn("A");
+        $mock->shouldReceive("getRating")->with("x-xss-protection")->andReturn("A");
 
         $this->assertEquals("A++", $mock->rate()->siteRating);
     }
