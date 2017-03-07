@@ -48,31 +48,31 @@ class FullReport {
             $report = $report->rate();
             $ContentSecurityPolicy->push([
                 'url' => $report->url,
-                'rating' => $report->getContentSecurityPolicyRating()
+                'rating' => $report->getRating('content-security-policy')
             ]);
             $ContentType->push([
                 'url' => $report->url,
-                'rating' => $report->getContentTypeRating()
+                'rating' => $report->getRating('content-type')
             ]);
             $StrictTransportSecurity->push([
                 'url' => $report->url,
-                'rating' => $report->getHttpStrictTransportSecurityRating()
+                'rating' => $report->getRating('strict-transport-security')
             ]);
             $PublicKeyPins->push([
                 'url' => $report->url,
-                'rating' => $report->getHttpPublicKeyPinningRating()
+                'rating' => $report->getRating('public-key-pins')
             ]);
             $XContentTypeOptions->push([
                 'url' => $report->url,
-                'rating' => $report->getXContentTypeOptionsRating()
+                'rating' => $report->getRating('x-content-type-options')
             ]);
             $XFrameOptions->push([
                 'url' => $report->url,
-                'rating' => $report->getXFrameOptionsRating()
+                'rating' => $report->getRating('x-frame-options')
             ]);
             $XXSSProtection->push([
                 'url' => $report->url,
-                'rating' => $report->getXXSSProtectionRating()
+                'rating' => $report->getRating('x-xss-protection')
             ]);
         }
 
