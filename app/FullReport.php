@@ -24,72 +24,47 @@ class FullReport {
     }
 
     /**
-     * Generate all $reports
+     * Generate the FullReport
      */
-    public function rate() {
+    public function generate() {
         Redis::hset($this->id, 'status', 'processing');
 
-        // Generate Reports
+        // Generate single Reports
         $this->reports = collect();
         foreach ($this->urls as $url) {
             $this->reports->push(new Report($url));
         }
 
-        $ContentSecurityPolicy = collect();
-        $ContentType = collect();
-        $PublicKeyPins = collect();
-        $StrictTransportSecurity = collect();
-        $XContentTypeOptions = collect();
-        $XFrameOptions = collect();
-        $XXSSProtection = collect();
-
+        // extract and group single ratings.
+        $ratings = collect();
         /** @var Report $report */
         foreach ($this->reports as $report) {
             $report = $report->rate();
-            $ContentSecurityPolicy->push([
+            $ratings->push([
                 'url' => $report->url,
-                'rating' => $report->getRating('content-security-policy')
-            ]);
-            $ContentType->push([
-                'url' => $report->url,
-                'rating' => $report->getRating('content-type')
-            ]);
-            $StrictTransportSecurity->push([
-                'url' => $report->url,
-                'rating' => $report->getRating('strict-transport-security')
-            ]);
-            $PublicKeyPins->push([
-                'url' => $report->url,
-                'rating' => $report->getRating('public-key-pins')
-            ]);
-            $XContentTypeOptions->push([
-                'url' => $report->url,
-                'rating' => $report->getRating('x-content-type-options')
-            ]);
-            $XFrameOptions->push([
-                'url' => $report->url,
-                'rating' => $report->getRating('x-frame-options')
-            ]);
-            $XXSSProtection->push([
-                'url' => $report->url,
-                'rating' => $report->getRating('x-xss-protection')
+                'content-security-policy' => $report->getRating('content-security-policy'),
+                'content-type' => $report->getRating('content-type'),
+                'strict-transport-security' => $report->getRating('strict-transport-security'),
+                'public-key-pins' => $report->getRating('public-key-pins'),
+                'x-content-type-options' => $report->getRating('x-content-type-options'),
+                'x-frame-options' => $report->getRating('x-frame-options'),
+                'x-xss-protection' => $report->getRating('x-xss-protection')
             ]);
         }
 
         // TODO: FullReportRating ? Webapp rating is worst header rating?
 
-
         // Structure the returned values
         $return = collect([
             'id' => $this->id,
             'rating' => 'B', // TODO: Rating
-            'Content-Security-Policy' => $ContentSecurityPolicy,
-            'Content-Type' => $ContentType,
-            'Strict-Transport-Security' => $StrictTransportSecurity,
-            'Public-Key-Pins' => $PublicKeyPins,
-            'X-Content-Type-Options' => $XContentTypeOptions,
-            'X-Frame-Options' => $XFrameOptions,
-            'X-Xss-Protection' => $XXSSProtection
+            'Content-Security-Policy' => $ratings->groupBy('content-security-policy'),
+            'Content-Type' => $ratings->groupBy('content-type'),
+            'Strict-Transport-Security' => $ratings->groupBy('strict-transport-security'),
+            'Public-Key-Pins' => $ratings->groupBy('public-key-pins'),
+            'X-Content-Type-Options' => $ratings->groupBy('x-content-type-options'),
+            'X-Frame-Options' => $ratings->groupBy('x-frame-options'),
+            'X-Xss-Protection' => $ratings->groupBy('x-xss-protection')
         ]);
 
         return $return;
