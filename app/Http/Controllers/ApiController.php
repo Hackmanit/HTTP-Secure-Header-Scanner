@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Crawler;
 use App\Jobs\AnalyzeSite;
 use App\Report;
 use Illuminate\Http\Request;
@@ -11,61 +12,12 @@ class ApiController extends Controller
 {
 
     /**
-     * Scan request
-     *
-     * @param Request $request
-     * @return array
-     */
-    public function scan(Request $request) {
-        $this->validate($request, [
-            'site' => 'required|url'
-        ]);
-
-        $id = str_random();
-
-        // TODO: Options via POST Request
-        $this->dispatch(new AnalyzeSite($id, $request->input('site'), collect(['hackmanit.de']), collect(['anchors', 'images', 'links', 'scripts', 'media', 'area', 'frames'])));
-
-        return [
-            'id' => $id,
-            'status' => Redis::hget($id, 'status')
-        ];
-    }
-
-    /**
-     * Get the specific request
-     *
-     * @param Request $request
-     * @return array
-     */
-    public function get(Request $request) {
-        $this->validate($request, [
-            'id' => 'required|string|size:16'
-        ]);
-
-        $id = $request->input('id');
-
-        if (Redis::hget($id, 'status') !== 'finished')
-            return [
-                'id' => $id,
-                'status' => Redis::hget($id, 'status')
-            ];
-
-        return [
-            'id' => $id,
-            'status' => Redis::hget($id, 'status'),
-            'report' => unserialize(Redis::hget($id, 'report'))
-        ];
-
-    }
-
-    /**
      * Returns the Report for a single URL.
      *
      * @param Request $request (GET parameter "url")
      * @return array casted to json
      */
-    public function report(Request $request) {
+    public function singleReport(Request $request) {
         $this->validate($request, [
             'url' => 'required|url'
         ]);
@@ -126,13 +78,43 @@ class ApiController extends Controller
 
     }
 
+
     /**
-     * Returns an array with the crawled links.
+     * Returns a Collection|json with the crawled links.
      *
      * @param Request $request
+     * @return \Illuminate\Support\Collection links
      */
-    public function links(Request $request) {
-        // TODO: Implement crawler return
+    public function crawler(Request $request) {
+        $this->validate($request, [
+            'url' => 'required|url',
+            'anchor' => 'boolean',
+            'image' => 'boolean',
+            'media' => 'boolean',
+            'link' => 'boolean',
+            'script' => 'boolean',
+            'area' => 'boolean',
+            'frame' => 'boolean',
+            'ignoreTlsErrors' => 'boolean',
+            'proxy' => 'url'
+        ]);
+
+        $options = collect([]);
+        if ($request->input("anchor") == true) $options->push("anchor");
+        if ($request->input("image") == true) $options->push("image");
+        if ($request->input("media") == true) $options->push("media");
+        if ($request->input("link") == true) $options->push("link");
+        if ($request->input("script") == true) $options->push("script");
+        if ($request->input("area") == true) $options->push("area");
+        if ($request->input("frame") == true) $options->push("frame");
+
+        if ($request->input("ignoreTlsErrors") == true) $options->push("ignoreTLS");
+        if ($request->has("proxy")) $options->put('proxy', $request->input('proxy'));
+
+        $crawler = new Crawler("abcd", $request->input('url'), null, $options);
+        $links = $crawler->extractAllLinks();
+
+        return $links;
     }
 
 }
