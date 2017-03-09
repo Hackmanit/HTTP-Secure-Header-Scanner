@@ -81,9 +81,49 @@ class Report
         return $this;
     }
 
-    public function __toString()
-    {
-        return json_encode($this, JSON_PRETTY_PRINT);
+    public function getJson() {
+        return [
+            'url' => $this->url,
+            'siteRating' => $this->siteRating,
+            'comment' => $this->comment,
+            'header' => [
+                'Content-Security-Policy' => [
+                    'plain' => $this->getHeader('Content-Security-Policy'),
+                    'rating' => $this->getRating('Content-Security-Policy'),
+                    'comment' => $this->getComment('Content-Security-Policy')
+                ],
+                'Content-Type' => [
+                    'plain' => $this->getHeader('Content-Type'),
+                    'rating' => $this->getRating('Content-Type'),
+                    'comment' => $this->getComment('Content-Type')
+                ],
+                'Public-Key-Pins' => [
+                    'plain' => $this->getHeader('Public-Key-Pins'),
+                    'rating' => $this->getRating('Public-Key-Pins'),
+                    'comment' => $this->getComment('Public-Key-Pins')
+                ],
+                'Strict-Transport-Security' => [
+                    'plain' => $this->getHeader('Strict-Transport-Security'),
+                    'rating' => $this->getRating('Strict-Transport-Security'),
+                    'comment' => $this->getComment('Strict-Transport-Security')
+                ],
+                'X-Content-Type-Options' => [
+                    'plain' => $this->getHeader('X-Content-Type-Options'),
+                    'rating' => $this->getRating('X-Content-Type-Options'),
+                    'comment' => $this->getComment('X-Content-Type-Options')
+                ],
+                'X-Frame-Options' => [
+                    'plain' => $this->getHeader('X-Frame-Options'),
+                    'rating' => $this->getRating('X-Frame-Options'),
+                    'comment' => $this->getComment('X-Frame-Options')
+                ],
+                'X-Xss-Protection' => [
+                    'plain' => $this->getHeader('X-Xss-Protection'),
+                    'rating' => $this->getRating('X-Xss-Protection'),
+                    'comment' => $this->getComment('X-Xss-Protection')
+                ],
+            ]
+        ];
     }
 
     public function getComment($header)

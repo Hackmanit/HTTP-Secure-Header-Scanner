@@ -62,23 +62,18 @@ class ApiController extends Controller
     /**
      * Returns the Report for a single URL.
      *
-     * @param Request $request (GET parameter "site")
-     * @return Report
+     * @param Request $request (GET parameter "url")
+     * @return array casted to json
      */
-    public function rate(Request $request) {
+    public function report(Request $request) {
         $this->validate($request, [
-            'site' => 'required|url'
+            'url' => 'required|url'
         ]);
 
-        $report = new Report($request->input('site'));
-        if( $report->status == "success")
-            return $report;
+        $report = (new Report($request->input('url')))->rate();
+        return $report->getJson();
 
-        return response()->json( [
-            "status" => "error"
-        ]);
     }
-
 
     /**
      * Returns a very simple and report for a single URL.
