@@ -3,7 +3,12 @@
 namespace App;
 
 use GuzzleHttp\Client;
+use GuzzleHttp\HandlerStack;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Cache;
+use Kevinrob\GuzzleCache\CacheMiddleware;
+use Kevinrob\GuzzleCache\Storage\LaravelCacheStorage;
+use Kevinrob\GuzzleCache\Strategy\PrivateCacheStrategy;
 use voku\helper\HtmlDomParser;
 use Illuminate\Support\Facades\Redis;
 
@@ -38,6 +43,22 @@ class Crawler
         $this->whitelist->push(strtolower(parse_url($mainUrl, PHP_URL_HOST)));
         $this->options = $options;
         $this->client = $client;
+
+        // If proxy should be used and no testing client is given, manage cache and proxy
+        if ($client === null && $options->has('proxy')) {
+            $stack = HandlerStack::create();
+            $stack->push(
+                new CacheMiddleware(
+                    new PrivateCacheStrategy(
+                        new LaravelCacheStorage(
+                            Cache::store('redis')
+                        )
+                    )
+                ),
+                'cache'
+            );
+            $this->client = new Client( ['proxy' => $options->get('proxy') ,'handler' => $stack] );
+        }
 
         if (! $options->has('limit'))
             $this->options->put('limit', env('LIMIT', 100));
