@@ -76,6 +76,9 @@ class Crawler
             $link = $this->toCrawl->pop();
             $this->crawledUrls->push($link);
 
+            if($this->crawledUrls->count() >= $this->options->get('limit'))
+                break;
+
             $extractedLinks = $this->extractLinks($link)->unique();
             foreach ($extractedLinks as $extractedLink) {
                 if ((! $this->toCrawl->contains($extractedLink)) && (! $this->crawledUrls->contains($extractedLink))) {

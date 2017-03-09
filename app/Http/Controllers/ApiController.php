@@ -3,10 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Crawler;
-use App\Jobs\AnalyzeSite;
 use App\Report;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Redis;
 
 class ApiController extends Controller
 {
@@ -96,7 +94,8 @@ class ApiController extends Controller
             'area' => 'boolean',
             'frame' => 'boolean',
             'ignoreTlsErrors' => 'boolean',
-            'proxy' => 'url'
+            'proxy' => 'url',
+            'limit' => 'integer'
         ]);
 
         $options = collect([]);
@@ -110,6 +109,7 @@ class ApiController extends Controller
 
         if ($request->input("ignoreTlsErrors") == true) $options->push("ignoreTLS");
         if ($request->has("proxy")) $options->put('proxy', $request->input('proxy'));
+        if ($request->has("limit")) $options->put('limit', $request->input('limit'));
 
         $crawler = new Crawler("abcd", $request->input('url'), null, $options);
         $links = $crawler->extractAllLinks();
