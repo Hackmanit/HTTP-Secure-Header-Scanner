@@ -32,10 +32,34 @@
   left: 75px;
 }
 
+.rating {
+  border: 1px dashed gray;
+  display: flex;
+  align-items: center;
+  margin: 30px auto;
+
+  table {
+    margin: 0;
+  }
+}
+
+.tag-list {
+  margin: 0;
+  padding: 0;
+
+  li {
+    display: inline-block;
+    margin: auto 5px;
+  }
+}
+
 .report-label {
-  margin-top: 7px;
-  font-size: 30pt;
-  display: inline-block;
+  font-size: 25pt;
+  width: 100px;
+  height: 100px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .sk-folding-cube {

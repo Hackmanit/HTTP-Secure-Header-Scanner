@@ -3,13 +3,28 @@ require('./bootstrap');
 var app = new Vue({
     el: '#app',
     data: {
-        toggleScans: true,
         show: {
             load: true,
             form: null,
+            result: null
         },
-        formRequest: {
-            url : '',
+        loadingMessage: "",
+        toggleScans: true,
+
+        singleRequest: {
+            url: 'https://www.hackmanit.de'
+        },
+
+        result: {
+            siteRating: '',
+        },
+
+        multipleRequest: {
+
+        },
+
+        crawlRequest: {
+            url : 'https://www.hackmanit.de',
             whitelist: '',
             scan : {
                 anchor: true,
@@ -28,19 +43,14 @@ var app = new Vue({
             ignoreTLS: true,
             proxy: '',
             proxyAddress: ''
-        },
-        report: {
-            'id': null,
-            'status': null,
-            'data': null
         }
     },
 
     mounted() {
         axios.get('/jsConfig').then(response => [
-            app.formRequest.proxyAddress = "http://" + response.data.HOST_IP + ":8080",
-            app.formRequest.limit = response.data.LIMIT,
-            app.formRequest.scan.customJson = response.data.CUSTOM_JSON,
+            app.crawlRequest.proxyAddress = "http://" + response.data.HOST_IP + ":8080",
+            app.crawlRequest.limit = response.data.LIMIT,
+            app.crawlRequest.scan.customJson = response.data.CUSTOM_JSON,
             app.show.load = false,
             app.show.form = true,
         ]);
@@ -55,5 +65,32 @@ var app = new Vue({
             app.formRequest.scan.script = app.toggleScans;
             app.formRequest.scan.link = app.toggleScans;
         }
+    },
+    filters: {
+    },
+    methods: {
+        getSingleReport() {
+            app.show.load = true;
+            app.show.form = false;
+            this.loadingMessage = "Requesting your report... just a moment, pls."
+            axios
+                .get("/api/v1/rate?url=" + this.singleRequest.url)
+                .then(response => [
+                    this.result = response.data,
+                    app.show.load = false,
+                    app.show.result = true
+                ])
+                .catch(error => [
+                    alert(error),
+
+                ]) ;
+        },
+        getFirst(someString) {
+            return someString.charAt(0);
+        },
+        nl2br(someString) {
+            return (someString + '').replace(/\\n/g, "<br>");
+        }
+
     }
 });
