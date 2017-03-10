@@ -216,7 +216,7 @@ class CrawlerTest extends TestCase
             'cache'
         );
         $client = new Client( ["handler" => $handler] );
-        $crawler = new Crawler('hackmanitID', 'https://www.hackmanit.de', collect(['hackmanit.de']), collect(['anchor']), $client);
+        $crawler = new Crawler('hackmanitID', 'https://www.hackmanit.de', collect(['hackmanit.de']), collect(['anchor', 'limit' => '30']), $client);
 
         $links = $crawler->extractAllLinks();
 
