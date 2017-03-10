@@ -84,43 +84,57 @@ class Report
     public function getJson() {
         return [
             'url' => $this->url,
-            'siteRating' => $this->siteRating,
+            'siteRating' => 'B+', //$this->siteRating,
             'comment' => $this->comment,
             'header' => [
                 'Content-Security-Policy' => [
                     'plain' => $this->getHeader('Content-Security-Policy'),
                     'rating' => $this->getRating('Content-Security-Policy'),
-                    'comment' => $this->getComment('Content-Security-Policy')
+                    'comment' => $this->getComment('Content-Security-Policy'),
+                    'description' => Ratings\CSPRating::getDescription(),
+                    'bestPractice' => Ratings\CSPRating::getBestPractice()
                 ],
                 'Content-Type' => [
                     'plain' => $this->getHeader('Content-Type'),
                     'rating' => $this->getRating('Content-Type'),
-                    'comment' => $this->getComment('Content-Type')
+                    'comment' => $this->getComment('Content-Type'),
+                    'description' => Ratings\ContentTypeRating::getDescription(),
+                    'bestPractice' => Ratings\ContentTypeRating::getBestPractice()
                 ],
                 'Public-Key-Pins' => [
                     'plain' => $this->getHeader('Public-Key-Pins'),
                     'rating' => $this->getRating('Public-Key-Pins'),
-                    'comment' => $this->getComment('Public-Key-Pins')
+                    'comment' => $this->getComment('Public-Key-Pins'),
+                    'description' => Ratings\HPKPRating::getDescription(),
+                    'bestPractice' => Ratings\HPKPRating::getBestPractice()
                 ],
                 'Strict-Transport-Security' => [
                     'plain' => $this->getHeader('Strict-Transport-Security'),
                     'rating' => $this->getRating('Strict-Transport-Security'),
-                    'comment' => $this->getComment('Strict-Transport-Security')
+                    'comment' => $this->getComment('Strict-Transport-Security'),
+                    'description' => Ratings\HSTSRating::getDescription(),
+                    'bestPractice' => Ratings\HSTSRating::getBestPractice()
                 ],
                 'X-Content-Type-Options' => [
                     'plain' => $this->getHeader('X-Content-Type-Options'),
                     'rating' => $this->getRating('X-Content-Type-Options'),
-                    'comment' => $this->getComment('X-Content-Type-Options')
+                    'comment' => $this->getComment('X-Content-Type-Options'),
+                    'description' => Ratings\XContentTypeOptionsRating::getDescription(),
+                    'bestPractice' => Ratings\XContentTypeOptionsRating::getBestPractice()
                 ],
                 'X-Frame-Options' => [
                     'plain' => $this->getHeader('X-Frame-Options'),
                     'rating' => $this->getRating('X-Frame-Options'),
-                    'comment' => $this->getComment('X-Frame-Options')
+                    'comment' => $this->getComment('X-Frame-Options'),
+                    'description' => Ratings\XFrameOptionsRating::getDescription(),
+                    'bestPractice' => Ratings\XFrameOptionsRating::getBestPractice()
                 ],
                 'X-Xss-Protection' => [
                     'plain' => $this->getHeader('X-Xss-Protection'),
                     'rating' => $this->getRating('X-Xss-Protection'),
-                    'comment' => $this->getComment('X-Xss-Protection')
+                    'comment' => $this->getComment('X-Xss-Protection'),
+                    'description' => Ratings\XXSSProtectionRating::getDescription(),
+                    'bestPractice' => Ratings\XXSSProtectionRating::getBestPractice()
                 ],
             ]
         ];
