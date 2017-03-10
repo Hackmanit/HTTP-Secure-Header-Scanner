@@ -5,7 +5,6 @@ namespace App\Ratings;
 use App\HTTPResponse;
 use GuzzleHttp\Client;
 
-// TODO: Cache rate() and getHeader() methods.
 abstract class Rating implements RatingInterface, \JsonSerializable
 {
     protected $url;
