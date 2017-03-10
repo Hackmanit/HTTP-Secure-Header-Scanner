@@ -218,6 +218,8 @@ sub2.example.com" class="form-control"></textarea>
                             </tr>
                         </table>
 
+                        <p>@{{ value.description }}</p>
+
                     </div>
                 </div>
             </div>
