@@ -11220,42 +11220,39 @@ var app = new Vue({
             whitelist: '',
             scan: {
                 anchor: true,
-                image: true,
-                script: true,
-                link: true,
-                media: true,
-                area: true,
-                frame: true,
+                image: false,
+                script: false,
+                link: false,
+                media: false,
+                area: false,
+                frame: false,
                 custom: false,
-                customJson: ''
+                customJson: ""
             },
-            doNotCrawl: false,
-            limitOn: false,
-            limit: '',
-            ignoreTLS: true,
-            proxy: '',
-            proxyAddress: ''
+            expertMode: false,
+            proxy: false,
+            proxyAdress: '',
+            ignoreTLS: true
         }
     },
 
     mounted: function mounted() {
         axios.get('/jsConfig').then(function (response) {
-            return [app.crawlRequest.proxyAddress = "http://" + response.data.HOST_IP + ":8080", app.crawlRequest.limit = response.data.LIMIT, app.crawlRequest.scan.customJson = response.data.CUSTOM_JSON, app.show.load = false, app.show.form = true];
+            return [app.crawlRequest.proxyAdress = "http://" + response.data.HOST_IP + ":8080", app.crawlRequest.limit = response.data.LIMIT, app.crawlRequest.scan.customJson = response.data.CUSTOM_JSON, app.show.load = false, app.show.form = true];
         });
     },
 
     watch: {
         toggleScans: function toggleScans() {
-            app.formRequest.scan.anchor = app.toggleScans;
-            app.formRequest.scan.image = app.toggleScans;
-            app.formRequest.scan.frame = app.toggleScans;
-            app.formRequest.scan.area = app.toggleScans;
-            app.formRequest.scan.media = app.toggleScans;
-            app.formRequest.scan.script = app.toggleScans;
-            app.formRequest.scan.link = app.toggleScans;
+            app.crawlRequest.scan.anchor = app.toggleScans;
+            app.crawlRequest.scan.image = app.toggleScans;
+            app.crawlRequest.scan.frame = app.toggleScans;
+            app.crawlRequest.scan.area = app.toggleScans;
+            app.crawlRequest.scan.media = app.toggleScans;
+            app.crawlRequest.scan.script = app.toggleScans;
+            app.crawlRequest.scan.link = app.toggleScans;
         }
     },
-    filters: {},
     methods: {
         getSingleReport: function getSingleReport() {
             app.show.load = true;
@@ -11279,6 +11276,24 @@ var app = new Vue({
             }).catch(function (error) {
                 return [alert(error)];
             });
+        },
+        getCrawledReport: function getCrawledReport() {
+            app.loadingMessage = "We're dispatching your request to the backend.<br>This should take just a moment.";
+            app.show.form = false;
+            app.show.load = true;
+
+            /*axios
+                .post('/api/v1/multiple', {
+                    urls: app.multipleRequest.urls.split('\n')
+                })
+                .then(response => [
+                    app.fullReport.reportUrl = response.data.reportUrl,
+                    app.loadingMessage = "",
+                    app.getReportDetails()
+                ])
+                .catch(error => [
+                    alert(error)
+                ]);*/
         },
         getReportDetails: function getReportDetails() {
             axios.get(app.fullReport.reportUrl).then(function (response) {

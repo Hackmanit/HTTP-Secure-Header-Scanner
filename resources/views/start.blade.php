@@ -61,111 +61,146 @@
                 </div>
 
                 <div id="crawler" class="tab-pane fade">
-                    <h3>Menu 2</h3>
-                    <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam.</p>
+                    <h3>Configure your crawler settings</h3>
+                    <div class="row vertical-center">
+                        <div class="col-sm-12">
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <label>Enter a URL to start</label>
+                                    <input class="form-control" placeholder="https://yoururl.com" v-model="crawlRequest.url">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-6">
+                                    <strong>Whitelist</strong><br>
+                                    <textarea class="form-control" rows="5" placeholder="Insert each URL in a seperated line." v-model="crawlRequest.whitelist"></textarea>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="row scan-elements">
+                                        <div class="col-sm-4 col-md-3">
+                                            <strong>Anchor-Tags</strong><br>
+                                            <div class="btn-group btn-toggle">
+                                                <button class="btn btn-sm" @click="crawlRequest.scan.anchor = true" :class="{'btn-primary active': crawlRequest.scan.anchor, 'btn-default': !crawlRequest.scan.anchor }">ON</button>
+                                                <button class="btn btn-sm" @click="crawlRequest.scan.anchor = false" :class="{'btn-primary active': !crawlRequest.scan.anchor, 'btn-default': crawlRequest.scan.anchor }">OFF</button>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-4 col-md-3">
+                                            <strong>Image-Tags</strong><br>
+                                            <div class="btn-group btn-toggle">
+                                                <button class="btn btn-sm" @click="crawlRequest.scan.image = true" :class="{'btn-primary active': crawlRequest.scan.image, 'btn-default': !crawlRequest.scan.image }">ON</button>
+                                                <button class="btn btn-sm" @click="crawlRequest.scan.image = false" :class="{'btn-primary active': !crawlRequest.scan.image, 'btn-default': crawlRequest.scan.image }">OFF</button>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-4 col-md-3">
+                                            <strong>Script-Tags</strong><br>
+                                            <div class="btn-group btn-toggle">
+                                                <button class="btn btn-sm" @click="crawlRequest.scan.script = true" :class="{'btn-primary active': crawlRequest.scan.script, 'btn-default': !crawlRequest.scan.script }">ON</button>
+                                                <button class="btn btn-sm" @click="crawlRequest.scan.script = false" :class="{'btn-primary active': !crawlRequest.scan.script, 'btn-default': crawlRequest.scan.script }">OFF</button>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-4 col-md-3">
+                                            <strong>Link-Tags</strong><br>
+                                            <div class="btn-group btn-toggle">
+                                                <button class="btn btn-sm" @click="crawlRequest.scan.link = true" :class="{'btn-primary active': crawlRequest.scan.link, 'btn-default': !crawlRequest.scan.link }">ON</button>
+                                                <button class="btn btn-sm" @click="crawlRequest.scan.link = false" :class="{'btn-primary active': !crawlRequest.scan.link, 'btn-default': crawlRequest.scan.link }">OFF</button>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-4 col-md-3">
+                                            <strong>Media-Tags</strong><br>
+                                            <div class="btn-group btn-toggle">
+                                                <button class="btn btn-sm" @click="crawlRequest.scan.media = true" :class="{'btn-primary active': crawlRequest.scan.media, 'btn-default': !crawlRequest.scan.media }">ON</button>
+                                                <button class="btn btn-sm" @click="crawlRequest.scan.media = false" :class="{'btn-primary active': !crawlRequest.scan.media, 'btn-default': crawlRequest.scan.media }">OFF</button>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-4 col-md-3">
+                                            <strong>Area-Tags</strong><br>
+                                            <div class="btn-group btn-toggle">
+                                                <button class="btn btn-sm" @click="crawlRequest.scan.area = true" :class="{'btn-primary active': crawlRequest.scan.area, 'btn-default': !crawlRequest.scan.area }">ON</button>
+                                                <button class="btn btn-sm" @click="crawlRequest.scan.area = false" :class="{'btn-primary active': !crawlRequest.scan.area, 'btn-default': crawlRequest.scan.area }">OFF</button>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-4 col-md-3">
+                                            <strong>Frame-Tags</strong><br>
+                                            <div class="btn-group btn-toggle">
+                                                <button class="btn btn-sm" @click="crawlRequest.scan.frame = true" :class="{'btn-primary active': crawlRequest.scan.frame, 'btn-default': !crawlRequest.scan.frame }">ON</button>
+                                                <button class="btn btn-sm" @click="crawlRequest.scan.frame = false" :class="{'btn-primary active': !crawlRequest.scan.frame, 'btn-default': crawlRequest.scan.frame }">OFF</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row" :class="{ 'hidden': !crawlRequest.expertMode }">
+                                <div class="col-sm-12">
+                                    <div class="row">
+                                        <div class="col-sm-6">
+                                            <div class="row">
+                                                <div class="col-sm-4">
+                                                    <strong>Proxy</strong><br>
+                                                    <div class="btn-group btn-toggle">
+                                                        <button class="btn btn-sm" @click="crawlRequest.proxy = true" :class="{'btn-primary active': crawlRequest.proxy, 'btn-default': !crawlRequest.proxy }">ON</button>
+                                                        <button class="btn btn-sm" @click="crawlRequest.proxy = false" :class="{'btn-primary active': !crawlRequest.proxy, 'btn-default': crawlRequest.proxy }">OFF</button>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-8">
+                                                    <div :class="{ 'hidden': !crawlRequest.proxy }">
+                                                        <strong>Proxy adress</strong>
+                                                        <input class="form-control" placeholder="https://yourProxy.com:8080" v-model="crawlRequest.proxyAdress">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <div class="row">
+                                                <div class="col-sm-4">
+                                                    <strong>TLS-Errors</strong><br>
+                                                    <div class="btn-group btn-toggle">
+                                                        <button class="btn btn-sm" @click="crawlRequest.ignoreTLS = false" :class="{'btn-primary active': !crawlRequest.ignoreTLS, 'btn-default': crawlRequest.ignoreTLS }">ON</button>
+                                                        <button class="btn btn-sm" @click="crawlRequest.ignoreTLS = true" :class="{'btn-primary active': crawlRequest.ignoreTLS, 'btn-default': !crawlRequest.ignoreTLS }">OFF</button>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-6">
+                                                    <strong>Limit</strong><br>
+                                                    <input class="form-control" placeholder="Limit to crawl" v-model="crawlRequest.limit">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm-2">
+                                            <strong>Custom</strong><br>
+                                            <div class="btn-group btn-toggle">
+                                                <button class="btn btn-sm" @click="crawlRequest.scan.custom = true" :class="{'btn-primary active': crawlRequest.scan.custom, 'btn-default': !crawlRequest.scan.custom }">ON</button>
+                                                <button class="btn btn-sm" @click="crawlRequest.scan.custom = false" :class="{'btn-primary active': !crawlRequest.scan.custom, 'btn-default': crawlRequest.scan.custom }">OFF</button>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-4">
+                                            <div :class="{ 'hidden': !crawlRequest.scan.custom}">
+                                                <strong>Custom JSON</strong><br>
+                                                <textarea class="form-control" rows="5" placeholder="Valid JSON" v-model="crawlRequest.customJson"></textarea>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row crawl-scan">
+                                <div class="col-sm-12">
+                                    <div>
+                                        <p class="text-info text-center toggleExpertMode" @click="crawlRequest.expertMode = true" :class="{ 'hidden': crawlRequest.expertMode }">
+                                            <i class="glyphicon glyphicon-cog"></i> Enable Expert-Mode
+                                        </p>
+                                        <p class="text-danger text-center toggleExpertMode" @click="crawlRequest.expertMode = false" :class="{ 'hidden': !crawlRequest.expertMode }">
+                                            <i class="glyphicon glyphicon-cog"></i> Disable Expert-Mode
+                                        </p>
+                                        <div class="divider"></div>
+                                    </div>
+                                    <button class="btn btn-primary form-control" @click="getCrawledReport()">Crawl &amp; Scan</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
-
-            {{-- <div class="row">
-                 <div class="col-md-3">
-                     <div class="checkbox">
-                     <textarea v-model="formRequest.whitelist" name="whitelist" rows="6" placeholder="sub1.example.com
-sub2.example.com" class="form-control"></textarea>
-                     </div>
-
-                 </div>
-                 <div class="col-md-3">
-                     <div v-show="!formRequest.scan.custom">
-                         <div class="checkbox">
-                             <label>
-                                 <input type="checkbox" v-model="toggleScans">
-                                 Select all
-                             </label>
-                         </div>
-                         <div class="checkbox">
-                             <label>
-                                 <input type="checkbox" name="scan[]" value="anchor" v-model="formRequest.scan.anchor">
-                                 Include <b>a</b>-Tags
-                             </label>
-                             <br>
-                             <label>
-                                 <input type="checkbox" name="scan[]" value="image" v-model="formRequest.scan.image">
-                                 Include <b>img</b>-Tags
-                             </label>
-                             <br>
-                             <label>
-                                 <input type="checkbox" name="scan[]" value="script" v-model="formRequest.scan.script">
-                                 Include <b>script</b>-Tags
-                             </label>
-                             <br>
-                             <label>
-                                 <input type="checkbox" name="scan[]" value="link" v-model="formRequest.scan.link">
-                                 Include <b>link</b>-Tags
-                             </label>
-                             <br>
-                             <label>
-                                 <input type="checkbox" name="scan[]" value="media" v-model="formRequest.scan.media">
-                                 Include <b>audio</b>- and <b>video</b>-Tags
-                             </label>
-                             <br>
-                             <label>
-                                 <input type="checkbox" name="scan[]" value="area" v-model="formRequest.scan.area">
-                                 Include <b>area</b>-Tags
-                             </label>
-                             <br>
-                             <label>
-                                 <input type="checkbox" name="scan[]" value="frame" v-model="formRequest.scan.frame">
-                                 Include <b>iframe</b>- and <b>frame</b>-Tags
-                             </label>
-                         </div>
-                     </div>
-                     <div class="checkbox">
-                         <div class="checkbox full-width" v-show="formRequest.scan.custom">
-                             <textarea name="customJson" rows="6" class="form-control" v-model="formRequest.scan.customJson"></textarea>
-                         </div>
-                         <label class="text-primary">
-                             <input type="checkbox" v-model="formRequest.scan.custom">Custom configuration</span>
-                         </label>
-                     </div>
-                 </div>
-                 <div class="col-md-3">
-                     <div class="checkbox">
-                         <label>
-                             <input type="checkbox" name="doNotCrawl" v-model="formRequest.doNotCrawl">
-                             Do NOT crawl
-                         </label>
-                     </div>
-                     <div class="checkbox">
-                         <label>
-                             <input type="checkbox" v-model="formRequest.limitOn">
-                             Limit scan
-                         </label>
-                         <span v-show="formRequest.limitOn">
-                             <br><input class="form-control" v-model="formRequest.limit">
-                         </span>
-                     </div>
-                 </div>
-                 <div class="col-md-3">
-                     <div class="checkbox">
-                         <label>
-                             <input type="checkbox" v-model="formRequest.ignoreTLS">
-                             Ignore SSL/TLS certificate errors
-                         </label>
-                     </div>
-                     <div class="checkbox">
-                         <label>
-                             <input type="checkbox" v-model="formRequest.proxy">
-                             Use a proxy
-                         </label>
-                         <span v-show="formRequest.proxy">
-                         <br><input type="text" class="form-control" v-model="formRequest.proxyAddress">
-                     </span>
-                     </div>
-                 </div>
-             </div>--}}
-            {{--<div class="row">
-
-            </div>--}}
         </div>
     </div>
 
