@@ -63,7 +63,7 @@
 /******/ 	__webpack_require__.p = "./";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 41);
+/******/ 	return __webpack_require__(__webpack_require__.s = 35);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -380,7 +380,7 @@ module.exports = {
 /* WEBPACK VAR INJECTION */(function(process) {
 
 var utils = __webpack_require__(0);
-var normalizeHeaderName = __webpack_require__(25);
+var normalizeHeaderName = __webpack_require__(27);
 
 var PROTECTION_PREFIX = /^\)\]\}',?\n/;
 var DEFAULT_CONTENT_TYPE = {
@@ -667,12 +667,12 @@ process.umask = function() { return 0; };
 /* WEBPACK VAR INJECTION */(function(process) {
 
 var utils = __webpack_require__(0);
-var settle = __webpack_require__(17);
-var buildURL = __webpack_require__(20);
-var parseHeaders = __webpack_require__(26);
-var isURLSameOrigin = __webpack_require__(24);
+var settle = __webpack_require__(19);
+var buildURL = __webpack_require__(22);
+var parseHeaders = __webpack_require__(28);
+var isURLSameOrigin = __webpack_require__(26);
 var createError = __webpack_require__(6);
-var btoa = (typeof window !== 'undefined' && window.btoa && window.btoa.bind(window)) || __webpack_require__(19);
+var btoa = (typeof window !== 'undefined' && window.btoa && window.btoa.bind(window)) || __webpack_require__(21);
 
 module.exports = function xhrAdapter(config) {
   return new Promise(function dispatchXhrRequest(resolve, reject) {
@@ -768,7 +768,7 @@ module.exports = function xhrAdapter(config) {
     // This is only done if running in a standard browser environment.
     // Specifically not if we're in a web worker, or react-native.
     if (utils.isStandardBrowserEnv()) {
-      var cookies = __webpack_require__(22);
+      var cookies = __webpack_require__(24);
 
       // Add xsrf header
       var xsrfValue = (config.withCredentials || isURLSameOrigin(config.url)) && config.xsrfCookieName ?
@@ -889,7 +889,7 @@ module.exports = function isCancel(value) {
 "use strict";
 
 
-var enhanceError = __webpack_require__(16);
+var enhanceError = __webpack_require__(18);
 
 /**
  * Create an Error with the specified message, config, error code, and response.
@@ -11182,10 +11182,153 @@ module.exports = g;
 /* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(11);
+__webpack_require__(30);
+
+var app = new Vue({
+    el: '#app',
+    data: {
+        show: {
+            load: true,
+            form: null,
+            singleReport: null,
+            fullReport: null
+        },
+        loadingMessage: "",
+        toggleScans: true,
+
+        singleRequest: {
+            url: 'https://www.hackmanit.de'
+        },
+
+        singleReport: {
+            siteRating: ''
+        },
+
+        fullReport: {
+            fullRating: '',
+            ratings: {},
+            amountUrlsTotal: '-',
+            amountGeneratedReports: '-'
+        },
+
+        multipleRequest: {
+            urls: "https://www.hackmanit.de/\nhttps://www.hackmanit.de/publikationen.html\nhttps://www.hackmanit.de/karriere.html\nhttps://www.hackmanit.de/img/christian_mainka.jpg\nhttps://www.hackmanit.de/impressum-en.html"
+        },
+
+        crawlRequest: {
+            url: 'https://www.hackmanit.de',
+            whitelist: '',
+            scan: {
+                anchor: true,
+                image: true,
+                script: true,
+                link: true,
+                media: true,
+                area: true,
+                frame: true,
+                custom: false,
+                customJson: ''
+            },
+            doNotCrawl: false,
+            limitOn: false,
+            limit: '',
+            ignoreTLS: true,
+            proxy: '',
+            proxyAddress: ''
+        }
+    },
+
+    mounted: function mounted() {
+        axios.get('/jsConfig').then(function (response) {
+            return [app.crawlRequest.proxyAddress = "http://" + response.data.HOST_IP + ":8080", app.crawlRequest.limit = response.data.LIMIT, app.crawlRequest.scan.customJson = response.data.CUSTOM_JSON, app.show.load = false, app.show.form = true];
+        });
+    },
+
+    watch: {
+        toggleScans: function toggleScans() {
+            app.formRequest.scan.anchor = app.toggleScans;
+            app.formRequest.scan.image = app.toggleScans;
+            app.formRequest.scan.frame = app.toggleScans;
+            app.formRequest.scan.area = app.toggleScans;
+            app.formRequest.scan.media = app.toggleScans;
+            app.formRequest.scan.script = app.toggleScans;
+            app.formRequest.scan.link = app.toggleScans;
+        }
+    },
+    filters: {},
+    methods: {
+        getSingleReport: function getSingleReport() {
+            app.show.load = true;
+            app.show.form = false;
+            this.loadingMessage = "Requesting your report... just a moment, pls.";
+            axios.get("/api/v1/rate?url=" + this.singleRequest.url).then(function (response) {
+                return [app.singleReport = response.data, app.show.load = false, app.show.singleReport = true];
+            }).catch(function (error) {
+                return [alert(error)];
+            });
+        },
+        getMultipleReport: function getMultipleReport() {
+            app.loadingMessage = "We're dispatching your request to the backend.<br>This should take just a moment.";
+            app.show.form = false;
+            app.show.load = true;
+
+            axios.post('/api/v1/multiple', {
+                urls: app.multipleRequest.urls.split('\n')
+            }).then(function (response) {
+                return [app.fullReport.reportUrl = response.data.reportUrl, app.loadingMessage = "", app.getReportDetails()];
+            }).catch(function (error) {
+                return [alert(error)];
+            });
+        },
+        getReportDetails: function getReportDetails() {
+            axios.get(app.fullReport.reportUrl).then(function (response) {
+                app.doStuffOrReload(response);
+            });
+        },
+        doStuffOrReload: function doStuffOrReload(response) {
+            if (response.data.status.localeCompare("finished") === 0) {
+                app.show.load = false;
+                app.show.fullReport = true;
+
+                app.fullReport = response.data.fullReport;
+                app.fullReport.amountUrlsTotal = response.data.amountUrlsTotal;
+                app.fullReport.amountGeneratedReports = response.data.amountGeneratedReports;
+            } else {
+                app.fullReport.amountUrlsTotal = response.data.amountUrlsTotal;
+                app.fullReport.amountGeneratedReports = response.data.amountGeneratedReports;
+                app.loadingMessage = "Generating reports: " + (app.fullReport.amountGeneratedReports != null ? app.fullReport.amountGeneratedReports : '-') + " of " + (app.fullReport.amountUrlsTotal != null ? app.fullReport.amountUrlsTotal : '-');
+                setTimeout(app.getReportDetails, 3000);
+            }
+        },
+        getFirst: function getFirst(someString) {
+            return someString.charAt(0);
+        },
+        nl2br: function nl2br(someString) {
+            return (someString + '').replace(/\\n/g, "<br>");
+        },
+        newScan: function newScan() {
+            app.show.load = false;
+            app.show.singleReport = false;
+            app.show.fullReport = false;
+            app.show.form = true;
+        }
+    }
+});
 
 /***/ }),
 /* 11 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 12 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = __webpack_require__(13);
+
+/***/ }),
+/* 13 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -11193,7 +11336,7 @@ module.exports = __webpack_require__(11);
 
 var utils = __webpack_require__(0);
 var bind = __webpack_require__(7);
-var Axios = __webpack_require__(13);
+var Axios = __webpack_require__(15);
 var defaults = __webpack_require__(1);
 
 /**
@@ -11228,14 +11371,14 @@ axios.create = function create(instanceConfig) {
 
 // Expose Cancel & CancelToken
 axios.Cancel = __webpack_require__(4);
-axios.CancelToken = __webpack_require__(12);
+axios.CancelToken = __webpack_require__(14);
 axios.isCancel = __webpack_require__(5);
 
 // Expose all/spread
 axios.all = function all(promises) {
   return Promise.all(promises);
 };
-axios.spread = __webpack_require__(27);
+axios.spread = __webpack_require__(29);
 
 module.exports = axios;
 
@@ -11244,7 +11387,7 @@ module.exports.default = axios;
 
 
 /***/ }),
-/* 12 */
+/* 14 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -11308,7 +11451,7 @@ module.exports = CancelToken;
 
 
 /***/ }),
-/* 13 */
+/* 15 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -11316,10 +11459,10 @@ module.exports = CancelToken;
 
 var defaults = __webpack_require__(1);
 var utils = __webpack_require__(0);
-var InterceptorManager = __webpack_require__(14);
-var dispatchRequest = __webpack_require__(15);
-var isAbsoluteURL = __webpack_require__(23);
-var combineURLs = __webpack_require__(21);
+var InterceptorManager = __webpack_require__(16);
+var dispatchRequest = __webpack_require__(17);
+var isAbsoluteURL = __webpack_require__(25);
+var combineURLs = __webpack_require__(23);
 
 /**
  * Create a new instance of Axios
@@ -11400,7 +11543,7 @@ module.exports = Axios;
 
 
 /***/ }),
-/* 14 */
+/* 16 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -11459,14 +11602,14 @@ module.exports = InterceptorManager;
 
 
 /***/ }),
-/* 15 */
+/* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 var utils = __webpack_require__(0);
-var transformData = __webpack_require__(18);
+var transformData = __webpack_require__(20);
 var isCancel = __webpack_require__(5);
 var defaults = __webpack_require__(1);
 
@@ -11545,7 +11688,7 @@ module.exports = function dispatchRequest(config) {
 
 
 /***/ }),
-/* 16 */
+/* 18 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -11571,7 +11714,7 @@ module.exports = function enhanceError(error, config, code, response) {
 
 
 /***/ }),
-/* 17 */
+/* 19 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -11603,7 +11746,7 @@ module.exports = function settle(resolve, reject, response) {
 
 
 /***/ }),
-/* 18 */
+/* 20 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -11630,7 +11773,7 @@ module.exports = function transformData(data, headers, fns) {
 
 
 /***/ }),
-/* 19 */
+/* 21 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -11673,7 +11816,7 @@ module.exports = btoa;
 
 
 /***/ }),
-/* 20 */
+/* 22 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -11748,7 +11891,7 @@ module.exports = function buildURL(url, params, paramsSerializer) {
 
 
 /***/ }),
-/* 21 */
+/* 23 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -11767,7 +11910,7 @@ module.exports = function combineURLs(baseURL, relativeURL) {
 
 
 /***/ }),
-/* 22 */
+/* 24 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -11827,7 +11970,7 @@ module.exports = (
 
 
 /***/ }),
-/* 23 */
+/* 25 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -11848,7 +11991,7 @@ module.exports = function isAbsoluteURL(url) {
 
 
 /***/ }),
-/* 24 */
+/* 26 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -11923,7 +12066,7 @@ module.exports = (
 
 
 /***/ }),
-/* 25 */
+/* 27 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -11942,7 +12085,7 @@ module.exports = function normalizeHeaderName(headers, normalizedName) {
 
 
 /***/ }),
-/* 26 */
+/* 28 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -11986,7 +12129,7 @@ module.exports = function parseHeaders(headers) {
 
 
 /***/ }),
-/* 27 */
+/* 29 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -12020,11 +12163,11 @@ module.exports = function spread(callback) {
 
 
 /***/ }),
-/* 28 */
+/* 30 */
 /***/ (function(module, exports, __webpack_require__) {
 
 
-window._ = __webpack_require__(30);
+window._ = __webpack_require__(32);
 
 /**
  * We'll load jQuery and the Bootstrap jQuery plugin which provides support
@@ -12034,7 +12177,7 @@ window._ = __webpack_require__(30);
 
 window.$ = window.jQuery = __webpack_require__(8);
 
-__webpack_require__(29);
+__webpack_require__(31);
 
 /**
  * Vue is a modern JavaScript library for building interactive web interfaces
@@ -12042,7 +12185,7 @@ __webpack_require__(29);
  * and simple, leaving you to focus on building your next great project.
  */
 
-window.Vue = __webpack_require__(31);
+window.Vue = __webpack_require__(33);
 
 /**
  * We'll load the axios HTTP library which allows us to easily issue requests
@@ -12050,7 +12193,7 @@ window.Vue = __webpack_require__(31);
  * CSRF token as a header based on the value of the "XSRF" token cookie.
  */
 
-window.axios = __webpack_require__(10);
+window.axios = __webpack_require__(12);
 
 window.axios.defaults.headers.common = {
   'X-Requested-With': 'XMLHttpRequest'
@@ -12070,7 +12213,7 @@ window.axios.defaults.headers.common = {
 // });
 
 /***/ }),
-/* 29 */
+/* 31 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(jQuery) {/*!
@@ -14454,7 +14597,7 @@ if (typeof jQuery === 'undefined') {
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(8)))
 
 /***/ }),
-/* 30 */
+/* 32 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global, module) {var __WEBPACK_AMD_DEFINE_RESULT__;/**
@@ -31543,10 +31686,10 @@ if (typeof jQuery === 'undefined') {
   }
 }.call(this));
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(9), __webpack_require__(32)(module)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(9), __webpack_require__(34)(module)))
 
 /***/ }),
-/* 31 */
+/* 33 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -40747,7 +40890,7 @@ module.exports = Vue$3;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2), __webpack_require__(9)))
 
 /***/ }),
-/* 32 */
+/* 34 */
 /***/ (function(module, exports) {
 
 module.exports = function(module) {
@@ -40775,113 +40918,11 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 33 */,
-/* 34 */
-/***/ (function(module, exports, __webpack_require__) {
-
-__webpack_require__(28);
-
-var app = new Vue({
-    el: '#app',
-    data: {
-        show: {
-            load: true,
-            form: null,
-            result: null
-        },
-        loadingMessage: "",
-        toggleScans: true,
-
-        singleRequest: {
-            url: 'https://www.hackmanit.de'
-        },
-
-        result: {
-            siteRating: ''
-        },
-
-        multipleRequest: {},
-
-        crawlRequest: {
-            url: 'https://www.hackmanit.de',
-            whitelist: '',
-            scan: {
-                anchor: true,
-                image: true,
-                script: true,
-                link: true,
-                media: true,
-                area: true,
-                frame: true,
-                custom: false,
-                customJson: ''
-            },
-            doNotCrawl: false,
-            limitOn: false,
-            limit: '',
-            ignoreTLS: true,
-            proxy: '',
-            proxyAddress: ''
-        }
-    },
-
-    mounted: function mounted() {
-        axios.get('/jsConfig').then(function (response) {
-            return [app.crawlRequest.proxyAddress = "http://" + response.data.HOST_IP + ":8080", app.crawlRequest.limit = response.data.LIMIT, app.crawlRequest.scan.customJson = response.data.CUSTOM_JSON, app.show.load = false, app.show.form = true];
-        });
-    },
-
-    watch: {
-        toggleScans: function toggleScans() {
-            app.formRequest.scan.anchor = app.toggleScans;
-            app.formRequest.scan.image = app.toggleScans;
-            app.formRequest.scan.frame = app.toggleScans;
-            app.formRequest.scan.area = app.toggleScans;
-            app.formRequest.scan.media = app.toggleScans;
-            app.formRequest.scan.script = app.toggleScans;
-            app.formRequest.scan.link = app.toggleScans;
-        }
-    },
-    filters: {},
-    methods: {
-        getSingleReport: function getSingleReport() {
-            var _this = this;
-
-            app.show.load = true;
-            app.show.form = false;
-            this.loadingMessage = "Requesting your report... just a moment, pls.";
-            axios.get("/api/v1/rate?url=" + this.singleRequest.url).then(function (response) {
-                return [_this.result = response.data, app.show.load = false, app.show.result = true];
-            }).catch(function (error) {
-                return [alert(error)];
-            });
-        },
-        getFirst: function getFirst(someString) {
-            return someString.charAt(0);
-        },
-        nl2br: function nl2br(someString) {
-            return (someString + '').replace(/\\n/g, "<br>");
-        }
-    }
-});
-
-/***/ }),
 /* 35 */
-/***/ (function(module, exports) {
-
-// removed by extract-text-webpack-plugin
-
-/***/ }),
-/* 36 */,
-/* 37 */,
-/* 38 */,
-/* 39 */,
-/* 40 */,
-/* 41 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(34);
-module.exports = __webpack_require__(35);
+__webpack_require__(10);
+module.exports = __webpack_require__(11);
 
 
 /***/ })

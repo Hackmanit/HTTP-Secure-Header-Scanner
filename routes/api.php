@@ -15,10 +15,12 @@ use Illuminate\Http\Request;
 
 Route::group(['prefix' => 'v1'], function () {
     Route::get('/rate', 'ApiController@singleReport');
-    Route::get('/crawl', 'ApiController@crawler');
 
-    //Route::get('/scan', 'ApiController@scan');
-    //Route::get('/report', 'ApiController@get');
+    Route::post('/multiple', 'ApiController@multipleReport');
+
+    Route::get('/report/{id}', 'ApiController@downloadReport')->name('downloadReport');
+
+    Route::get('/crawl', 'ApiController@crawler');
 
     Route::get('/siwecos/rate', 'ApiController@siwecosReport');
 });

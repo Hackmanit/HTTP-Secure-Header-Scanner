@@ -6,7 +6,8 @@ var app = new Vue({
         show: {
             load: true,
             form: null,
-            result: null
+            singleReport: null,
+            fullReport: null
         },
         loadingMessage: "",
         toggleScans: true,
@@ -15,12 +16,19 @@ var app = new Vue({
             url: 'https://www.hackmanit.de'
         },
 
-        result: {
+        singleReport: {
             siteRating: '',
         },
 
-        multipleRequest: {
+        fullReport: {
+            fullRating: '',
+            ratings: {},
+            amountUrlsTotal: '-',
+            amountGeneratedReports: '-'
+        },
 
+        multipleRequest: {
+            urls :"https://www.hackmanit.de/\nhttps://www.hackmanit.de/publikationen.html\nhttps://www.hackmanit.de/karriere.html\nhttps://www.hackmanit.de/img/christian_mainka.jpg\nhttps://www.hackmanit.de/impressum-en.html",
         },
 
         crawlRequest: {
@@ -76,20 +84,68 @@ var app = new Vue({
             axios
                 .get("/api/v1/rate?url=" + this.singleRequest.url)
                 .then(response => [
-                    this.result = response.data,
+                    app.singleReport = response.data,
                     app.show.load = false,
-                    app.show.result = true
+                    app.show.singleReport = true
                 ])
                 .catch(error => [
                     alert(error),
-
                 ]) ;
+        },
+        getMultipleReport() {
+            app.loadingMessage = "We're dispatching your request to the backend.<br>This should take just a moment.";
+            app.show.form = false;
+            app.show.load = true;
+
+            axios
+                .post('/api/v1/multiple', {
+                    urls: app.multipleRequest.urls.split('\n')
+                })
+                .then(response => [
+                    app.fullReport.reportUrl = response.data.reportUrl,
+                    app.loadingMessage = "",
+                    app.getReportDetails()
+                ])
+                .catch(error => [
+                   alert(error)
+                ]);
+        },
+        getReportDetails() {
+            axios.get(app.fullReport.reportUrl).then(function(response){
+                app.doStuffOrReload(response);
+            });
+        },
+
+        doStuffOrReload(response) {
+            if (response.data.status.localeCompare("finished") === 0) {
+                app.show.load = false;
+                app.show.fullReport = true;
+
+                app.fullReport = response.data.fullReport;
+                app.fullReport.amountUrlsTotal = response.data.amountUrlsTotal;
+                app.fullReport.amountGeneratedReports = response.data.amountGeneratedReports;
+            }
+            else {
+                app.fullReport.amountUrlsTotal = response.data.amountUrlsTotal;
+                app.fullReport.amountGeneratedReports = response.data.amountGeneratedReports;
+                app.loadingMessage = "Generating reports: "
+                    + (app.fullReport.amountGeneratedReports != null ? app.fullReport.amountGeneratedReports : '-')
+                    + " of "
+                    + (app.fullReport.amountUrlsTotal != null ? app.fullReport.amountUrlsTotal : '-');
+                setTimeout(app.getReportDetails, 3000);
+            }
         },
         getFirst(someString) {
             return someString.charAt(0);
         },
         nl2br(someString) {
             return (someString + '').replace(/\\n/g, "<br>");
+        },
+        newScan() {
+            app.show.load = false;
+            app.show.singleReport = false;
+            app.show.fullReport = false;
+            app.show.form = true;
         }
 
     }

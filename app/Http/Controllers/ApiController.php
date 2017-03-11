@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Crawler;
+use App\Jobs\GenerateFullReportJob;
 use App\Report;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Redis;
 
 class ApiController extends Controller
 {
@@ -25,7 +27,56 @@ class ApiController extends Controller
     }
 
     /**
-     * Returns a very simple and report for a single URL.
+     * Dispatches a job for a multipleReport and returns the reportUrl.
+     *
+     * @param Request $request
+     * @return \Illuminate\Support\Collection
+     */
+    public function multipleReport(Request $request) {
+        $this->validate($request, [
+            'urls' => 'required|array',
+            'urls.*' => 'url'
+        ]);
+
+        $id = str_random();
+        $this->dispatch(new GenerateFullReportJob($id, collect($request->input('urls'))));
+
+        return collect([
+            'id' => $id,
+            'reportUrl' => route('downloadReport', $id)
+        ]);
+    }
+
+    /**
+     * Retrieves the fullReport for the $id from redis and returns it as json.
+     * If the fullReport is not ready yet, it returns a status update.
+     *
+     * @param $id
+     * @return \Illuminate\Support\Collection
+     */
+    public function downloadReport($id) {
+        $status = Redis::hget($id, 'status');
+
+        if ($status == 'finished') {
+            $fullReport = unserialize(Redis::hget($id, 'fullReport'));
+            return collect([
+                'id' => $id,
+                'status' => $status,
+                'amountUrlsTotal' => Redis::hget($id, 'amountUrlsTotal'),
+                'amountGeneratedReports' => Redis::hget($id, 'amountReportsGenerated'),
+                'fullReport' => $fullReport
+            ]);
+        }
+        return collect([
+            'id' => $id,
+            'status' => $status,
+            'amountUrlsTotal' => Redis::hget($id, 'amountUrlsTotal'),
+            'amountGeneratedReports' => Redis::hget($id, 'amountReportsGenerated')
+        ]);
+    }
+
+    /**
+     * Returns a very simple report for a single URL.
      *
      * @param Request $request
      * @return \Illuminate\Support\Collection
@@ -76,7 +127,6 @@ class ApiController extends Controller
                 ]
             ]);
     }
-
 
     /**
      * Returns a Collection|json with the crawled links.

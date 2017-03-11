@@ -19,11 +19,12 @@
                 <div class="sk-cube3 sk-cube"></div>
             </div>
             <br>
-            <p class="text-muted">@{{ loadingMessage }}</p>
+            <p class="text-muted text-center" v-html="loadingMessage"></p>
         </div>
     </div>
 
-    <div :class="{ 'hidden': show.form === null, 'animated zoomIn': show.form, 'animated zoomOut hidden': !show.form }">
+    {{-- Form --}}
+    <div class="full-width" :class="{ 'hidden': show.form === null, 'animated zoomIn': show.form, 'animated zoomOut hidden': !show.form }">
         <div class="col-md-12">
             <h1>HTTP Secure Header Scanner</h1>
             <hr>
@@ -39,7 +40,7 @@
                     <h3>Enter your URL</h3>
                     <div class="row">
                         <div class="col-md-10">
-                            <input class="form-control" placeholder="https://yoururl.com" name="url" v-model="singleRequest.url">
+                            <input class="form-control" placeholder="https://yoururl.com" v-model="singleRequest.url">
                         </div>
                         <div class="col-md-2">
                             <button class="btn btn-primary form-control" @click="getSingleReport()">Scan</button>
@@ -48,8 +49,15 @@
                 </div>
 
                 <div id="multiple" class="tab-pane fade">
-                    <h3>Menu 1</h3>
-                    <p>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+                    <h3>Enter your list of URLs to check</h3>
+                    <div class="row vertical-center">
+                        <div class="col-sm-10">
+                            <textarea class="form-control" rows="5" placeholder="Insert each URL in a seperated line." v-model="multipleRequest.urls"></textarea>
+                        </div>
+                        <div class="col-sm-2">
+                            <button class="btn btn-primary form-control" @click="getMultipleReport()">Scan</button>
+                        </div>
+                    </div>
                 </div>
 
                 <div id="crawler" class="tab-pane fade">
@@ -161,37 +169,38 @@ sub2.example.com" class="form-control"></textarea>
         </div>
     </div>
 
-    <div :class="{ 'hidden': show.result === null, 'animated zoomIn': show.result, 'animated zoomOut hidden': !show.result }">
+    {{-- Single singleReport --}}
+    <div :class="{ 'hidden': show.singleReport === null, 'animated zoomIn': show.singleReport, 'animated zoomOut hidden': !show.singleReport }">
         <div class="col-md-12">
-            <a href="/" class="btn btn-default">New scan</a>
+            <span @click="newScan()" class="btn btn-default">New scan</span>
             <hr>
             <h2>HTTP Secure Header Checker - Your result</h2>
             <div class="row rating">
                 <div class="col-md-2">
-                    <span class="label report-label" :class="{ 'label-success': getFirst(result.siteRating) == 'A', 'label-warning': getFirst(result.siteRating) == 'B', 'label-danger': getFirst(result.siteRating) == 'C'}">@{{ result.siteRating }}</span>
+                    <span class="label report-label" :class="{ 'label-success': getFirst(singleReport.siteRating) == 'A', 'label-warning': getFirst(singleReport.siteRating) == 'B', 'label-danger': getFirst(singleReport.siteRating) == 'C'}">@{{ singleReport.siteRating }}</span>
                 </div>
                 <div class="col-md-10">
                     <table class="table table-striped">
                         <tr>
                             <th>Scanned:</th>
-                            <td><a :href="result.url" target="_blank">@{{ result.url }}</a></td>
+                            <td><a :href="singleReport.url" target="_blank">@{{ singleReport.url }}</a></td>
                         </tr>
                         <tr>
                             <th>Comment:</th>
-                            <td>@{{ result.comment }}</td>
+                            <td>@{{ singleReport.comment }}</td>
                         </tr>
                         <tr>
                             <th><nobr>Rated headers:</nobr></th>
                             <td>
                                 <ul class="tag-list">
-                                    <li class="label label-info" v-for="(value, header) in result.header">@{{ header }}</li>
+                                    <li class="label label-info" v-for="(value, header) in singleReport.header">@{{ header }}</li>
                                 </ul>
                             </td>
                         </tr>
                     </table>
                 </div>
             </div>
-            <div class="panel panel-default" v-for="(value, header) in result.header">
+            <div class="panel panel-default" v-for="(value, header) in singleReport.header">
                 <div class="panel-heading" role="tab" :id="'heading' + header">
                     <h4 class="panel-title">
                         <span class="label label-default" :class="{ 'label-success': getFirst(value.rating) == 'A', 'label-warning': getFirst(value.rating) == 'B', 'label-danger': getFirst(value.rating) == 'C'}">@{{ value.rating }}</span>
@@ -226,6 +235,62 @@ sub2.example.com" class="form-control"></textarea>
         </div>
     </div>
 
+    {{-- FullReport --}}
+    <div :class="{ 'hidden': show.fullReport === null, 'animated zoomIn': show.fullReport, 'animated zoomOut hidden': !show.fullReport }">
+        <div class="col-md-12">
+            <span @click="newScan()" class="btn btn-default">New scan</span>
+            <hr>
+            <h2>HTTP Secure Header Checker - Your result</h2>
+            <div class="row rating">
+                <div class="col-md-2">
+                    <span class="label report-label" :class="{ 'label-success': getFirst(fullReport.fullRating) == 'A', 'label-warning': getFirst(fullReport.fullRating) == 'B', 'label-danger': getFirst(fullReport.fullRating) == 'C'}">@{{ fullReport.fullRating }}</span>
+                </div>
+                <div class="col-md-10">
+                    <table class="table table-striped">
+                        <tr>
+                            <th><nobr>URLs scanned</nobr></th>
+                            <td>@{{ fullReport.amountGeneratedReports }} of @{{ fullReport.amountUrlsTotal }}</td>
+                        </tr>
+                        <tr>
+                            <th><nobr>Rated headers:</nobr></th>
+                            <td>
+                                <ul class="tag-list">
+                                    <li class="label label-info" v-for="(value, header) in fullReport.header">@{{ header }}</li>
+                                </ul>
+                            </td>
+                        </tr>
+
+                    </table>
+                </div>
+            </div>
+            <div class="panel panel-default" v-for="(value, header) in fullReport.header">
+                <div class="panel-heading" role="tab" :id="'headingMultiple' + header">
+                    <h4 class="panel-title">
+                        <span class="label label-default" :class="{ 'label-success': getFirst(fullReport.worstHeaderRatings[header]) == 'A', 'label-warning': getFirst(fullReport.worstHeaderRatings[header]) == 'B', 'label-danger': getFirst(fullReport.worstHeaderRatings[header]) == 'C'}">@{{ fullReport.worstHeaderRatings[header] }}</span>
+                        <a role="button" data-toggle="collapse" :href="'#collapseMultiple' + header" aria-expanded="false" :aria-controls="'collapseMultiple' + header">
+                            @{{ header }}
+                        </a>
+                    </h4>
+                </div>
+                <div :id="'collapseMultiple' + header" class="panel-collapse collapse" role="tabpanel" :aria-labelledby="'headingMultiple' + header">
+                    <div class="panel-body">
+
+                        <table class="table table-hover">
+                            <tr>
+                                <th>Rating</th>
+                                <th>Url</th>
+                            </tr>
+                            <tr v-for="entry in value">
+                                <td><span class="label label-default" :class="{ 'label-success': getFirst(entry.rating) == 'A', 'label-warning': getFirst(entry.rating) == 'B', 'label-danger': getFirst(entry.rating) == 'C'}">@{{ entry.rating }}</span></td>
+                                <td>@{{ entry.url }}</td>
+                            </tr>
+                        </table>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 <script src="{{ mix('/js/start.js') }}"></script>
 </body>
