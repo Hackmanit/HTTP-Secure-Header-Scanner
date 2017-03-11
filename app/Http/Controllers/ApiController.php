@@ -13,7 +13,7 @@ class ApiController extends Controller
      * Returns the Report for a single URL.
      *
      * @param Request $request (GET parameter "url")
-     * @return array casted to json
+     * @return \Illuminate\Support\Collection
      */
     public function singleReport(Request $request) {
         $this->validate($request, [
@@ -21,20 +21,22 @@ class ApiController extends Controller
         ]);
 
         $report = (new Report($request->input('url')))->rate();
-        return $report->getJson();
-
+        return $report->get();
     }
 
     /**
      * Returns a very simple and report for a single URL.
+     *
+     * @param Request $request
+     * @return \Illuminate\Support\Collection
      */
     public function siwecosReport(Request $request) {
         $this->validate($request, [
-            'site' => 'required|url'
+            'url' => 'required|url'
         ]);
 
-        $report = new Report($request->input('site'));
-        return  [
+        $report = new Report($request->input('url'));
+        return  collect([
                 'checks' => [
                     'Content-Type' => [
                         'result' => !(strpos( $report->getRating("content-type"), 'C' ) !== false),
@@ -72,8 +74,7 @@ class ApiController extends Controller
                         'directive' => $report->getHeader( 'x-xss-protection' )
                     ]
                 ]
-            ];
-
+            ]);
     }
 
 

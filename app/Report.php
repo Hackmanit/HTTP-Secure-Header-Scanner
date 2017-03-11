@@ -81,8 +81,13 @@ class Report
         return $this;
     }
 
-    public function getJson() {
-        return [
+    /**
+     * Returns the Report.
+     *
+     * @return \Illuminate\Support\Collection
+     */
+    public function get() {
+        return collect([
             'url' => $this->url,
             'siteRating' => 'B+', //$this->siteRating,
             'comment' => $this->comment,
@@ -137,7 +142,7 @@ class Report
                     'bestPractice' => Ratings\XXSSProtectionRating::getBestPractice()
                 ],
             ]
-        ];
+        ]);
     }
 
     public function getComment($header)
