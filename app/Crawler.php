@@ -119,34 +119,34 @@ class Crawler
 
             $dom = HtmlDomParser::str_get_html($response->body());
 
-            if($this->options->has('customJson')) {
-                foreach (json_decode( $this->options->get( 'customJson' ) ) as $tag => $attribute)
+            if($this->options->has('customElements')) {
+                foreach (json_decode( $this->options->get( 'customElements' ) ) as $tag => $attribute)
                     foreach ($dom->find( $tag ) as $element)
                         $links->push( $element->$attribute );
             }
-            else {
-                if ($this->options->contains("anchor"))
-                    foreach ($dom->find( "a" ) as $link)
-                        $links->push( $link->href );
-                if ($this->options->contains('image'))
-                    foreach ($dom->find("img") as $link)
-                        $links->push($link->src);
-                if ($this->options->contains('media'))
-                    foreach ($dom->find("video,audio,source") as $link)
-                        $links->push($link->src);
-                if ($this->options->contains('link'))
-                    foreach ($dom->find("link") as $link)
-                        $links->push($link->href);
-                if ($this->options->contains('script'))
-                    foreach ($dom->find("script") as $link)
-                        $links->push($link->src);
-                if ($this->options->contains('area'))
-                    foreach ($dom->find("area") as $link)
-                        $links->push($link->href);
-                if ($this->options->contains('frame'))
-                    foreach ($dom->find("iframe,frame") as $link)
-                        $links->push($link->src);
-            }
+
+            if ($this->options->contains("anchor"))
+                foreach ($dom->find( "a" ) as $link)
+                    $links->push( $link->href );
+            if ($this->options->contains('image'))
+                foreach ($dom->find("img") as $link)
+                    $links->push($link->src);
+            if ($this->options->contains('media'))
+                foreach ($dom->find("video,audio,source") as $link)
+                    $links->push($link->src);
+            if ($this->options->contains('link'))
+                foreach ($dom->find("link") as $link)
+                    $links->push($link->href);
+            if ($this->options->contains('script'))
+                foreach ($dom->find("script") as $link)
+                    $links->push($link->src);
+            if ($this->options->contains('area'))
+                foreach ($dom->find("area") as $link)
+                    $links->push($link->href);
+            if ($this->options->contains('frame'))
+                foreach ($dom->find("iframe,frame") as $link)
+                    $links->push($link->src);
+
             return $links;
         }
         return null;
