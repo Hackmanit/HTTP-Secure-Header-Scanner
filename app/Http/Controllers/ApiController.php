@@ -146,10 +146,15 @@ class ApiController extends Controller
             'frame' => 'boolean',
             'ignoreTlsErrors' => 'boolean',
             'proxy' => 'url',
-            'limit' => 'integer'
+            'limit' => 'integer',
+            'whitelist' => 'array',
+            'whitelist.*' => 'url',
+            'customElements' => 'json'
         ]);
 
         $options = collect([]);
+        $whitelist = null;
+
         if ($request->input("anchor") == true) $options->push("anchor");
         if ($request->input("image") == true) $options->push("image");
         if ($request->input("media") == true) $options->push("media");
@@ -158,11 +163,17 @@ class ApiController extends Controller
         if ($request->input("area") == true) $options->push("area");
         if ($request->input("frame") == true) $options->push("frame");
 
-        if ($request->input("ignoreTlsErrors") == true) $options->push("ignoreTLS");
-        if ($request->has("proxy")) $options->put('proxy', $request->input('proxy'));
-        if ($request->has("limit")) $options->put('limit', $request->input('limit'));
+        if ($request->has("customElements")) $options->put("customElements", $request->input("customElements"));
 
-        $crawler = new Crawler("abcd", $request->input('url'), null, $options);
+        if ($request->input("ignoreTlsErrors") == true) $options->push("ignoreTLS");
+        if ($request->has("proxy")) $options->put("proxy", $request->input("proxy"));
+        if ($request->has("limit")) $options->put("limit", $request->input("limit"));
+
+        if ($request->has("whitelist")) $whitelist = $request->input("whitelist");
+
+
+        // TODO: Job Dispatcher
+        $crawler = new Crawler("abcd", $request->input("url"), $whitelist, $options);
         $links = $crawler->extractAllLinks();
 
         return $links;
