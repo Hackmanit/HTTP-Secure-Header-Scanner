@@ -3,10 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Crawler;
+use App\Jobs\CrawlerJob;
 use App\Jobs\GenerateFullReportJob;
 use App\Report;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redis;
+use Illuminate\Support\Facades\URL;
 
 class ApiController extends Controller
 {
@@ -136,7 +138,7 @@ class ApiController extends Controller
      */
     public function crawler(Request $request) {
         $this->validate($request, [
-            'url' => 'required|url',
+            'url' => 'required',
             'anchor' => 'boolean',
             'image' => 'boolean',
             'media' => 'boolean',
@@ -145,11 +147,11 @@ class ApiController extends Controller
             'area' => 'boolean',
             'frame' => 'boolean',
             'ignoreTlsErrors' => 'boolean',
-            'proxy' => 'url',
+            'proxy' => 'url|nullable',
             'limit' => 'integer',
-            'whitelist' => 'array',
+            'whitelist' => 'array|nullable',
             'whitelist.*' => 'url',
-            'customElements' => 'json'
+            'customElements' => 'json|nullable'
         ]);
 
         $options = collect([]);
@@ -169,14 +171,48 @@ class ApiController extends Controller
         if ($request->has("proxy")) $options->put("proxy", $request->input("proxy"));
         if ($request->has("limit")) $options->put("limit", $request->input("limit"));
 
-        if ($request->has("whitelist")) $whitelist = $request->input("whitelist");
+        if ($request->has("whitelist")) {
+            $whitelist = collect($request->input("whitelist"));
+            $whitelist = $whitelist->map(function($value, $key) {
+               return parse_url($value, PHP_URL_HOST);
+            });
+        }
 
+        $id = str_random();
+        $this->dispatch(new CrawlerJob($id, $request->input('url'), $whitelist, $options));
 
-        // TODO: Job Dispatcher
-        $crawler = new Crawler("abcd", $request->input("url"), $whitelist, $options);
-        $links = $crawler->extractAllLinks();
+        return collect([
+            'status' => Redis::hget($id, 'status'),
+            'id' => $id,
+            'linksUrl' => route('downloadLinks', $id)
+        ]);
+    }
 
-        return $links;
+    /**
+     * Returns the cralwed links from the redis cache.
+     *
+     * @param $id
+     * @return \Illuminate\Support\Collection
+     */
+    public function crawledLinks($id) {
+        $status = Redis::hget($id, 'status');
+
+        if ($status == 'crawlerFinished') {
+            $links = unserialize(Redis::hget($id, 'crawledLinks'));
+            return collect([
+                'id' => $id,
+                'status' => $status,
+                'amountUrlsCrawled' => Redis::hget($id, 'amountUrlsCrawled'),
+                'amountUrlsToCrawl' => Redis::hget($id, 'amountUrlsToCrawl'),
+                'links' => $links
+            ]);
+        }
+        return collect([
+            'id' => $id,
+            'status' => $status,
+            'amountUrlsCrawled' => Redis::hget($id, 'amountUrlsCrawled'),
+            'amountUrlsToCrawl' => Redis::hget($id, 'amountUrlsToCrawl'),
+        ]);
     }
 
 }

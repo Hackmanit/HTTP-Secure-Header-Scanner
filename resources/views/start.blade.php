@@ -176,7 +176,7 @@
                                         <div class="col-sm-4">
                                             <div :class="{ 'hidden': !crawlRequest.scan.custom}">
                                                 <strong>Custom JSON</strong><br>
-                                                <textarea class="form-control" rows="5" placeholder="Valid JSON" v-model="crawlRequest.customJson"></textarea>
+                                                <textarea class="form-control" rows="5" placeholder="Valid JSON" v-model="crawlRequest.scan.customJson"></textarea>
                                             </div>
                                         </div>
                                     </div>

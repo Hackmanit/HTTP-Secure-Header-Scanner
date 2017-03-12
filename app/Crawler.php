@@ -38,9 +38,10 @@ class Crawler
         $this->id = $id;
         $this->mainUrl = $mainUrl;
         $this->whitelist = $whitelist;
-        if ($this->whitelist === null)
+        if ($this->whitelist === null) {
             $this->whitelist = collect();
-        $this->whitelist->push(strtolower(parse_url($mainUrl, PHP_URL_HOST)));
+            $this->whitelist->push(strtolower(parse_url($mainUrl, PHP_URL_HOST)));
+        }
         $this->options = $options;
         $this->client = $client;
 
@@ -76,6 +77,9 @@ class Crawler
             $link = $this->toCrawl->pop();
             $this->crawledUrls->push($link);
 
+            Redis::hset($this->id, 'amountUrlsCrawled', $this->crawledUrls->count());
+            Redis::hset($this->id, 'amountUrlsToCrawl', $this->toCrawl->count());
+
             if($this->crawledUrls->count() >= $this->options->get('limit'))
                 break;
 
@@ -84,6 +88,8 @@ class Crawler
                 if ((! $this->toCrawl->contains($extractedLink)) && (! $this->crawledUrls->contains($extractedLink))) {
                     $this->toCrawl->push($extractedLink);
                 }
+                Redis::hset($this->id, 'amountUrlsCrawled', $this->crawledUrls->count());
+                Redis::hset($this->id, 'amountUrlsToCrawl', $this->toCrawl->count());
             }
         }
 

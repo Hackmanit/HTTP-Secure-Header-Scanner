@@ -10,10 +10,9 @@ var app = new Vue({
             fullReport: null
         },
         loadingMessage: "",
-        toggleScans: true,
 
         singleRequest: {
-            url: 'https://www.hackmanit.de'
+            url: ''
         },
 
         singleReport: {
@@ -28,11 +27,11 @@ var app = new Vue({
         },
 
         multipleRequest: {
-            urls :"https://www.hackmanit.de/\nhttps://www.hackmanit.de/publikationen.html\nhttps://www.hackmanit.de/karriere.html\nhttps://www.hackmanit.de/img/christian_mainka.jpg\nhttps://www.hackmanit.de/impressum-en.html",
+            urls: ''
         },
 
         crawlRequest: {
-            url : 'https://www.hackmanit.de',
+            url : '',
             whitelist: '',
             scan : {
                 anchor: true,
@@ -49,6 +48,11 @@ var app = new Vue({
             proxy: false,
             proxyAdress: '',
             ignoreTLS: true,
+
+            downloadLinksUrl : '',
+            amountUrlsCrawled : '-',
+            amountUrlsToCrawl : '-',
+            crawledLinks: ''
         }
     },
 
@@ -56,21 +60,9 @@ var app = new Vue({
         axios.get('/jsConfig').then(response => [
             app.crawlRequest.proxyAdress = "http://" + response.data.HOST_IP + ":8080",
             app.crawlRequest.limit = response.data.LIMIT,
-            app.crawlRequest.scan.customJson = response.data.CUSTOM_JSON,
             app.show.load = false,
             app.show.form = true,
         ]);
-    },
-    watch: {
-        toggleScans: function () {
-            app.crawlRequest.scan.anchor = app.toggleScans;
-            app.crawlRequest.scan.image = app.toggleScans;
-            app.crawlRequest.scan.frame = app.toggleScans;
-            app.crawlRequest.scan.area = app.toggleScans;
-            app.crawlRequest.scan.media = app.toggleScans;
-            app.crawlRequest.scan.script = app.toggleScans;
-            app.crawlRequest.scan.link = app.toggleScans;
-        }
     },
     methods: {
         getSingleReport() {
@@ -88,14 +80,14 @@ var app = new Vue({
                     alert(error),
                 ]) ;
         },
-        getMultipleReport() {
+        getMultipleReport(runWithCrawledLinks = false) {
             app.loadingMessage = "We're dispatching your request to the backend.<br>This should take just a moment.";
             app.show.form = false;
             app.show.load = true;
 
             axios
                 .post('/api/v1/multiple', {
-                    urls: app.multipleRequest.urls.split('\n')
+                    urls: runWithCrawledLinks ? app.crawlRequest.crawledLinks : app.multipleRequest.urls.split('\n')
                 })
                 .then(response => [
                     app.fullReport.reportUrl = response.data.reportUrl,
@@ -111,26 +103,70 @@ var app = new Vue({
             app.show.form = false;
             app.show.load = true;
 
-            /*axios
-                .post('/api/v1/multiple', {
-                    urls: app.multipleRequest.urls.split('\n')
+            axios
+                .post('/api/v1/crawl', {
+                    url: app.crawlRequest.url,
+
+                    whitelist: app.crawlRequest.whitelist ? app.crawlRequest.whitelist.split('\n') : null,
+
+                    anchor: app.crawlRequest.scan.anchor,
+                    image: app.crawlRequest.scan.image,
+                    media: app.crawlRequest.scan.media,
+                    link: app.crawlRequest.scan.link,
+                    script: app.crawlRequest.scan.script,
+                    area: app.crawlRequest.scan.area,
+                    frame: app.crawlRequest.scan.frame,
+
+                    ignoreTlsErrors: app.crawlRequest.expertMode ? app.crawlRequest.ignoreTLS : false,
+                    customElements: (app.crawlRequest.expertMode && app.crawlRequest.custom) ? app.crawlRequest.scan.customJson : null,
+                    proxy: (app.crawlRequest.expertMode && app.crawlRequest.proxy) ? app.crawlRequest.proxyAdress : null,
+                    limit: app.crawlRequest.limit
                 })
                 .then(response => [
-                    app.fullReport.reportUrl = response.data.reportUrl,
-                    app.loadingMessage = "",
-                    app.getReportDetails()
+                    app.loadingMessage = "Crawler job was successfully dispatched.",
+                    app.crawlRequest.downloadLinksUrl = response.data.linksUrl,
+                    app.getCrawledLinks()
                 ])
                 .catch(error => [
                     alert(error)
-                ]);*/
+                ]);
         },
+
+        getCrawledLinks() {
+            axios
+                .get(app.crawlRequest.downloadLinksUrl)
+                .then(function(response){
+                    app.dispatchReportWithCrawledLinksOrRelaod(response);
+                });
+        },
+
+        dispatchReportWithCrawledLinksOrRelaod(response) {
+            if (response.data.status.localeCompare("crawlerFinished") === 0) {
+                app.loadingMessage = "Crawler has finished.<br>In the next step the report will be generated.";
+                app.crawlRequest.crawledLinks = response.data.links;
+                app.getMultipleReport(true);
+            }
+            else {
+                app.crawlRequest.amountUrlsCrawled = response.data.amountUrlsCrawled;
+                app.crawlRequest.amountUrlsToCrawl = response.data.amountUrlsToCrawl;
+                app.loadingMessage = "Crawled Urls: "
+                    + ((app.crawlRequest.amountUrlsCrawled !== null) ? app.crawlRequest.amountUrlsCrawled : '-')
+                    + "<br>"
+                    + "Not crawled yet: "
+                    + (app.crawlRequest.amountUrlsToCrawl !== null ? app.crawlRequest.amountUrlsToCrawl : '-')
+                    + "<br>"
+                    + "Limit: " + app.crawlRequest.limit;
+                setTimeout(app.getCrawledLinks, 3000);
+            }
+        },
+
         getReportDetails() {
             axios.get(app.fullReport.reportUrl).then(function(response){
-                app.doStuffOrReload(response);
+                app.displayReportOrReload(response);
             });
         },
 
-        doStuffOrReload(response) {
+        displayReportOrReload(response) {
             if (response.data.status.localeCompare("finished") === 0) {
                 app.show.load = false;
                 app.show.fullReport = true;
@@ -143,9 +179,9 @@ var app = new Vue({
                 app.fullReport.amountUrlsTotal = response.data.amountUrlsTotal;
                 app.fullReport.amountGeneratedReports = response.data.amountGeneratedReports;
                 app.loadingMessage = "Generating reports: "
-                    + (app.fullReport.amountGeneratedReports != null ? app.fullReport.amountGeneratedReports : '-')
+                    + (app.fullReport.amountGeneratedReports !== null ? app.fullReport.amountGeneratedReports : '-')
                     + " of "
-                    + (app.fullReport.amountUrlsTotal != null ? app.fullReport.amountUrlsTotal : '-');
+                    + (app.fullReport.amountUrlsTotal !== null ? app.fullReport.amountUrlsTotal : '-');
                 setTimeout(app.getReportDetails, 3000);
             }
         },

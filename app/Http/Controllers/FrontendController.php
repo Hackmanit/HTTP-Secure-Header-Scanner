@@ -18,20 +18,8 @@ class FrontendController extends Controller
      */
     public function jsConfig() {
         return [
-            'LIMIT' => env("LIMIT", 1000),
-            'HOST_IP' => exec("/sbin/ip route|awk '/default/ { print $3 }'"),
-            'CUSTOM_JSON' => [
-                "a"  => "href",
-                "img" => "src",
-                "link" => "href",
-                "script" => "src",
-                "video" => "src",
-                "audio" => "src",
-                "source" => "src",
-                "area" => "href",
-                "iframe" => "src",
-                "frame" => "src"
-            ]
+            'LIMIT' => env("LIMIT", 100),
+            'HOST_IP' => exec("/sbin/ip route|awk '/default/ { print $3 }'")
         ];
     }
 
