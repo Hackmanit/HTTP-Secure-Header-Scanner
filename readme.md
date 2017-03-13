@@ -36,7 +36,7 @@ Another nice feature is that you can even do **intranet checks** or use it with 
 
 
 ### How to use?
-`sudo docker run --rm -p 80:80 lednerb/http-secure-header-scanner`
+`sudo docker run --rm -p 80:80 hackmanit/http-secure-header-scanner`
 
 Switch to [http://localhost](http://localhost) in your favorite web browser and use it.
 
