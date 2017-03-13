@@ -67,6 +67,6 @@ class HSTSRating extends Rating {
     {
         // OWASP Best Practice
         // https://www.owasp.org/index.php/OWASP_Secure_Headers_Project#hsts
-        return 'Strict-Transport-Security "max-age=63072000; includeSubdomains"';
+        return 'max-age=63072000; includeSubdomains';
     }
 }

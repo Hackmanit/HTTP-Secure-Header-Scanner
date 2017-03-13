@@ -45,6 +45,6 @@ class XXSSProtectionRating extends Rating
     {
         // OWASP
         // https://www.owasp.org/index.php/OWASP_Secure_Headers_Project#xxp
-        return 'X-XSS-Protection: 1; mode=block';
+        return '1; mode=block';
     }
 }
