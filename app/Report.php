@@ -30,53 +30,31 @@ class Report
         $this->siteRating = 'C';
         $this->comment = __("This site is insecure.");
 
-        /*
-         * Criteria for H
-         *
-         * All Ratings with grade A
-         */
+        // Class A Rating - high security
         if (
-            (strpos($this->getRating("content-security-policy")      , 'A')  !== false) &&
-            (strpos($this->getRating("content-type")                , 'A')  !== false) &&
-            (strpos($this->getRating("public-key-pins")       , 'A')  !== false) &&
-            (strpos($this->getRating("strict-transport-security"), 'A')  !== false) &&
-            (strpos($this->getRating("x-content-type-options")        , 'A')  !== false) &&
-            (strpos($this->getRating("x-frame-options")              , 'A')  !== false) &&
-            (strpos($this->getRating("x-xss-protection")             , 'A')  !== false)
+            (strpos($this->getRating("Strict-Transport-Security")   , 'A') !== false) &&
+            (strpos($this->getRating('X-Content-Type-Options')      , 'A') !== false) && 
+            (strpos($this->getRating('X-Frame-Options')             , 'A') !== false) &&
+            (strpos($this->getRating('X-Xss-Protection')            , 'B') !== false) &&
+            (strpos($this->getRating('Content-Security-Policy')     , 'B') !== false)
         ) {
-            $this->siteRating = 'A++';
-            $this->comment = 'WOHA! Great work! Everything is perfect!'; // TODO
+            $this->siteRating = "A";
+            $this->comment = __("This site is highly secure.");
         }
-
-        /*
-         * Criteria for A
-         */
+        
+        // Class B Rating - medium security
         elseif (
-            (strpos($this->getRating("strict-transport-security"), 'A')  !== false) &&
-            (strpos($this->getRating("x-xss-protection")             , 'A')  !== false) &&
-            ((strpos($this->getRating("content-security-policy"), 'B')  !== false) || (strpos($this->getRating("content-security-policy"), 'A')  !== false)) &&
-            (strpos($this->getRating("content-type")                , 'A')  !== false) &&
-            (strpos($this->getRating("x-content-type-options")        , 'A')  !== false) &&
-            (strpos($this->getRating("x-frame-options")              , 'A')  !== false)
+            (strpos($this->getRating('Strict-Transport-Security')   , 'A') !== false) &&
+            (strpos($this->getRating('X-Content-Type-Options')      , 'A') !== false) &&
+            (strpos($this->getRating('Content-Security-Policy')     , 'B') !== false)
         ) {
-            $this->siteRating = 'A';
-            $this->comment = __('This site is secure.');
-
+            $this->siteRating = "B";
+            $this->comment = __("This site is secure.");
         }
 
-        /*
-         * Criteria for B
-         */
-        elseif (
-            ((strpos($this->getRating("strict-transport-security"), 'B')  !== false) || (strpos($this->getRating("strict-transport-security"), 'A')  !== false)) &&
-            ((strpos($this->getRating("content-security-policy"), 'B')  !== false) || (strpos($this->getRating("content-security-policy"), 'A')  !== false)) &&
-            ((strpos($this->getRating("content-type"), 'B') !== false) || (strpos($this->getRating("content-type"), 'A') !== false)) &&
-            (strpos($this->getRating("x-content-type-options"), 'A')  !== false) &&
-            (strpos($this->getRating("x-frame-options"), 'A') !== false)
-        ) {
-            $this->siteRating = 'B';
-            $this->comment = __('This site is secure.');
-        }
+        // Optional "+" ratings
+        if (strpos($this->getRating('Public-Key-Pins')              , 'B' !== false)) $this->siteRating .= "+";
+        if (strpos($this->getRating('Content-Security-Policy')      , 'A' !== false)) $this->siteRating .= "+";
 
         return $this;
     }
@@ -187,7 +165,7 @@ class Report
             case "x-content-type-options": return (new Ratings\XContentTypeOptionsRating($this->url))->getRating(); break;
             case "x-frame-options": return (new Ratings\XFrameOptionsRating($this->url))->getRating(); break;
             case "x-xss-protection": return (new Ratings\XXSSProtectionRating($this->url))->getRating(); break;
+            default: return "ERROR";
         }
     }
-
 }
