@@ -1,10 +1,10 @@
 # HTTP Secure Header Checker
 
 ### What?
-The HTTP Secure Header Checker is an open source tool that allows you to scan your web application's HTTP header.
-The included crawler will check every single site for it's headers and reports any issues so you can improve your site's security.
+The HTTP Secure Header Checker is an open source tool that allows you to scan the HTTP headers of your web application.
+It includes a crawler to check every single site for its headers and reports the identified issues so that you can improve your site's overall security.
 
-Furthermore the generated report will include a simple rating:
+Furthermore the generated report includes a simple rating:
 
 - A: The tested application is secure.
 - B: The tested application is partly secure but you can do it better.
@@ -21,19 +21,16 @@ Furthermore the generated report will include a simple rating:
 
 
 ### Why?
-Special HTTP headers can heavily increase your web applications security.
+Special HTTP headers can greatly increase your web applications security.
 
-With this tool you're able to scan your site's headers for security related issues, locate and fix them.
+With the help of this tool, you are able to scan your the HTTP headers of your website for security related issues, locate them, and fix them.
 
-Some already existing tools like [securityheaders.io](https://securityheaders.io) or [Mozilla's Observatory](https://observatory.mozilla.org) project
-are either closed source or hard to maintain / install.
-The observatory for example includes many further tests and you're able to use other third party tools to check your application.
+There are some related tools, such as [securityheaders.io](https://securityheaders.io) or [Mozilla's Observatory](https://observatory.mozilla.org) project, but these are either closed source or hard to maintain/install.
 
-
-In contrast to the others this project aims to be a single and **standalone tool** that you can **run with docker** on your own machine or servers.
+In contrast to them, the HTTP Secure Header Scanner (HSHS) aims to be a single and **standalone tool** that you can **run with docker** on your own machine or servers.
 It's **easy to use** and comes with a nice and **simple API** so you can include the checking functionality in your own projects or products.
 
-Furthermore it includes a **crawler** that does not only checks your frontpage but your whole application if you want to.
+Furthermore it includes a **crawler** that does not only check your frontpage but your whole application (optional).
 
 Another nice feature is that you can even do **intranet checks** or use it with a **proxy server** to perform further analyzes.
 
