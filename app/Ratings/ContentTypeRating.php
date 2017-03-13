@@ -68,7 +68,7 @@ class ContentTypeRating extends Rating
     {
         // W3C
         // https://www.w3.org/International/articles/http-charset/index.en
-        return 'Content-Type: text/html; charset=utf-8';
+        return 'text/html; charset=utf-8';
     }
 
 }

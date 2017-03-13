@@ -1,6 +1,7 @@
 {
   "This site is insecure.": "Diese Seite ist unsicher.",
   "This site is secure." : "Diese Seite ist sicher.",
+  "This site is highly secure." : "Diese Seite ist sehr sicher.",
 
   "The header is not set." : "Der Header ist nicht gesetzt.",
   "The header is set multiple times." : "Der Header ist mehrmals gesetzt.",

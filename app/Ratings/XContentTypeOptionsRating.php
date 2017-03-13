@@ -43,8 +43,8 @@ class XContentTypeOptionsRating extends Rating
 
     public static function getBestPractice()
     {
-        // OWASP
-        https://www.owasp.org/index.php/OWASP_Secure_Headers_Project#xcto
-        return 'X-Content-Type-Options: nosniff';
+        // OWASP 
+        // https://www.owasp.org/index.php/OWASP_Secure_Headers_Project#xcto
+        return 'nosniff';
     }
 }

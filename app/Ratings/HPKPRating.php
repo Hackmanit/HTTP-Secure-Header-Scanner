@@ -66,6 +66,6 @@ class HPKPRating extends Rating {
     {
         // OWASP Secure Headers Prorject
         // https://www.owasp.org/index.php/OWASP_Secure_Headers_Project#hpkp
-        return 'Public-Key-Pins "pin-sha256=\"<HASH>\"; pin-sha256=\"<HASH>\"; max-age=2592000; includeSubDomains"';
+        return 'pin-sha256="<HASH>"; pin-sha256="<HASH>"; max-age=2592000; includeSubDomains';
     }
 }

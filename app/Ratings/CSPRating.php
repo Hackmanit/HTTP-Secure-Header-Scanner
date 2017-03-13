@@ -58,5 +58,4 @@ class CSPRating extends Rating
         // TODO: Translate
         return __('Best Practice is to use the CSP with "default-src \'none\'" and without any \'unsafe-eval\' or \'unsafe-inline\' directives');
     }
-
 }
