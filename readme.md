@@ -1,7 +1,5 @@
 # HTTP Secure Header Checker
 
-This project is still under heavy development. Do not use it for production.
-
 ### What?
 The HTTP Secure Header Checker is an open source tool that allows you to scan your web application's HTTP header.
 The included crawler will check every single site for it's headers and reports any issues so you can improve your site's security.
@@ -41,11 +39,11 @@ Another nice feature is that you can even do **intranet checks** or use it with 
 
 
 ### How to use?
-Clone this repo in recursive mode, cd in to the `laradock` folder and run:
- 
-`docker-compose up -d workspace nginx redis`.
+`sudo docker run --rm -p 80:80 lednerb/http-secure-header-scanner`.
 
 Switch to [http://localhost](http://localhost) in your favorite web browser and use it.
+
+When you're done, just `ctrl+c` out the running terminal.
 
 
 ### How to contribute?
