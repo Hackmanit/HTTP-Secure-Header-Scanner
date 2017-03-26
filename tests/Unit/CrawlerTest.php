@@ -192,7 +192,7 @@ class CrawlerTest extends TestCase
             new Response(200, [], $sampleBody),
         ]);
 
-        $crawler = new Crawler('testId', 'https://testdomain', collect([ 'www.testdomain' ]), collect(['anchor', "image", "area", "media", "script", "frame"]), $client);
+        $crawler = new Crawler('testId', 'https://testdomain', collect([ 'testdomain', 'www.testdomain' ]), collect(['anchor', "image", "area", "media", "script", "frame"]), $client);
         $links = $crawler->extractLinks("http://testdomain");
 
         $this->assertCount(38, $links);
@@ -216,7 +216,7 @@ class CrawlerTest extends TestCase
             'cache'
         );
         $client = new Client( ["handler" => $handler] );
-        $crawler = new Crawler('hackmanitID', 'https://www.hackmanit.de', collect(['hackmanit.de']), collect(['anchor', 'limit' => '30']), $client);
+        $crawler = new Crawler('hackmanitID', 'https://www.hackmanit.de', collect(['www.hackmanit.de']), collect(['anchor', 'limit' => '30']), $client);
 
         $links = $crawler->extractAllLinks();
 
@@ -241,7 +241,7 @@ class CrawlerTest extends TestCase
      * @return mixed
      */
     protected function getOptimizedUrls(Collection $links) {
-        $crawler = new Crawler("testID", "http://testdomain", collect(), collect());
+        $crawler = new Crawler("testID", "http://testdomain", collect(['testdomain']), collect());
         $optimizeUrls = new \ReflectionMethod(Crawler::class, "optimizeUrls");
         $optimizeUrls->setAccessible(true);
 
