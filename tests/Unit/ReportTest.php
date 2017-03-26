@@ -13,7 +13,7 @@ class ReportTest extends TestCase
     /** @test */
     public function report_returns_insecure_as_default()
     {
-        $mock = Mockery::mock(Report::class, ["http://testdomain"])->makePartial();
+        $mock = Mockery::mock(Report::class, ["http://hackmanit.de"])->makePartial();
 
         $mock->shouldReceive("getRating")->with("content-security-policy")->andReturn("");
         $mock->shouldReceive("getRating")->with("content-type")->andReturn("");
@@ -29,7 +29,7 @@ class ReportTest extends TestCase
     /** @test */
     public function report_returns_insecure_when_all_parts_are_insecure()
     {
-        $mock = Mockery::mock(Report::class, ["http://testdomain"])->makePartial();
+        $mock = Mockery::mock(Report::class, ["http://hackmanit.de"])->makePartial();
 
         $mock->shouldReceive("getRating")->with("content-security-policy")->andReturn("C");
         $mock->shouldReceive("getRating")->with("content-type")->andReturn("C");
@@ -45,7 +45,7 @@ class ReportTest extends TestCase
     /** @test */
     public function report_returns_secure_when_all_parts_are_secure()
     {
-        $mock = Mockery::mock(Report::class, ["http://testdomain"])->makePartial();
+        $mock = Mockery::mock(Report::class, ["http://hackmanit.de"])->makePartial();
 
         $mock->shouldReceive("getRating")->with("content-security-policy")->andReturn("A");
         $mock->shouldReceive("getRating")->with("content-type")->andReturn("A");
