@@ -57,7 +57,7 @@ class HTTPResponse
                 ] );
 
             } catch (\Exception $exception) {
-                \Log::critical( $this->url );
+                \Log::critical( $this->url . ": " . $exception);
             }
         }
         return $this->response;
