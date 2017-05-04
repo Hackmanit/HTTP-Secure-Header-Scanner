@@ -1,8 +1,9 @@
-# HTTP Secure Header Checker
+# HTTP Secure Header Scanner
 
 ### What?
-The HTTP Secure Header Checker is an open source tool that allows you to scan the HTTP headers of your web application.
-It includes a crawler to check every single site for its headers and reports the identified issues so that you can improve your site's overall security.
+
+The HTTP Secure Header Scanner is an open source tool that allows you to scan your web application's HTTP header.
+The included crawler will check every single site for it's headers and reports any issues so you can improve your site's security.
 
 Furthermore the generated report includes a simple rating:
 

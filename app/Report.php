@@ -28,7 +28,7 @@ class Report
     {
         // Standard is insecure.
         $this->siteRating = 'C';
-        $this->comment = __("This site is insecure.");
+        $this->comment = __("There are possible HTTP header misconfigurations.");
 
         // Class A Rating - high security
         if (
