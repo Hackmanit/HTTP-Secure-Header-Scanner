@@ -1,5 +1,5 @@
 {
-  "This site is insecure.": "Diese Seite ist unsicher.",
+  "There are possible HTTP header misconfigurations.": "Es gibt mögliche HTTP-Header-Fehlkonfigurationen.",
   "This site is secure." : "Diese Seite ist sicher.",
   "This site is highly secure." : "Diese Seite ist sehr sicher.",
 
