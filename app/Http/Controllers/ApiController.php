@@ -92,37 +92,37 @@ class ApiController extends Controller
         return  collect([
                 'checks' => [
                     'Content-Type' => [
-                        'result' => !(strpos( $report->getRating("content-type"), 'C' ) !== false),
+                        'result' => (strpos( $report->getRating("content-type"), 'C' ) !== false),
                         'comment' => $report->getComment("content-type"),
                         'directive' => $report->getHeader( 'content-type' )
                     ],
                     'Content-Security-Policy' => [
-                        'result' => !(strpos( $report->getRating("content-security-policy"), 'C' ) !== false),
+                        'result' => (strpos( $report->getRating("content-security-policy"), 'C' ) !== false),
                         'comment' => $report->getComment("content-security-policy"),
                         'directive' => $report->getHeader( 'content-security-policy' )
                     ],
                     'Public-Key-Pins' => [
-                        'result' => !(strpos( $report->getRating("public-key-pins"), 'C' ) !== false),
+                        'result' => (strpos( $report->getRating("public-key-pins"), 'C' ) !== false),
                         'comment' => $report->getComment("public-key-pins"),
                         'directive' => $report->getHeader( 'public-key-pins' )
                     ],
                     'Strict-Transport-Security' => [
-                        'result' => !(strpos( $report->getRating("strict-transport-security"), 'C' ) !== false),
+                        'result' => (strpos( $report->getRating("strict-transport-security"), 'C' ) !== false),
                         'comment' => $report->getComment("strict-transport-security"),
                         'directive' => $report->getHeader( 'strict-transport-security' )
                     ],
                     'X-Content-Type-Options' => [
-                        'result' => !(strpos( $report->getRating("x-content-type-options"), 'C' ) !== false),
+                        'result' => (strpos( $report->getRating("x-content-type-options"), 'C' ) !== false),
                         'comment' => $report->getComment("x-content-type-options"),
                         'directive' => $report->getHeader( 'x-content-type-options' )
                     ],
                     'X-Frame-Options' => [
-                        'result' => !(strpos( $report->getRating("x-frame-options"), 'C' ) !== false),
+                        'result' => (strpos( $report->getRating("x-frame-options"), 'C' ) !== false),
                         'comment' => $report->getComment("x-frame-options"),
                         'directive' => $report->getHeader( 'x-frame-options' )
                     ],
                     'X-Xss-Protection' => [
-                        'result' => !(strpos( $report->getRating("x-xss-protection"), 'C' ) !== false),
+                        'result' => (strpos( $report->getRating("x-xss-protection"), 'C' ) !== false),
                         'comment' => $report->getComment("x-xss-protection"),
                         'directive' => $report->getHeader( 'x-xss-protection' )
                     ]
