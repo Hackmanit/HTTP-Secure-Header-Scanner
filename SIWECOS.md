@@ -12,43 +12,43 @@ This module scans the HTTP header of a specific URL and returns a report that ca
 {
     "checks": {
         "Content-Type": {
-            "result": true,
+            "result": false,
             "comment": "The header is set with the charset and follows the best practice.",
             "directive": [
                 "text/html; charset=UTF-8"
             ]
         },
         "Content-Security-Policy": {
-            "result": false,
+            "result": true,
             "comment": "The header is not set.",
             "directive": null
         },
         "Public-Key-Pins": {
-            "result": false,
+            "result": true,
             "comment": "The header is not set.",
             "directive": null
         },
         "Strict-Transport-Security": {
-            "result": false,
+            "result": true,
             "comment": "The header is not set.",
             "directive": null
         },
         "X-Content-Type-Options": {
-            "result": true,
+            "result": false,
             "comment": "The header is set correctly.",
             "directive": [
                 "nosniff"
             ]
         },
         "X-Frame-Options": {
-            "result": true,
+            "result": false,
             "comment": "The header is set and does not contain any wildcard.",
             "directive": [
                 "SAMEORIGIN"
             ]
         },
         "X-Xss-Protection": {
-            "result": true,
+            "result": false,
             "comment": "The header is set correctly.\n\"mode=block\" is activated.",
             "directive": [
                 "1; mode=block"
@@ -72,10 +72,10 @@ When a server sends a document to a user agent (eg. a browser) it also sends inf
 `text/html; charset=utf-8;`
 
 ##### Scan-Result
-`true`: 
+`false`: 
 - The header is set and contains a charset.
 
-`false`: 
+`true`: 
 - The header is not set correctly. 
 
 ##### Impact and Feasibility (10/10)
@@ -96,10 +96,10 @@ Best Practice is to use the CSP with `default-src 'none'` and without any `unsaf
 
 ##### Scan-Result
 
-`true`: 
+`false`: 
 - The header is set does not contain `unsafe-eval` or `unsafe-inline`.
 
-`false`: 
+`true`: 
 - The header is not set or does contain `unsafe-eval` or `unsafe-inline`.
 
 ##### Impact and Feasibility (7/10)
@@ -123,10 +123,10 @@ HTTP Public Key Pinning (HPKP) is a security mechanism which allows HTTPS websit
 
 ##### Scan-Result
 
-`true`: 
+`false`: 
 - The header is set correctly.
 
-`false`: 
+`true`: 
 - The header is not set.
 
 ##### Impact and Feasibility (3/10)
@@ -146,10 +146,10 @@ HTTP Strict Transport Security (HSTS) is a web security policy mechanism which h
 
 ##### Scan-Result
 
-`true`: 
+`false`: 
 - The header is set correctly.
 
-`false`: 
+`true`: 
 - The header is not set.
 
 ##### Impact and Feasibility (10/10)
@@ -168,10 +168,10 @@ Setting this header will prevent the browser from interpreting files as somethin
 
 ##### Scan-Result
 
-`true`: 
+`false`: 
 - The header is set correctly.
 
-`false`: 
+`true`: 
 - The header is not set.
 
 ##### Impact and Feasibility (6/10)
@@ -193,10 +193,10 @@ Do not use `allow-from: *`
 
 ##### Scan-Result
 
-`true`: 
+`false`: 
 - The header is set correctly.
 
-`false`: 
+`true`: 
 - The header is not set or contains wildcards `*`.
 
 
@@ -218,10 +218,10 @@ This header enables the Cross-site scripting (XSS) filter in the browser.
 
 ##### Scan-Result
 
-`true`: 
+`false`: 
 - The header is set correctly.
 
-`false`: 
+`true`: 
 - The header is not set.
 
 
