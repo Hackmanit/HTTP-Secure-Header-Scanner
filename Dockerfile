@@ -2,13 +2,13 @@ FROM ubuntu:16.04
 
 MAINTAINER Sascha Brendel <code@lednerb.de>
 
-RUN locale-gen en_US.UTF-8
-
 ENV LANG en_US.UTF-8
 ENV LANGUAGE en_US:en
 ENV LC_ALL en_US.UTF-8
 
 RUN apt-get update \
+    && apt-get install locales \
+    && locale-gen en_US.UTF-8 \
     && apt-get install -y nginx curl zip unzip git software-properties-common supervisor sqlite3 redis-server \
     && add-apt-repository -y ppa:ondrej/php \
     && apt-get update \
