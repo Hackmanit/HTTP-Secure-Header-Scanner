@@ -34,6 +34,7 @@ COPY . /var/www/html
 COPY docker/env /var/www/html/.env
 WORKDIR /var/www/html
 RUN composer install \
+    && composer update \
     && touch database/database.sqlite \
     && php artisan key:generate \
     && php artisan migrate
