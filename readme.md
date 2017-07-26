@@ -1,11 +1,12 @@
 # SIWECOS Documentation
 
-## HTTP Secure Header Scanner
+This documentation describes the two modules "HTTP Secure Header Scanner" and "DOMXSS-Scanner".
+
+# HTTP Secure Header Scanner
 This module scans the HTTP header of a specific URL and returns a report that can be used to improve the configuration for a better security.
 
-
 ## API-Call
-`http://localhost/api/v1/siwecos/rate?url=http://siwecos.de`
+`http://localhost/api/v1/header?url=http://siwecos.de`
 
 ### Sample output
 ```json
@@ -108,7 +109,6 @@ The Content-Security-Policy can prevent a wide range of attacks that infiltrate 
 On the other hand it's often not possible to set a secure CSP header without modifying the website's source code.
 
 Impact-Rating: 10/10 | Feasibility: 5/10
-
 
 
 
@@ -229,3 +229,57 @@ This header enables the Cross-site scripting (XSS) filter in the browser.
 Prevents reflected XSS attacks.
 
 Easy to implement and no further adjustments on the website are needed.
+
+
+# DOMXSS-Scanner
+This module scans the given URL and checks for DOMXSS sinks and sources.
+
+## API-Call
+`http://localhost/api/v1/domxss?url=http://siwecos.de`
+
+### Sample output
+```json
+{
+    "checks": {
+        "sinks":true,
+        "sources":true
+    }
+}
+```
+
+## Scanned tasks and descriptions
+
+### Sources (`sources`)
+
+##### Description
+A source is an input that could be controlled by an external (untrusted) source.
+ > https://github.com/wisec/domxsswiki/wiki/Glossary
+ 
+##### Scan-Result
+`true`:
+ - At least one source was found on the scanned URL.
+ 
+`false`:
+- No sources were found on the scanned URL
+
+##### Impact (1/10)
+The scan's result can only be used as an indication if there might be security vulnerabilities.
+Further advanced tests would be needed to confirm if there are vulnerabilities on the site or not.
+
+
+### Sinks (`sinks`)
+
+##### Description
+A sink is a potentially dangerous method that could lead to a vulnerability. In this case a DOM Based XSS.
+ > https://github.com/wisec/domxsswiki/wiki/Glossary
+ 
+##### Scan-Result
+`true`:
+ - At least one sink was found on the scanned URL.
+ 
+`false`:
+- No sinks were found on the scanned URL
+
+##### Impact (2/10)
+The scan's result can only be used as an indication if there might be security vulnerabilities.
+Further advanced tests would be needed to confirm if there are vulnerabilities on the site or not.

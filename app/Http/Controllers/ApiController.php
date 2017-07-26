@@ -3,9 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Crawler;
+use App\DomxssReport;
 use App\Jobs\CrawlerJob;
 use App\Jobs\GenerateFullReportJob;
-use App\Report;
+use App\HeaderReport;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\URL;
@@ -23,7 +24,7 @@ class ApiController extends Controller
             'url' => 'required|url'
         ]);
 
-        $report = new Report($request->input('url'));
+        $report = new HeaderReport($request->input('url'));
         return  collect([
                 'checks' => [
                     'Content-Type' => [
@@ -63,6 +64,20 @@ class ApiController extends Controller
                     ]
                 ]
             ]);
+    }
+
+
+    public function domxssReport(Request $request){
+        $this->validate($request, [
+            'url' => 'required|url'
+        ]);
+        $report = new DomxssReport($request->url);
+        return [
+            'checks' => [
+                'sinks' => ! $report->hasSinks(),
+                'sources' => ! $report->hasSources()
+            ]
+        ];
     }
 
 }

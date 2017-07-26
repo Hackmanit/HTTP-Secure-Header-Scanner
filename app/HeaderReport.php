@@ -5,9 +5,9 @@ namespace App;
 use App\Ratings;
 
 /**
- * Returns a Report / Rating for the given URL.
+ * Returns a HeaderReport / Rating for the given URL.
  */
-class Report
+class HeaderReport
 {
     public $url;
     public $siteRating = null;
