@@ -37,7 +37,7 @@ class HTTPResponse
                     new CacheMiddleware(
                         new PrivateCacheStrategy(
                             new LaravelCacheStorage(
-                                Cache::store('redis')
+                                Cache::store(env('CACHE_DRIVER', 'file'))
                             )
                         )
                     ),
