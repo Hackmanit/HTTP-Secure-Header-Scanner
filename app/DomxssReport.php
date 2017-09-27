@@ -11,7 +11,8 @@ class DomxssReport
         $this->url = $url;
     }
 
-    public function hasSources() {
+    public function hasSources()
+    {
         $response = new HTTPResponse($this->url);
 
         if ($response !== null) {
@@ -21,14 +22,16 @@ class DomxssReport
 
             $findings = preg_match($sourcePattern, $response->body());
 
-            if($findings !== false && $findings > 0)
+            if ($findings !== false && $findings > 0) {
                 return true;
+            }
         }
 
         return false;
     }
 
-    public function hasSinks() {
+    public function hasSinks()
+    {
         $response = new HTTPResponse($this->url);
 
         if ($response !== null) {
@@ -38,11 +41,11 @@ class DomxssReport
 
             $findings = preg_match($sourcePattern, $response->body());
 
-            if($findings !== false && $findings > 0)
+            if ($findings !== false && $findings > 0) {
                 return true;
+            }
         }
 
         return false;
     }
-
 }

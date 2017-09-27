@@ -2,8 +2,8 @@
 
 namespace App\Ratings;
 
-class HSTSRating extends Rating {
-
+class HSTSRating extends Rating
+{
     protected function rate()
     {
         $header = $this->getHeader('strict-transport-security');
@@ -11,40 +11,35 @@ class HSTSRating extends Rating {
         if ($header === null) {
             $this->rating   = 'C';
             $this->comment  = __('The header is not set.');
-        }
-
-        elseif (count($header) > 1) {
+        } elseif (count($header) > 1) {
             $this->rating   = 'C';
             $this->comment  = __('The header is set multiple times.');
-        }
-
-        else {
+        } else {
             $header = $header[0];
 
             $beginAge   = strpos($header, 'max-age=') + 8;
             $endAge     = strpos($header, ';', $beginAge);
 
             // if there is no semicolon | max-age=300
-            if ( $endAge === false)
+            if ($endAge === false) {
                 $endAge = strlen($header);
+            }
 
             $maxAge     = substr($header, $beginAge, $endAge - $beginAge);
 
             if ($maxAge < 15768000) {
                 $this->rating   = 'B';
                 $this->comment  = __('The value for "max-age" is smaller than 6 months.');
-            }
-            elseif ($maxAge >= 15768000) {
+            } elseif ($maxAge >= 15768000) {
                 $this->rating   = 'A';
                 $this->comment  = __('The value for "max-age" is greater than 6 months.');
-            }
-            else {
+            } else {
                 $this->rating   = 'C';
                 $this->comment  = __('An error occured while checking "max-age".');
             }
         }
 
-        if (strpos($header, 'includeSubDomains') !== false ) {
+        if (strpos($header, 'includeSubDomains') !== false) {
             $this->rating   .= '+';
             $this->comment  .= '\n' . __('"includeSubDomains" is set.');
         }

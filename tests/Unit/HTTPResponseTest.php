@@ -8,11 +8,8 @@ use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Response;
 use Mockery;
-use Illuminate\Foundation\Testing\DatabaseMigrations;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
 
 use Tests\TestCase;
-
 
 class HTTPResponseTest extends TestCase
 {
@@ -26,43 +23,44 @@ class HTTPResponseTest extends TestCase
     public function a_http_response_has_an_url()
     {
         $response = $this->getMockedHTTPResponse([
-            new Response( 200 ),
+            new Response(200),
         ]);
-        $this->assertEquals( "http://testdomain", $response->url() );
+        $this->assertEquals("http://testdomain", $response->url());
     }
 
     /** @test */
     public function a_custom_mock_handler_can_be_used_within_the_HTTPResponse_class()
     {
         $response = $this->getMockedHTTPResponse([
-            new Response( 200 ),
+            new Response(200),
         ]);
 
-        $this->assertEquals( 200, $response->statusCode() );
+        $this->assertEquals(200, $response->statusCode());
     }
 
     /** @test */
     public function the_http_client_follow_redirects()
     {
-       $response = $this->getMockedHTTPResponse([
-           new Response( 301, [
+        $response = $this->getMockedHTTPResponse([
+           new Response(301, [
                'Location' => 'http://followMe',
-           ] ),
-           new Response( 200, [
+           ]),
+           new Response(200, [
                'Strict-Transport-Security' => 'max-age=60; includeSubDomains',
                'X-Content-Type-Options' => 'nosniff',
-           ] )
+           ])
        ]);
 
-        $this->assertEquals( 200, $response->statusCode() );
+        $this->assertEquals(200, $response->statusCode());
     }
 
     /** @test */
-    public function the_HTTPResponse_class_returns_the_correct_headers() {
+    public function the_HTTPResponse_class_returns_the_correct_headers()
+    {
         $response = $this->getMockedHTTPResponse([
-            new Response( 200, [
+            new Response(200, [
                 'Strict-Transport-Security' => 'max-age=60; includeSubDomains',
-            ] )
+            ])
         ]);
 
         $header = $response->header("strict-transport-security");
@@ -71,11 +69,12 @@ class HTTPResponseTest extends TestCase
     }
 
     /** @test */
-    public function the_HTTPResponse_class_returns_the_correct_headers_case_insensitive() {
+    public function the_HTTPResponse_class_returns_the_correct_headers_case_insensitive()
+    {
         $response = $this->getMockedHTTPResponse([
-            new Response( 200, ['X-XSS-PROTECTION' => '1; mode=block'] ),
-            new Response( 200, ['X-Xss-Protection' => '1; mode=block'] ),
-            new Response( 200, ['x-xss-protection' => '1; mode=block'] ),
+            new Response(200, ['X-XSS-PROTECTION' => '1; mode=block']),
+            new Response(200, ['X-Xss-Protection' => '1; mode=block']),
+            new Response(200, ['x-xss-protection' => '1; mode=block']),
         ]);
 
         $header = $response->header("X-XSS-PROTECTION");
@@ -93,7 +92,7 @@ class HTTPResponseTest extends TestCase
     {
         $sampleBody = file_get_contents(base_path() . "/tests/Unit/example.org.html");
         $response = $this->getMockedHTTPResponse([
-            new Response( 200, ['X-XSS-PROTECTION' => '1; mode=block'], $sampleBody)
+            new Response(200, ['X-XSS-PROTECTION' => '1; mode=block'], $sampleBody)
         ]);
 
         $this->assertEquals($sampleBody, $response->body());
@@ -104,8 +103,8 @@ class HTTPResponseTest extends TestCase
     {
         $sampleBody = file_get_contents(base_path() . "/tests/Unit/example.org.html");
         $response = $this->getMockedHTTPResponse([
-            new Response( 301, ['Location' => 'http://followMe']),
-            new Response( 200, ['X-XSS-PROTECTION' => '1; mode=block'], $sampleBody)
+            new Response(301, ['Location' => 'http://followMe']),
+            new Response(200, ['X-XSS-PROTECTION' => '1; mode=block'], $sampleBody)
         ]);
 
         $this->assertEquals($sampleBody, $response->body());
@@ -116,13 +115,12 @@ class HTTPResponseTest extends TestCase
      * @param array $responses
      * @return HTTPResponse
      */
-    protected function getMockedHTTPResponse(array $responses) {
-        $mock = new MockHandler( $responses );
-        $handler = HandlerStack::create( $mock );
-        $client = new Client( ["handler" => $handler] ) ;
+    protected function getMockedHTTPResponse(array $responses)
+    {
+        $mock = new MockHandler($responses);
+        $handler = HandlerStack::create($mock);
+        $client = new Client(["handler" => $handler]) ;
 
-        return new HTTPResponse( "http://testdomain", $client);
+        return new HTTPResponse("http://testdomain", $client);
     }
-
-
 }

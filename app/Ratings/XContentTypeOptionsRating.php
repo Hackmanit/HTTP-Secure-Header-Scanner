@@ -4,7 +4,6 @@ namespace App\Ratings;
 
 class XContentTypeOptionsRating extends Rating
 {
-
     protected function rate()
     {
         $header = $this->getHeader('x-content-type-options');
@@ -12,14 +11,10 @@ class XContentTypeOptionsRating extends Rating
         if ($header === null) {
             $this->rating = 'C';
             $this->comment  = __('The header is not set.');
-        }
-
-        elseif (count($header) > 1) {
+        } elseif (count($header) > 1) {
             $this->rating = 'C';
             $this->comment  = __('The header is set multiple times.');
-        }
-
-        else {
+        } else {
             $header = $header[0];
 
             $this->rating = 'C';
@@ -29,7 +24,6 @@ class XContentTypeOptionsRating extends Rating
                 $this->rating = 'A';
                 $this->comment = __('The header is set correctly.');
             }
-
         }
     }
 
@@ -43,7 +37,7 @@ class XContentTypeOptionsRating extends Rating
 
     public static function getBestPractice()
     {
-        // OWASP 
+        // OWASP
         // https://www.owasp.org/index.php/OWASP_Secure_Headers_Project#xcto
         return 'nosniff';
     }

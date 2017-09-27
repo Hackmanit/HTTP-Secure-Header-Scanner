@@ -2,8 +2,8 @@
 
 namespace App\Ratings;
 
-class HPKPRating extends Rating {
-
+class HPKPRating extends Rating
+{
     protected function rate()
     {
         $header = $this->getHeader('public-key-pins');
@@ -11,33 +11,28 @@ class HPKPRating extends Rating {
         if ($header === null) {
             $this->rating   = 'C';
             $this->comment  = __('The header is not set.');
-        }
-
-        elseif (count($header) > 1) {
+        } elseif (count($header) > 1) {
             $this->rating   = 'C';
             $this->comment  = __('The header is set multiple times.');
-        }
-
-        else {
+        } else {
             $header = $header[0];
 
-            $beginAge = strpos( $header, 'max-age=' ) + 8;
-            $endAge = strpos( $header, ';', $beginAge );
+            $beginAge = strpos($header, 'max-age=') + 8;
+            $endAge = strpos($header, ';', $beginAge);
             // if there is no semicolon | max-age=300
-            if ( $endAge === false)
+            if ($endAge === false) {
                 $endAge = strlen($header);
+            }
 
-            $maxAge = substr( $header, $beginAge, $endAge - $beginAge );
+            $maxAge = substr($header, $beginAge, $endAge - $beginAge);
 
             if ($maxAge < 1296000) {
                 $this->rating   = 'B';
                 $this->comment  = __('The keys are pinned for less than 15 days.');
-            }
-            elseif ($maxAge >= 1296000) {
+            } elseif ($maxAge >= 1296000) {
                 $this->rating   = 'A';
                 $this->comment  = __('The keys are pinned for more than 15 days.');
-            }
-            else {
+            } else {
                 $this->rating   = 'C';
                 $this->comment  = __('An error occured while checking "max-age".');
             }

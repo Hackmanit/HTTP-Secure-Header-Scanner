@@ -4,7 +4,6 @@ namespace App\Ratings;
 
 class ContentTypeRating extends Rating
 {
-
     protected function rate()
     {
         $header = $this->getHeader('content-type');
@@ -12,14 +11,10 @@ class ContentTypeRating extends Rating
         if ($header === null) {
             $this->rating = 'C';
             $this->comment  = __('The header is not set.');
-        }
-
-        elseif (count($header) > 1) {
+        } elseif (count($header) > 1) {
             $this->rating = 'C';
             $this->comment  = __('The header is set multiple times.');
-        }
-
-        else {
+        } else {
             $this->rating = 'C';
             $this->comment = __('The header is set without the charset.');
 
@@ -40,8 +35,7 @@ class ContentTypeRating extends Rating
             elseif (stripos($header, 'utf8') !== false) {
                 $this->rating = 'C';
                 $this->comment = __('The given charset is wrong and thereby ineffective.') . __('The correct writing is: charset=utf-8');
-            }
-            elseif (
+            } elseif (
                 (stripos($header, 'Windows-31J') !== false) ||
                 (stripos($header, 'CP932') !== false) ||
                 (stripos($header, 'MS932') !== false) ||
@@ -52,7 +46,6 @@ class ContentTypeRating extends Rating
                 $this->rating = 'C';
                 $this->comment = __('The given charset is wrong and thereby ineffective.') . __('Best practice is: charset=utf-8');
             }
-
         }
     }
 
@@ -70,5 +63,4 @@ class ContentTypeRating extends Rating
         // https://www.w3.org/International/articles/http-charset/index.en
         return 'text/html; charset=utf-8';
     }
-
 }

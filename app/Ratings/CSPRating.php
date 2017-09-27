@@ -4,7 +4,6 @@ namespace App\Ratings;
 
 class CSPRating extends Rating
 {
-
     protected function rate()
     {
         $header = $this->getHeader('content-security-policy');
@@ -12,25 +11,19 @@ class CSPRating extends Rating
         if ($header === null) {
             $this->rating   = 'C';
             $this->comment  = __('The header is not set.');
-        }
-
-        elseif (count($header) > 1) {
+        } elseif (count($header) > 1) {
             $this->rating   = 'C';
             $this->comment  = __('The header is set multiple times.');
-        }
-
-        else {
+        } else {
             $header = $header[0];
 
             if (strpos($header, 'unsafe-inline') !== false || strpos($header, 'unsafe-eval') !== false) {
                 $this->rating   = 'C';
                 $this->comment  = __('The header contains "unsafe-inline" or "unsafe-eval" directives.');
-            }
-            elseif (strpos($header, 'unsafe-inline') === false && strpos($header, 'unsafe-eval') === false && strpos($header, "default-src 'none'") === false) {
+            } elseif (strpos($header, 'unsafe-inline') === false && strpos($header, 'unsafe-eval') === false && strpos($header, "default-src 'none'") === false) {
                 $this->rating   = 'B';
                 $this->comment  = __('The header is free of any "unsafe-" directives.');
-            }
-            elseif (strpos($header, 'unsafe-inline') === false && strpos($header, 'unsafe-eval') === false && strpos($header, "default-src 'none'") !== false) {
+            } elseif (strpos($header, 'unsafe-inline') === false && strpos($header, 'unsafe-eval') === false && strpos($header, "default-src 'none'") !== false) {
                 $this->rating   = 'A';
                 $this->comment  = __('The header is "unsafe-" free and includes "default-src \'none\'"');
             }

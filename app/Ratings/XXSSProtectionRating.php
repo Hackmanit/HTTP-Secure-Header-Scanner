@@ -4,7 +4,6 @@ namespace App\Ratings;
 
 class XXSSProtectionRating extends Rating
 {
-
     protected function rate()
     {
         $header = $this->getHeader('x-xss-protection');
@@ -12,14 +11,10 @@ class XXSSProtectionRating extends Rating
         if ($header === null) {
             $this->rating = 'C';
             $this->comment  = __('The header is not set.');
-        }
-
-        elseif (count($header) > 1) {
+        } elseif (count($header) > 1) {
             $this->rating = 'C';
             $this->comment  = __('The header is set multiple times.');
-        }
-
-        else {
+        } else {
             $header = $header[0];
 
             $this->rating = 'B';
@@ -29,7 +24,6 @@ class XXSSProtectionRating extends Rating
                 $this->rating = 'A';
                 $this->comment .= "\n" . __('"mode=block" is activated.');
             }
-
         }
     }
 

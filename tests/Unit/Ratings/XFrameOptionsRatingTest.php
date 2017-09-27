@@ -8,8 +8,6 @@ use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Response;
 use Tests\TestCase;
-use Illuminate\Foundation\Testing\DatabaseMigrations;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
 
 class XFrameOptionsRatingTest extends TestCase
 {
@@ -17,7 +15,7 @@ class XFrameOptionsRatingTest extends TestCase
     public function xFrameOptionsRating_rates_c_for_a_missing_header()
     {
         $client = $this->getMockedGuzzleClient([
-            new Response( 200 ),
+            new Response(200),
         ]);
         $rating = new XFrameOptionsRating("http://testdomain", $client);
 
@@ -29,7 +27,7 @@ class XFrameOptionsRatingTest extends TestCase
     public function xFrameOptionsRating_rates_c_when_wildcards_are_used()
     {
         $client = $this->getMockedGuzzleClient([
-            new Response( 200, [
+            new Response(200, [
                 "X-Frame-Options" => "allow-from *"
             ]),
         ]);
@@ -43,7 +41,7 @@ class XFrameOptionsRatingTest extends TestCase
     public function xFrameOptionsRating_rates_a_when_set_and_no_wildcards_are_used()
     {
         $client = $this->getMockedGuzzleClient([
-            new Response( 200, [
+            new Response(200, [
                 "X-Frame-Options" => "deny"
             ]),
         ]);
@@ -58,9 +56,10 @@ class XFrameOptionsRatingTest extends TestCase
      * @param array $responses
      * @return Client
      */
-    protected function getMockedGuzzleClient(array $responses) {
-        $mock = new MockHandler( $responses );
-        $handler = HandlerStack::create( $mock );
-        return (new Client( ["handler" => $handler] )) ;
+    protected function getMockedGuzzleClient(array $responses)
+    {
+        $mock = new MockHandler($responses);
+        $handler = HandlerStack::create($mock);
+        return (new Client(["handler" => $handler])) ;
     }
 }

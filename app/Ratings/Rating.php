@@ -25,7 +25,8 @@ abstract class Rating implements RatingInterface, \JsonSerializable
         $this->rate();
     }
 
-    public function url() {
+    public function url()
+    {
         return $this->url;
     }
 
@@ -37,7 +38,8 @@ abstract class Rating implements RatingInterface, \JsonSerializable
     /**
      * @return string
      */
-    public function getRating() {
+    public function getRating()
+    {
         return $this->rating;
     }
 
@@ -56,7 +58,7 @@ abstract class Rating implements RatingInterface, \JsonSerializable
      * which is a value of any type other than a resource.
      * @since 5.4.0
      */
-    function jsonSerialize()
+    public function jsonSerialize()
     {
         return ["rating" => $this->getRating(), "comment" => $this->comment];
     }

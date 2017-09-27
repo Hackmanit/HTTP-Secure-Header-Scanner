@@ -8,8 +8,6 @@ use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Response;
 use Tests\TestCase;
-use Illuminate\Foundation\Testing\DatabaseMigrations;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
 
 class XXSSProtectionRatingTest extends TestCase
 {
@@ -18,7 +16,7 @@ class XXSSProtectionRatingTest extends TestCase
     public function xXSSProtection_rates_c_for_a_missing_header()
     {
         $client = $this->getMockedGuzzleClient([
-            new Response( 200 ),
+            new Response(200),
         ]);
         $rating = new XXSSProtectionRating("http://testdomain", $client);
 
@@ -30,8 +28,8 @@ class XXSSProtectionRatingTest extends TestCase
     public function xXSSProtection_rates_b_for_a_set_header()
     {
         $client = $this->getMockedGuzzleClient([
-            new Response( 200, [ "X-Xss-Protection" => "0"] ),
-            new Response( 200, [ "X-Xss-Protection" => "1"] ),
+            new Response(200, [ "X-Xss-Protection" => "0"]),
+            new Response(200, [ "X-Xss-Protection" => "1"]),
         ]);
 
         $rating = new XXSSProtectionRating("http://testdomain", $client);
@@ -49,7 +47,7 @@ class XXSSProtectionRatingTest extends TestCase
     public function xXSSProtection_rates_a_for_mode_block()
     {
         $client = $this->getMockedGuzzleClient([
-            new Response( 200, [ "X-Xss-Protection" => "1; mode=block"] ),
+            new Response(200, [ "X-Xss-Protection" => "1; mode=block"]),
         ]);
 
         $rating = new XXSSProtectionRating("http://testdomain", $client);
@@ -63,9 +61,10 @@ class XXSSProtectionRatingTest extends TestCase
      * @param array $responses
      * @return Client
      */
-    protected function getMockedGuzzleClient(array $responses) {
-        $mock = new MockHandler( $responses );
-        $handler = HandlerStack::create( $mock );
-        return (new Client( ["handler" => $handler] )) ;
+    protected function getMockedGuzzleClient(array $responses)
+    {
+        $mock = new MockHandler($responses);
+        $handler = HandlerStack::create($mock);
+        return (new Client(["handler" => $handler])) ;
     }
 }
