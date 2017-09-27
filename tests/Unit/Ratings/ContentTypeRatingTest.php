@@ -72,6 +72,20 @@ class ContentTypeRatingTest extends TestCase
         }
     }
 
+    /** @test */
+    public function if_the_header_is_not_set_the_meta_tag_is_rated()
+    {
+        $sampleBody = file_get_contents(base_path() . "/tests/Unit/example.org.html");
+
+        $client = $this->getMockedGuzzleClient([
+            new Response(200, [ ], $sampleBody)
+        ]);
+
+        $rating = new ContentTypeRating("http://testdomain", $client);
+
+        $this->assertEquals("A", $rating->getRating());
+    }
+
     /**
      * This method sets and activates the GuzzleHttp Mocking functionality.
      * @param array $responses

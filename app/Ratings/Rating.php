@@ -8,7 +8,7 @@ use GuzzleHttp\Client;
 abstract class Rating implements RatingInterface, \JsonSerializable
 {
     protected $url;
-    protected $response;
+    public $response;
     protected $rating = 'C';
     protected $comment = 'An error occurred.';
 
