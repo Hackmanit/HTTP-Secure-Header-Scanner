@@ -83,7 +83,7 @@ class ContentTypeRatingTest extends TestCase
 
         $rating = new ContentTypeRating("http://testdomain", $client);
 
-        $this->assertEquals("A", $rating->getRating());
+        $this->assertEquals("B", $rating->getRating());
     }
 
     /**
