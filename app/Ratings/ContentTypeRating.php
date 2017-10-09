@@ -2,9 +2,10 @@
 
 namespace App\Ratings;
 
+use voku\helper\HtmlDomParser;
+
 class ContentTypeRating extends Rating
 {
-
     protected function rate()
     {
         $header = $this->getHeader('content-type');
@@ -12,16 +13,16 @@ class ContentTypeRating extends Rating
         if ($header === null) {
             $this->rating = 'C';
             $this->comment  = __('The header is not set.');
-        }
 
-        elseif (count($header) > 1) {
+            $this->checkMetaTag();
+        } elseif (count($header) > 1) {
             $this->rating = 'C';
             $this->comment  = __('The header is set multiple times.');
-        }
-
-        else {
+        } else {
             $this->rating = 'C';
             $this->comment = __('The header is set without the charset.');
+
+            $this->checkMetaTag();
 
             $header = $header[0];
 
@@ -40,8 +41,7 @@ class ContentTypeRating extends Rating
             elseif (stripos($header, 'utf8') !== false) {
                 $this->rating = 'C';
                 $this->comment = __('The given charset is wrong and thereby ineffective.') . __('The correct writing is: charset=utf-8');
-            }
-            elseif (
+            } elseif (
                 (stripos($header, 'Windows-31J') !== false) ||
                 (stripos($header, 'CP932') !== false) ||
                 (stripos($header, 'MS932') !== false) ||
@@ -52,7 +52,6 @@ class ContentTypeRating extends Rating
                 $this->rating = 'C';
                 $this->comment = __('The given charset is wrong and thereby ineffective.') . __('Best practice is: charset=utf-8');
             }
-
         }
     }
 
@@ -71,4 +70,28 @@ class ContentTypeRating extends Rating
         return 'text/html; charset=utf-8';
     }
 
+    protected function checkMetaTag()
+    {
+        $dom = HtmlDomParser::str_get_html($this->response->body());
+
+        // case: <meta charset="utf-8">
+        if ($finding = $dom->find('meta[charset]')) {
+            $this->comment .= __(' A meta tag is set with a charset.');
+
+            if (stripos($finding[0]->charset, 'utf-8') !== false) {
+                $this->rating = 'B';
+                $this->comment .= __(' A meta tag is set with a charset and follows the best practice.');
+            }
+        }
+        // case: <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        elseif ($finding = $dom->find('meta[http-equiv=Content-Type]')) {
+            if (stripos($finding[0]->content, 'charset=utf-8') !== false) {
+                $this->rating = 'A';
+                $this->comment .= __(' A meta tag is set with a charset and follows the best practice.');
+            } elseif (stripos($finding[0]->content, 'charset=') !== false) {
+                $this->rating = 'B';
+                $this->comment .= __(' A meta tag is set with a charset.');
+            }
+        }
+    }
 }

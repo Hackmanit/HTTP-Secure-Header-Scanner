@@ -7,7 +7,6 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Response;
-use Mockery;
 use Tests\TestCase;
 
 /**
@@ -23,7 +22,7 @@ class CSPRatingTest extends TestCase
     public function cspRating_rates_c_because_header_is_not_set()
     {
         $client = $this->getMockedGuzzleClient([
-            new Response( 200 ),
+            new Response(200),
         ]);
         $rating = new CSPRating("http://testdomain", $client);
 
@@ -35,9 +34,9 @@ class CSPRatingTest extends TestCase
     public function cspRating_rates_c_because_header_is_set_with_unsafe_inline()
     {
         $client = $this->getMockedGuzzleClient([
-            new Response( 200, [
+            new Response(200, [
                 "Content-Security-Policy" => "default-src 'none'; script-src 'unsafe-inline'; object-src 'none';",
-            ] ),
+            ]),
         ]);
         $rating = new CSPRating("http://testdomain", $client);
 
@@ -49,9 +48,9 @@ class CSPRatingTest extends TestCase
     public function cspRating_rates_c_because_header_is_set_with_unsafe_eval()
     {
         $client = $this->getMockedGuzzleClient([
-            new Response( 200, [
+            new Response(200, [
                 "Content-Security-Policy" => "default-src 'none'; script-src 'unsafe-eval'; object-src 'none';",
-            ] ),
+            ]),
         ]);
         $rating = new CSPRating("http://testdomain", $client);
 
@@ -63,9 +62,9 @@ class CSPRatingTest extends TestCase
     public function cspRating_rates_b_because_header_is_set_without_unsafes_but_without_default_src_none()
     {
         $client = $this->getMockedGuzzleClient([
-            new Response( 200, [
+            new Response(200, [
                 "Content-Security-Policy" => "default-src 'self';",
-            ] ),
+            ]),
         ]);
         $rating = new CSPRating("http://testdomain", $client);
 
@@ -77,9 +76,9 @@ class CSPRatingTest extends TestCase
     public function cspRating_rates_a_because_header_is_set_without_unsafes_and_with_default_src_none()
     {
         $client = $this->getMockedGuzzleClient([
-            new Response( 200, [
+            new Response(200, [
                 "Content-Security-Policy" => "default-src 'none';",
-            ] ),
+            ]),
         ]);
         $rating = new CSPRating("http://testdomain", $client);
 
@@ -95,9 +94,9 @@ class CSPRatingTest extends TestCase
     public function cspRating_adds_comment_for_legacy_header()
     {
         $client = $this->getMockedGuzzleClient([
-            new Response( 200, [
+            new Response(200, [
                 "X-Content-Security-Policy" => "default-src 'none';",
-            ] ),
+            ]),
         ]);
         $rating = new CSPRating("http://testdomain", $client);
 
@@ -110,9 +109,10 @@ class CSPRatingTest extends TestCase
      * @param array $responses
      * @return Client
      */
-    protected function getMockedGuzzleClient(array $responses) {
-        $mock = new MockHandler( $responses );
-        $handler = HandlerStack::create( $mock );
-        return (new Client( ["handler" => $handler] )) ;
+    protected function getMockedGuzzleClient(array $responses)
+    {
+        $mock = new MockHandler($responses);
+        $handler = HandlerStack::create($mock);
+        return (new Client(["handler" => $handler])) ;
     }
 }

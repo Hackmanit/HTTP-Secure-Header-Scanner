@@ -2,7 +2,8 @@
 
 namespace App\Ratings;
 
-interface RatingInterface {
+interface RatingInterface
+{
     public function __construct($url);
     public static function getDescription();
     public static function getBestPractice();

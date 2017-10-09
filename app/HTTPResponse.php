@@ -14,7 +14,7 @@ class HTTPResponse
     protected $url;
     protected $response = null;
 
-    function __construct($url, Client $client = null)
+    public function __construct($url, Client $client = null)
     {
         $this->url = $url;
         $this->client = $client;
@@ -37,27 +37,26 @@ class HTTPResponse
                     new CacheMiddleware(
                         new PrivateCacheStrategy(
                             new LaravelCacheStorage(
-                                Cache::store('redis')
+                                Cache::store(env('CACHE_DRIVER', 'file'))
                             )
                         )
                     ),
                     'cache'
                 );
-                $this->client = new Client( ['handler' => $stack] );
+                $this->client = new Client(['handler' => $stack]);
             }
 
             try {
-                $this->response = $this->client->get( $this->url, [
+                $this->response = $this->client->get($this->url, [
                     // User-Agent because some sites (e.g. facebook) do not return all headers if the user-agent is missing or Guzzle
                     'headers' => [
                         'User-Agent' => 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:40.0) Gecko/20100101 Firefox/40.1',
                     ],
                     'verify' => false,
                     'http_errors' => false,
-                ] );
-
+                ]);
             } catch (\Exception $exception) {
-                \Log::critical( $this->url . ": " . $exception);
+                \Log::critical($this->url . ": " . $exception);
             }
         }
         return $this->response;
@@ -93,7 +92,7 @@ class HTTPResponse
      */
     public function header($name)
     {
-        return $this->headers()->mapWithKeys(function( $value, $key ) {
+        return $this->headers()->mapWithKeys(function ($value, $key) {
             return [strtolower($key) => $value];
         })->get(strtolower($name));
     }
@@ -105,5 +104,4 @@ class HTTPResponse
     {
         return $this->response()->getBody()->getContents();
     }
-
 }

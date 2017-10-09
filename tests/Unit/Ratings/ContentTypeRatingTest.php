@@ -8,8 +8,6 @@ use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Response;
 use Tests\TestCase;
-use Illuminate\Foundation\Testing\DatabaseMigrations;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
 
 class ContentTypeRatingTest extends TestCase
 {
@@ -17,7 +15,7 @@ class ContentTypeRatingTest extends TestCase
     public function contentTypeRating_rates_c_for_a_missing_header()
     {
         $client = $this->getMockedGuzzleClient([
-            new Response( 200 ),
+            new Response(200),
         ]);
         $rating = new ContentTypeRating("http://testdomain", $client);
 
@@ -29,7 +27,7 @@ class ContentTypeRatingTest extends TestCase
     public function contentTypeRating_rates_c_when_the_charset_is_missing()
     {
         $client = $this->getMockedGuzzleClient([
-            new Response( 200, [ "Content-Type" => "text/html" ] ),
+            new Response(200, [ "Content-Type" => "text/html" ]),
         ]);
         $rating = new ContentTypeRating("http://testdomain", $client);
 
@@ -38,15 +36,16 @@ class ContentTypeRatingTest extends TestCase
     }
 
     /** @test */
-    public function contentTypeRating_rates_c_when_a_wrong_charset_definition_is_given_see_HASEGAWA() {
+    public function contentTypeRating_rates_c_when_a_wrong_charset_definition_is_given_see_HASEGAWA()
+    {
         $client = $this->getMockedGuzzleClient([
-            new Response( 200, [ "Content-Type" => "text/html; charset=utf8" ] ),
-            new Response( 200, [ "Content-Type" => "text/html; charset=Windows-31J" ] ),
-            new Response( 200, [ "Content-Type" => "text/html; charset=CP932" ] ),
-            new Response( 200, [ "Content-Type" => "text/html; charset=MS932" ] ),
-            new Response( 200, [ "Content-Type" => "text/html; charset=MS942C" ] ),
-            new Response( 200, [ "Content-Type" => "text/html; charset=sjis" ] ),
-            new Response( 200, [ "Content-Type" => "text/html; charset=jis" ] ),
+            new Response(200, [ "Content-Type" => "text/html; charset=utf8" ]),
+            new Response(200, [ "Content-Type" => "text/html; charset=Windows-31J" ]),
+            new Response(200, [ "Content-Type" => "text/html; charset=CP932" ]),
+            new Response(200, [ "Content-Type" => "text/html; charset=MS932" ]),
+            new Response(200, [ "Content-Type" => "text/html; charset=MS942C" ]),
+            new Response(200, [ "Content-Type" => "text/html; charset=sjis" ]),
+            new Response(200, [ "Content-Type" => "text/html; charset=jis" ]),
         ]);
 
         for ($i = 1; $i <= 7; $i++) {
@@ -58,18 +57,33 @@ class ContentTypeRatingTest extends TestCase
     }
 
     /** @test */
-    public function contentTypeRating_rates_a_when_the_charset_is_utf_8() {
+    public function contentTypeRating_rates_a_when_the_charset_is_utf_8()
+    {
         $client = $this->getMockedGuzzleClient([
-            new Response( 200, [ "Content-Type" => "text/html; charset=utf-8" ] ),
-            new Response( 200, [ "Content-Type" => "text/html; charset=UTF-8" ] ),
+            new Response(200, [ "Content-Type" => "text/html; charset=utf-8" ]),
+            new Response(200, [ "Content-Type" => "text/html; charset=UTF-8" ]),
         ]);
 
         for ($i = 1; $i <= 2; $i++) {
-            $rating = new ContentTypeRating( "http://testdomain", $client );
+            $rating = new ContentTypeRating("http://testdomain", $client);
 
-            $this->assertEquals( "A", $rating->getRating() );
-            $this->assertEquals( "The header is set with the charset and follows the best practice.", $rating->getComment() );
+            $this->assertEquals("A", $rating->getRating());
+            $this->assertEquals("The header is set with the charset and follows the best practice.", $rating->getComment());
         }
+    }
+
+    /** @test */
+    public function if_the_header_is_not_set_the_meta_tag_is_rated()
+    {
+        $sampleBody = file_get_contents(base_path() . "/tests/Unit/example.org.html");
+
+        $client = $this->getMockedGuzzleClient([
+            new Response(200, [ ], $sampleBody)
+        ]);
+
+        $rating = new ContentTypeRating("http://testdomain", $client);
+
+        $this->assertEquals("B", $rating->getRating());
     }
 
     /**
@@ -77,9 +91,10 @@ class ContentTypeRatingTest extends TestCase
      * @param array $responses
      * @return Client
      */
-    protected function getMockedGuzzleClient(array $responses) {
-        $mock = new MockHandler( $responses );
-        $handler = HandlerStack::create( $mock );
-        return (new Client( ["handler" => $handler] )) ;
+    protected function getMockedGuzzleClient(array $responses)
+    {
+        $mock = new MockHandler($responses);
+        $handler = HandlerStack::create($mock);
+        return (new Client(["handler" => $handler])) ;
     }
 }
