@@ -17,15 +17,15 @@ class XXSSProtectionRatingTest extends TestCase
     {
         $client = $this->getMockedGuzzleClient([
             new Response(200),
-        ]);
+        ]); 
         $rating = new XXSSProtectionRating("http://testdomain", $client);
 
-        $this->assertEquals("C", $rating->getRating());
-        $this->assertEquals("The header is not set.", $rating->getComment());
+        $this->assertEquals(0, $rating->score);
+        $this->assertEquals($rating->errorMessage, 'HEADER_NOT_SET');
     }
 
     /** @test */
-    public function xXSSProtection_rates_b_for_a_set_header()
+    public function xXSSProtection_rates_a_set_header()
     {
         $client = $this->getMockedGuzzleClient([
             new Response(200, [ "X-Xss-Protection" => "0"]),
@@ -34,17 +34,17 @@ class XXSSProtectionRatingTest extends TestCase
 
         $rating = new XXSSProtectionRating("http://testdomain", $client);
 
-        $this->assertEquals("B", $rating->getRating());
-        $this->assertEquals("The header is set correctly.", $rating->getComment());
+        $this->assertEquals(50, $rating->score);
+        $this->assertTrue(collect($rating)->flatten()->contains('XXSS_CORRECT'));
 
         $rating = new XXSSProtectionRating("http://testdomain", $client);
 
-        $this->assertEquals("B", $rating->getRating());
-        $this->assertEquals("The header is set correctly.", $rating->getComment());
+        $this->assertEquals(50, $rating->score);
+        $this->assertTrue(collect($rating)->flatten()->contains('XXSS_CORRECT'));
     }
 
     /** @test */
-    public function xXSSProtection_rates_a_for_mode_block()
+    public function xXSSProtection_rates_mode_block()
     {
         $client = $this->getMockedGuzzleClient([
             new Response(200, [ "X-Xss-Protection" => "1; mode=block"]),
@@ -52,8 +52,8 @@ class XXSSProtectionRatingTest extends TestCase
 
         $rating = new XXSSProtectionRating("http://testdomain", $client);
 
-        $this->assertEquals("A", $rating->getRating());
-        $this->assertEquals("The header is set correctly.\n\"mode=block\" is activated.", $rating->getComment());
+        $this->assertEquals(100, $rating->score);
+        $this->assertTrue(collect($rating)->flatten()->contains('XXSS_BLOCK'));
     }
 
     /**

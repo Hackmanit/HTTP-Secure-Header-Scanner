@@ -2,43 +2,40 @@
 
 namespace App\Ratings;
 
+use GuzzleHttp\Client;
+
+
 class XXSSProtectionRating extends Rating
 {
+    
+    public function __construct($url, Client $client = null) {
+        parent::__construct($url, $client);
+
+        $this->name = "X_XSS_PROTECTION";
+        $this->scoreType = "critical";
+    }
+
     protected function rate()
     {
         $header = $this->getHeader('x-xss-protection');
 
         if ($header === null) {
-            $this->rating = 'C';
-            $this->comment  = __('The header is not set.');
+            $this->hasError = true;
+            $this->errorMessage = "HEADER_NOT_SET";
         } elseif (count($header) > 1) {
-            $this->rating = 'C';
-            $this->comment  = __('The header is set multiple times.');
+            $this->hasError = true;
+            $this->errorMessage = "HEADER_SET_MULTIPLE_TIMES";
         } else {
             $header = $header[0];
 
-            $this->rating = 'B';
-            $this->comment = __('The header is set correctly.');
+            $this->score = 50;
+            $this->testDetails->push(['placeholder' => 'XXSS_CORRECT']);
 
             if (strpos($header, 'mode=block') !== false) {
-                $this->rating = 'A';
-                $this->comment .= "\n" . __('"mode=block" is activated.');
+                $this->score = 100;
+                $this->testDetails->push(['placeholder' => 'XXSS_BLOCK']);
             }
         }
     }
 
-    public static function getDescription()
-    {
-        // OWASP
-        // https://www.owasp.org/index.php/OWASP_Secure_Headers_Project#X-XSS-Protection
-        // TODO: Translate
-        return 'This header enables the Cross-site scripting (XSS) filter in your browser.';
-    }
-
-    public static function getBestPractice()
-    {
-        // OWASP
-        // https://www.owasp.org/index.php/OWASP_Secure_Headers_Project#xxp
-        return '1; mode=block';
-    }
 }
