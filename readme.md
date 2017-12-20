@@ -288,3 +288,49 @@ A sink is a potentially dangerous method that could lead to a vulnerability. In 
 ##### Impact (2/10)
 The scan's result can only be used as an indication if there might be security vulnerabilities.
 Further advanced tests would be needed to confirm if there are vulnerabilities on the site or not.
+
+
+
+
+# Scanner Interface Values
+
+## HSHS-Scanner
+
+### Messages
+
+| Placeholder | Message                     |
+|-------------|-----------------------------|
+| **GENERAL** | |
+| HEADER_NOT_SET | The header is not set. |
+| HEADER_SET_MULTIPLE_TIMES | The header is set multiple times. |
+| MAX_AGE_ERROR | An error occured while checking `max-age`. |
+| INCLUDE_SUBDOMAINS | `includeSubDomains` is set. |
+| **CONTENT-SECURITY-POLICY** | |
+| CSP_UNSAFE_INCLUDED | The header contains `unsafe-inline` or `unsafe-eval` directives. |
+| CSP_NO_UNSAFE_INCLUDED | The header is free of any `unsafe-` directives. |
+| CSP_CORRECT | The header is `unsafe-` free and includes `default-src 'none'`. | 
+| CSP_LEGACY_HEADER_SET | The legacy header `X-Content-Security-Policy` is set. The new and standardized header is `Content-Security-Policy`. |
+| **CONTENT-TYPE** | |
+| CT_HEADER_WITHOUT_CHARSET | The header is set without the charset. |
+| CT_HEADER_WITH_CHARSET | The header is set with the charset. |
+| CT_CORRECT | The header is set with the charset and follows the best practice. |
+| CT_WRONG_CHARSET | The given charset is wrong and thereby ineffective. |
+| CT_META_TAG_SET | A meta tag is set with a charset. |
+| CT_META_TAG_SET_CORRECT | A meta tag is set with a charset and follows the best practice. |
+| **PUBLIC-KEY-PINS**||
+| HPKP_LESS_15 | The keys are pinned for less than 15 days. |
+| HPKP_MORE_15 | The keys are pinned for more than 15 days. |
+| HPKP_REPORT_URI | A `report-uri` is set. |
+| **STRICT-TRANSPORT-SECURITY** ||
+| HSTS_LESS_6 | The value for `max-age` is smaller than 6 months. |
+| HSTS_MORE_6 | The value for `max-age` is greater than 6 months. |
+| HSTS_PRELOAD | `preload` is set. |
+| **X-CONTENT-TYPE-OPTIONS** ||
+| XCTO_CORRECT | The header is set correctly. |
+| XCTO_NOT_CORRECT | The header is not set correctly. |
+| **X-FRAME-OPTIONS** ||
+| XFO_CORRECT | The header is set and does not contain any wildcard. |
+| XFO_WILDCARDS | The header contains wildcards and is thereby useless. |
+| **X-XSS-PROTECTION** ||
+| XXSS_CORRECT | The header is set correctly. |
+| XXSS_BLOCK | `mode=block` is activated. |

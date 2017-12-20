@@ -19,40 +19,13 @@ class HPKPRatingTest extends TestCase
         ]);
         $rating = new HPKPRating("http://testdomain", $client);
 
-        $this->assertEquals("C", $rating->getRating());
-        $this->assertEquals("The header is not set.", $rating->getComment());
+        $this->assertEquals(0, $rating->score);
+        $this->assertEquals($rating->errorMessage, 'HEADER_NOT_SET');
     }
 
+    
     /** @test */
-    public function hpkpRating_rates_b_for_a_short_max_age()
-    {
-        $client = $this->getMockedGuzzleClient([
-            new Response(200, [
-                'Public-Key-Pins' => 'max-age=100000; pin-sha256="E9CZ9INDbd+2eRQozYqqbQ2yXLVKB9+xcprMF+44U1g="; pin-sha256="LPJNul+wow4m6DsqxbninhsWHlwfp0JecwQzYpOLmCQ=";'
-            ]),
-        ]);
-        $rating = new HPKPRating("http://testdomain", $client);
-
-        $this->assertEquals("B", $rating->getRating());
-        $this->assertEquals('The keys are pinned for less than 15 days.', $rating->getComment());
-    }
-
-    /** @test */
-    public function hpkpRating_rates_a_for_a_good_max_age()
-    {
-        $client = $this->getMockedGuzzleClient([
-            new Response(200, [
-                'Public-Key-Pins' => 'max-age=1500000; pin-sha256="E9CZ9INDbd+2eRQozYqqbQ2yXLVKB9+xcprMF+44U1g="; pin-sha256="LPJNul+wow4m6DsqxbninhsWHlwfp0JecwQzYpOLmCQ=";'
-            ]),
-        ]);
-        $rating = new HPKPRating("http://testdomain", $client);
-
-        $this->assertEquals("A", $rating->getRating());
-        $this->assertEquals('The keys are pinned for more than 15 days.', $rating->getComment());
-    }
-
-    /** @test */
-    public function hpkpRating_rates_x_plus_for_includeSubDomains()
+    public function hpkpRating_rates_includeSubDomains()
     {
         $client = $this->getMockedGuzzleClient([
             new Response(200, [
@@ -61,12 +34,11 @@ class HPKPRatingTest extends TestCase
         ]);
         $rating = new HPKPRating("http://testdomain", $client);
 
-        $this->assertStringEndsWith("+", $rating->getRating());
-        $this->assertStringEndsWith('"includeSubDomains" is set.', $rating->getComment());
+        $this->assertTrue($rating->testDetails->flatten()->contains('INCLUDE_SUBDOMAINS'));
     }
 
     /** @test */
-    public function hpkpRating_rates_x_plus_for_report_uri()
+    public function hpkpRating_rates_report_uri()
     {
         $client = $this->getMockedGuzzleClient([
             new Response(200, [
@@ -75,8 +47,7 @@ class HPKPRatingTest extends TestCase
         ]);
         $rating = new HPKPRating("http://testdomain", $client);
 
-        $this->assertStringEndsWith("+", $rating->getRating());
-        $this->assertStringEndsWith('A report-uri is set.', $rating->getComment());
+        $this->assertTrue($rating->testDetails->flatten()->contains('HPKP_REPORT_URI'));
     }
 
     /**

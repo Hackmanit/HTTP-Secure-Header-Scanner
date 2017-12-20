@@ -19,8 +19,8 @@ class HSTSRatingTest extends TestCase
         ]);
         $rating = new HSTSRating("http://testdomain", $client);
 
-        $this->assertEquals("C", $rating->getRating());
-        $this->assertEquals("The header is not set.", $rating->getComment());
+        $this->assertEquals(0, $rating->score);
+        $this->assertEquals($rating->errorMessage, 'HEADER_NOT_SET');
     }
 
     /** @test */
@@ -33,8 +33,8 @@ class HSTSRatingTest extends TestCase
         ]);
         $rating = new HSTSRating("http://testdomain", $client);
 
-        $this->assertEquals("B", $rating->getRating());
-        $this->assertEquals('The value for "max-age" is smaller than 6 months.', $rating->getComment());
+        $this->assertEquals(60, $rating->score);
+        $this->assertTrue(collect($rating)->flatten()->contains('HSTS_LESS_6'));
     }
 
     /** @test */
@@ -47,8 +47,8 @@ class HSTSRatingTest extends TestCase
         ]);
         $rating = new HSTSRating("http://testdomain", $client);
 
-        $this->assertEquals("A", $rating->getRating());
-        $this->assertEquals('The value for "max-age" is greater than 6 months.', $rating->getComment());
+        $this->assertEquals(100, $rating->score);
+        $this->assertTrue(collect($rating)->flatten()->contains('HSTS_MORE_6'));
     }
 
     /** @test */
@@ -61,8 +61,7 @@ class HSTSRatingTest extends TestCase
         ]);
         $rating = new HSTSRating("http://testdomain", $client);
 
-        $this->assertStringEndsWith("+", $rating->getRating());
-        $this->assertStringEndsWith('"includeSubDomains" is set.', $rating->getComment());
+        $this->assertTrue($rating->testDetails->flatten()->contains('INCLUDE_SUBDOMAINS'));
     }
 
     /** @test */
@@ -75,8 +74,7 @@ class HSTSRatingTest extends TestCase
         ]);
         $rating = new HSTSRating("http://testdomain", $client);
 
-        $this->assertStringEndsWith("+", $rating->getRating());
-        $this->assertStringEndsWith('"preload" is set.', $rating->getComment());
+        $this->assertTrue($rating->testDetails->flatten()->contains('HSTS_PRELOAD'));
     }
 
     /**

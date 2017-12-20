@@ -2,43 +2,39 @@
 
 namespace App\Ratings;
 
+use GuzzleHttp\Client;
+
+
 class XContentTypeOptionsRating extends Rating
 {
+
+    public function __construct($url, Client $client = null) {
+        parent::__construct($url, $client);
+
+        $this->name = "X_CONTENT_TYPE_OPTIONS";
+        $this->scoreType = "critical";
+    }
+
     protected function rate()
     {
         $header = $this->getHeader('x-content-type-options');
 
         if ($header === null) {
-            $this->rating = 'C';
-            $this->comment  = __('The header is not set.');
+            $this->hasError = true;
+            $this->errorMessage = "HEADER_NOT_SET";
         } elseif (count($header) > 1) {
-            $this->rating = 'C';
-            $this->comment  = __('The header is set multiple times.');
+            $this->hasError = true;
+            $this->errorMessage = "HEADER_SET_MULTIPLE_TIMES";
         } else {
             $header = $header[0];
 
-            $this->rating = 'C';
-            $this->comment = __('The header is not set correctly.');
-
             if (strpos($header, 'nosniff') !== false) {
-                $this->rating = 'A';
-                $this->comment = __('The header is set correctly.');
+                $this->score = 100;
+                $this->testDetails->push(['placeholder' => 'XCTO_CORRECT']);
+            }
+            else {
+                $this->testDetails->push(['placeholder' => 'XCTO_NOT_CORRECT']);
             }
         }
-    }
-
-    public static function getDescription()
-    {
-        // OWASP
-        // https://www.owasp.org/index.php/OWASP_Secure_Headers_Project#X-Content-Type-Options
-        // TODO: Translate
-        return 'Setting this header will prevent the browser from interpreting files as something else than declared by the content type in the HTTP headers.';
-    }
-
-    public static function getBestPractice()
-    {
-        // OWASP
-        // https://www.owasp.org/index.php/OWASP_Secure_Headers_Project#xcto
-        return 'nosniff';
     }
 }

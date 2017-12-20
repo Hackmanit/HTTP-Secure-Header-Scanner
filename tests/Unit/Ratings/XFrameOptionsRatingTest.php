@@ -16,11 +16,11 @@ class XFrameOptionsRatingTest extends TestCase
     {
         $client = $this->getMockedGuzzleClient([
             new Response(200),
-        ]);
+        ]); 
         $rating = new XFrameOptionsRating("http://testdomain", $client);
 
-        $this->assertEquals("C", $rating->getRating());
-        $this->assertEquals("The header is not set.", $rating->getComment());
+        $this->assertEquals(0, $rating->score);
+        $this->assertEquals($rating->errorMessage, 'HEADER_NOT_SET');
     }
 
     /** @test */
@@ -33,8 +33,8 @@ class XFrameOptionsRatingTest extends TestCase
         ]);
         $rating = new XFrameOptionsRating("http://testdomain", $client);
 
-        $this->assertEquals("C", $rating->getRating());
-        $this->assertEquals("The header contains wildcards and is thereby useless.", $rating->getComment());
+        $this->assertEquals(0, $rating->score);
+        $this->assertTrue(collect($rating)->flatten()->contains('XFO_WILDCARDS'));
     }
 
     /** @test */
@@ -47,8 +47,8 @@ class XFrameOptionsRatingTest extends TestCase
         ]);
         $rating = new XFrameOptionsRating("http://testdomain", $client);
 
-        $this->assertEquals("A", $rating->getRating());
-        $this->assertEquals("The header is set and does not contain any wildcard.", $rating->getComment());
+        $this->assertEquals(100, $rating->score);
+        $this->assertTrue(collect($rating)->flatten()->contains('XFO_CORRECT'));
     }
 
     /**
