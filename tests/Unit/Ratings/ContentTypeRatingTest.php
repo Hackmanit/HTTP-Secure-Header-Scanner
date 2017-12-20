@@ -19,8 +19,8 @@ class ContentTypeRatingTest extends TestCase
         ]);
         $rating = new ContentTypeRating("http://testdomain", $client);
 
-        $this->assertEquals("C", $rating->getRating());
-        $this->assertEquals("The header is not set.", $rating->getComment());
+        $this->assertEquals(0, $rating->score);
+        $this->assertEquals($rating->errorMessage, 'HEADER_NOT_SET');
     }
 
     /** @test */
@@ -31,8 +31,8 @@ class ContentTypeRatingTest extends TestCase
         ]);
         $rating = new ContentTypeRating("http://testdomain", $client);
 
-        $this->assertEquals("C", $rating->getRating());
-        $this->assertEquals("The header is set without the charset.", $rating->getComment());
+        $this->assertEquals(0, $rating->score);
+        $this->assertTrue(collect($rating)->contains("CT_HEADER_WITHOUT_CHARSET"));
     }
 
     /** @test */
@@ -51,8 +51,8 @@ class ContentTypeRatingTest extends TestCase
         for ($i = 1; $i <= 7; $i++) {
             $rating = new ContentTypeRating("http://testdomain", $client);
 
-            $this->assertEquals("C", $rating->getRating());
-            $this->assertStringStartsWith("The given charset is wrong and thereby ineffective.", $rating->getComment());
+            $this->assertEquals(0, $rating->score);
+            $this->assertTrue(collect($rating)->contains('CT_WRONG_CHARSET'));
         }
     }
 
@@ -64,11 +64,10 @@ class ContentTypeRatingTest extends TestCase
             new Response(200, [ "Content-Type" => "text/html; charset=UTF-8" ]),
         ]);
 
-        for ($i = 1; $i <= 2; $i++) {
-            $rating = new ContentTypeRating("http://testdomain", $client);
+        $rating = new ContentTypeRating("http://testdomain", $client);
 
-            $this->assertEquals("A", $rating->getRating());
-            $this->assertEquals("The header is set with the charset and follows the best practice.", $rating->getComment());
+        for ($i = 1; $i <= 2; $i++) {
+            $this->assertEquals(100, $rating->score);
         }
     }
 
@@ -83,7 +82,7 @@ class ContentTypeRatingTest extends TestCase
 
         $rating = new ContentTypeRating("http://testdomain", $client);
 
-        $this->assertEquals("B", $rating->getRating());
+        $this->assertEquals(60, $rating->score);
     }
 
     /**

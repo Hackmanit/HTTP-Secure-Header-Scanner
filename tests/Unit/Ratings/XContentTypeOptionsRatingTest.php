@@ -13,27 +13,39 @@ class XContentTypeOptionsRatingTest extends TestCase
 {
 
     /** @test */
-    public function xContentTypeOptionsRating_rates_c_for_a_missing_header()
+    public function xContentTypeOptionsRating_rates_a_missing_header()
     {
         $client = $this->getMockedGuzzleClient([
             new Response(200),
         ]);
         $rating = new XContentTypeOptionsRating("http://testdomain", $client);
 
-        $this->assertEquals("C", $rating->getRating());
-        $this->assertEquals("The header is not set.", $rating->getComment());
+        $this->assertEquals(0, $rating->score);
+        $this->assertEquals($rating->errorMessage, 'HEADER_NOT_SET');
     }
 
     /** @test */
-    public function xContentTypeOptionsRating_rates_a_for_a_correct_header()
+    public function xContentTypeOptionsRating_rates_a_correct_header()
     {
         $client = $this->getMockedGuzzleClient([
             new Response(200, [ "X-Content-Type-Options" => "nosniff" ]),
         ]);
         $rating = new XContentTypeOptionsRating("http://testdomain", $client);
 
-        $this->assertEquals("A", $rating->getRating());
-        $this->assertEquals("The header is set correctly.", $rating->getComment());
+        $this->assertEquals(100, $rating->score);
+        $this->assertTrue(collect($rating)->flatten()->contains('XCTO_CORRECT'));
+    }
+
+    /** @test */
+    public function xContentTypeOptionsRating_rates_a_wrong_header()
+    {
+        $client = $this->getMockedGuzzleClient([
+            new Response(200, [ "X-Content-Type-Options" => "wrong entry" ]),
+        ]);
+        $rating = new XContentTypeOptionsRating("http://testdomain", $client);
+
+        $this->assertEquals(0, $rating->score);
+        $this->assertTrue(collect($rating)->flatten()->contains('XCTO_NOT_CORRECT'));
     }
 
     /**

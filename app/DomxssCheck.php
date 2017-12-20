@@ -81,8 +81,10 @@ class DomxssCheck
                     'score' => $this->hasSinks() ? 100 : 0,
                     'scoreType' => 'info',
                     'testDetails' => [
-                        'placeholder' => $this->hasSinks() ? 'SINKS_FOUND' : 'NO_SINKS_FOUND',
-                        'values' => null
+                        [
+                            'placeholder' => $this->hasSinks() ? 'SINKS_FOUND' : 'NO_SINKS_FOUND',
+                            'values' => null
+                        ]
                     ]
                 ],
                 [
@@ -92,8 +94,10 @@ class DomxssCheck
                     'score' => $this->hasSources() ? 100 : 0,
                     'scoreType' => 'info',
                     'testDetails' => [
-                        'placeholder' => $this->hasSources() ? 'SOURCES_FOUND' : 'NO_SOURCES_FOUND',
-                        'values' => null
+                        [
+                            'placeholder' => $this->hasSources() ? 'SOURCES_FOUND' : 'NO_SOURCES_FOUND',
+                            'values' => null
+                        ]
                     ]
                 ]
             ]

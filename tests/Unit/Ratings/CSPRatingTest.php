@@ -26,8 +26,8 @@ class CSPRatingTest extends TestCase
         ]);
         $rating = new CSPRating("http://testdomain", $client);
 
-        $this->assertEquals("C", $rating->getRating());
-        $this->assertEquals('The header is not set.', $rating->getComment());
+        $this->assertEquals(0, $rating->score);
+        $this->assertEquals($rating->errorMessage, 'HEADER_NOT_SET');
     }
 
     /** @test */
@@ -40,8 +40,8 @@ class CSPRatingTest extends TestCase
         ]);
         $rating = new CSPRating("http://testdomain", $client);
 
-        $this->assertEquals("C", $rating->getRating());
-        $this->assertEquals('The header contains "unsafe-inline" or "unsafe-eval" directives.', $rating->getComment());
+        $this->assertEquals(0, $rating->score);
+        $this->assertTrue(collect($rating)->contains('CSP_UNSAFE_INCLUDED'));
     }
 
     /** @test */
@@ -54,8 +54,8 @@ class CSPRatingTest extends TestCase
         ]);
         $rating = new CSPRating("http://testdomain", $client);
 
-        $this->assertEquals("C", $rating->getRating());
-        $this->assertEquals('The header contains "unsafe-inline" or "unsafe-eval" directives.', $rating->getComment());
+        $this->assertEquals(0, $rating->score);
+        $this->assertTrue(collect($rating)->contains('CSP_UNSAFE_INCLUDED'));
     }
 
     /** @test */
@@ -68,8 +68,7 @@ class CSPRatingTest extends TestCase
         ]);
         $rating = new CSPRating("http://testdomain", $client);
 
-        $this->assertEquals("B", $rating->getRating());
-        $this->assertEquals('The header is free of any "unsafe-" directives.', $rating->getComment());
+        $this->assertEquals(50, $rating->score);
     }
 
     /** @test */
@@ -82,13 +81,9 @@ class CSPRatingTest extends TestCase
         ]);
         $rating = new CSPRating("http://testdomain", $client);
 
-        $this->assertEquals("A", $rating->getRating());
-        $this->assertEquals('The header is "unsafe-" free and includes "default-src \'none\'"', $rating->getComment());
+        $this->assertEquals(100, $rating->score);
     }
 
-    // TODO: Rates with C because of wildcards in script-src, object-src or default-src
-    // TODO: default-src *
-    // TODO: default-src 'none'; script-src *;
 
     /** @test */
     public function cspRating_adds_comment_for_legacy_header()
@@ -100,7 +95,7 @@ class CSPRatingTest extends TestCase
         ]);
         $rating = new CSPRating("http://testdomain", $client);
 
-        $this->assertStringEndsWith("The legacy header \"X-Content-Security-Policy\" (that is only used for IE11 with CSP v.1) is set. The new and standardized header is Content-Security-Policy.", $rating->getComment());
+        $this->assertTrue(collect($rating)->contains('CSP_LEGACY_HEADER_SET'));
     }
 
 
