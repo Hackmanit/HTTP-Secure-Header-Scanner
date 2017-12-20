@@ -2,14 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Crawler;
-use App\DomxssReport;
-use App\Jobs\CrawlerJob;
-use App\Jobs\GenerateFullReportJob;
 use App\HeaderReport;
+use App\DomxssCheck;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Redis;
-use Illuminate\Support\Facades\URL;
+use Illuminate\Support\Facades\Validator;
+use GuzzleHttp\Client;
 
 class ApiController extends Controller
 {
@@ -68,16 +65,36 @@ class ApiController extends Controller
 
 
     public function domxssReport(Request $request){
-        $this->validate($request, [
-            'url' => 'required|url'
+        
+        $validator = Validator::make($request->all(), [
+            'url' => 'required|url',
+            'dangerLevel' => 'integer|min:0|max:10',
+            'callbackurls' => 'required|array',
+            'callbackurls.*' => 'url'
         ]);
-        $report = new DomxssReport($request->url);
-        return [
-            'checks' => [
-                'sinks' => ! $report->hasSinks(),
-                'sources' => ! $report->hasSources()
-            ]
-        ];
+
+        if ($validator->fails()) {
+            return $validator->errors();
+        }
+
+        $check = new DomxssCheck($request->url);
+
+        foreach ($request->callbackurls as $url) {
+            
+            try {
+                $client = new Client();
+                $client->post($url, [
+                    'http_errors' => false,
+                    'timeout' => 0.1,
+                    'json' => $check->report()
+                ]);
+            }
+            catch (\Exception $e) {
+                \Log::debug($e);
+            }
+        }
+       
+        return "OK";
     }
 
 }

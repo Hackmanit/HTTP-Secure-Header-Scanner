@@ -7,7 +7,6 @@
     "require": {
         "php": ">=5.6.4",
         "guzzlehttp/guzzle": "^6.2",
-        "kevinrob/guzzle-cache-middleware": "^1.5",
         "laravel/framework": "5.4.*",
         "voku/simple_html_dom": "^1.5"
     },
