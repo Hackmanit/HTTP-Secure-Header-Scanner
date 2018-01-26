@@ -16,9 +16,9 @@ class ApiController extends Controller
         
         $this->checkSiwecosRequest($request);
 
-        $check = new HeaderCheck($request->url);
+        $check = new HeaderCheck($request->json('url'));
 
-        $this->notifyCallbacks($request->callbackurls, $check);
+        $this->notifyCallbacks($request->json('callbackurls'), $check);
 
         return "OK";
     }
@@ -27,9 +27,11 @@ class ApiController extends Controller
         
         $this->checkSiwecosRequest($request);
 
-        $check = new DomxssCheck($request->url);
+        $check = new DomxssCheck($request->json('url'));
 
-        $this->notifyCallbacks($request->callbackurls, $check);
+        $report = $check->report();
+
+        $this->notifyCallbacks($request->json('callbackurls'), $check);
 
         return "OK";
     }
@@ -50,13 +52,14 @@ class ApiController extends Controller
     }
 
     protected function notifyCallbacks(array $callbackurls, $check) {
+        $report = $check->report();
         foreach ($callbackurls as $url) {
             try {
                 $client = new Client();
                 $client->post($url, [
                     'http_errors' => false,
-                    'timeout' => 0.1,
-                    'json' => $check->report()
+                    'timeout' => 60,
+                    'json' => $report
                 ]);
             }
             catch (\Exception $e) {
