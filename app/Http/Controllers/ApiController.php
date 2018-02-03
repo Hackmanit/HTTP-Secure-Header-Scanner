@@ -29,8 +29,6 @@ class ApiController extends Controller
 
         $check = new DomxssCheck($request->json('url'));
 
-        $report = $check->report();
-
         $this->notifyCallbacks($request->json('callbackurls'), $check);
 
         return "OK";
