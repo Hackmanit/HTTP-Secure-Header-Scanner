@@ -34,6 +34,8 @@ class ContentTypeRating extends Rating
 
             $header = $header[0];
 
+            $this->testDetails->push(['placeholder' => 'HEADER', 'values' => [$header]]);
+
             if (stripos($header, 'charset=') !== false) {
                 $this->score = 50;
                 $detail = "CT_HEADER_WITH_CHARSET";
@@ -77,6 +79,8 @@ class ContentTypeRating extends Rating
                 $this->score = 60;
                 $detailMeta = "CT_META_TAG_SET_CORRECT";
             }
+            
+            $this->testDetails->push(['placeholder' => 'META', 'values' => [ $finding[0]->__toString() ]]);
         }
         // case: <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
         elseif ($finding = $dom->find('meta[http-equiv=Content-Type]')) {
@@ -87,6 +91,8 @@ class ContentTypeRating extends Rating
                 $detailMeta = "CT_META_TAG_SET";
                 $this->score = 30;
             }
+
+            $this->testDetails->push(['placeholder' => 'META', 'values' => [ $finding[0]->__toString() ]]);
         }
 
         if ($detailMeta)
