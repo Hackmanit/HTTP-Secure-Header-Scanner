@@ -28,6 +28,8 @@ class HPKPRating extends Rating
         } else {
             $header = $header[0];
 
+            $this->testDetails->push(['placeholder' => 'HEADER', 'values' => [ $header ]]);
+
             $beginAge = strpos($header, 'max-age=') + 8;
             $endAge = strpos($header, ';', $beginAge);
             // if there is no semicolon | max-age=300

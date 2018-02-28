@@ -28,6 +28,8 @@ class XXSSProtectionRating extends Rating
         } else {
             $header = $header[0];
 
+            $this->testDetails->push(['placeholder' => 'HEADER', 'values' => [ $header ]]);
+
             $this->score = 50;
             $this->testDetails->push(['placeholder' => 'XXSS_CORRECT']);
 
