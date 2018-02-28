@@ -11,58 +11,146 @@ This documentation describes the two modules "HTTP Secure Header Scanner" and "D
 This module scans the HTTP header of a specific URL and returns a report that can be used to improve the configuration for a better security.
 
 ## API-Call
-`http://localhost/api/v1/header?url=http://siwecos.de`
+Send a POST-Request to `http://localhost/api/v1/header`:
+
+```
+POST /api/v1/header HTTP/1.1
+Host: localhost:8000
+Content-Type: application/json
+Cache-Control: no-cache
+
+
+{
+  "url": "https://siwecos.de",
+  "callbackurls": [
+    "http://localhost:9002"
+  ]
+}
+```
+
+The parameters `url` and `callbackurls` are required:
+- `url` must be a `string`.
+- `callbackurls` must be an `array` with only contains one or more `string`s.
+
 
 ### Sample output
 ```json
 {
-    "checks": {
-        "Content-Type": {
-            "result": false,
-            "comment": "The header is set with the charset and follows the best practice.",
-            "directive": [
-                "text/html; charset=UTF-8"
-            ]
+  "name": "HEADER",
+  "hasError": false,
+  "errorMessage": null,
+  "score": 0,
+  "tests": [
+    {
+      "name": "CONTENT_SECURITY_POLICY",
+      "hasError": true,
+      "errorMessage": "HEADER_NOT_SET",
+      "score": 0,
+      "scoreType": "critical",
+      "testDetails": []
+    },
+    {
+      "name": "CONTENT_TYPE",
+      "hasError": false,
+      "errorMessage": null,
+      "score": 100,
+      "scoreType": "critical",
+      "testDetails": [
+        {
+          "placeholder": "META",
+          "values": [
+            "<meta charset=\"UTF-8\" \\/>"
+          ]
         },
-        "Content-Security-Policy": {
-            "result": true,
-            "comment": "The header is not set.",
-            "directive": null
+        {
+          "placeholder": "CT_META_TAG_SET_CORRECT"
         },
-        "Public-Key-Pins": {
-            "result": true,
-            "comment": "The header is not set.",
-            "directive": null
+        {
+          "placeholder": "HEADER",
+          "values": [
+            "text\\/html; charset=UTF-8"
+          ]
         },
-        "Strict-Transport-Security": {
-            "result": true,
-            "comment": "The header is not set.",
-            "directive": null
-        },
-        "X-Content-Type-Options": {
-            "result": false,
-            "comment": "The header is set correctly.",
-            "directive": [
-                "nosniff"
-            ]
-        },
-        "X-Frame-Options": {
-            "result": false,
-            "comment": "The header is set and does not contain any wildcard.",
-            "directive": [
-                "SAMEORIGIN"
-            ]
-        },
-        "X-Xss-Protection": {
-            "result": false,
-            "comment": "The header is set correctly.\n\"mode=block\" is activated.",
-            "directive": [
-                "1; mode=block"
-            ]
+        {
+          "placeholder": "CT_CORRECT"
         }
+      ]
+    },
+    {
+      "name": "PUBLIC_KEY_PINS",
+      "hasError": true,
+      "errorMessage": "HEADER_NOT_SET",
+      "score": 0,
+      "scoreType": "info",
+      "testDetails": []
+    },
+    {
+      "name": "STRICT_TRANSPORT_SECURITY",
+      "hasError": true,
+      "errorMessage": "HEADER_NOT_SET",
+      "score": 0,
+      "scoreType": "critical",
+      "testDetails": []
+    },
+    {
+      "name": "X_CONTENT_TYPE_OPTIONS",
+      "hasError": false,
+      "errorMessage": null,
+      "score": 100,
+      "scoreType": "critical",
+      "testDetails": [
+        {
+          "placeholder": "HEADER",
+          "values": [
+            "nosniff"
+          ]
+        },
+        {
+          "placeholder": "XCTO_CORRECT"
+        }
+      ]
+    },
+    {
+      "name": "X_FRAME_OPTIONS",
+      "hasError": false,
+      "errorMessage": null,
+      "score": 100,
+      "scoreType": "critical",
+      "testDetails": [
+        {
+          "placeholder": "HEADER",
+          "values": [
+            "SAMEORIGIN"
+          ]
+        },
+        {
+          "placeholder": "XFO_CORRECT"
+        }
+      ]
+    },
+    {
+      "name": "X_XSS_PROTECTION",
+      "hasError": false,
+      "errorMessage": null,
+      "score": 100,
+      "scoreType": "critical",
+      "testDetails": [
+        {
+          "placeholder": "HEADER",
+          "values": [
+            "1; mode=block"
+          ]
+        },
+        {
+          "placeholder": "XXSS_CORRECT"
+        },
+        {
+          "placeholder": "XXSS_BLOCK"
+        }
+      ]
     }
+  ]
 }
-
 ```
 
 
@@ -77,18 +165,11 @@ When a server sends a document to a user agent (eg. a browser) it also sends inf
 ##### Best-Practice
 `text/html; charset=utf-8;`
 
-##### Scan-Result
-`false`:
-- The header is set and contains a charset.
-
-`true`:
-- The header is not set correctly.
 
 ##### Impact and Feasibility (10/10)
 A correct header with the setted charset prevents different XSS attacks that use other charsets than the original webpage so they can bypass XSS prevention.
 
 It's easy and harmless to set the correct charset without affecting the sites content.
-
 
 
 
@@ -99,14 +180,6 @@ Content Security Policy (CSP) requires careful tuning and precise definition of 
 
 ##### Best-Practice
 Best Practice is to use the CSP with `default-src 'none'` and without any `unsafe-eval` or `unsafe-inline` directives.
-
-##### Scan-Result
-
-`false`:
-- The header is set does not contain `unsafe-eval` or `unsafe-inline`.
-
-`true`:
-- The header is not set or does contain `unsafe-eval` or `unsafe-inline`.
 
 ##### Impact and Feasibility (7/10)
 The Content-Security-Policy can prevent a wide range of attacks that infiltrate external content and code. With the correct setting it's a powerful method to increase the sites security.
@@ -124,15 +197,8 @@ Impact-Rating: 10/10 | Feasibility: 5/10
 HTTP Public Key Pinning (HPKP) is a security mechanism which allows HTTPS websites to resist impersonation by attackers using mis-issued or otherwise fraudulent certificates. (For example, sometimes attackers can compromise certificate authorities, and then can mis-issue certificates for a web origin.).
 
 ##### Best-Practice
-`pin-sha256="<HASH>"; pin-sha256="<HASH>"; max-age=2592000; includeSubDomains`
+Do not use this. // `pin-sha256="<HASH>"; pin-sha256="<HASH>"; max-age=2592000; includeSubDomains`
 
-##### Scan-Result
-
-`false`:
-- The header is set correctly.
-
-`true`:
-- The header is not set.
 
 ##### Impact and Feasibility (3/10)
 For small and medium-sized enterprises as is the target group of SIWECOS this header is a 'nice to have' but not a absolutely must.
@@ -149,14 +215,6 @@ HTTP Strict Transport Security (HSTS) is a web security policy mechanism which h
 ##### Best-Practice
 `max-age=63072000; includeSubdomains`
 
-##### Scan-Result
-
-`false`:
-- The header is set correctly.
-
-`true`:
-- The header is not set.
-
 ##### Impact and Feasibility (10/10)
 This is a must-have header for every webpage and easy and harmless to integrate.
 The header guaranteed that the traffic between the server and client has to be encrypted to communicate.
@@ -170,14 +228,6 @@ Setting this header will prevent the browser from interpreting files as somethin
 
 ##### Best-Practice
 `nosniff`
-
-##### Scan-Result
-
-`false`:
-- The header is set correctly.
-
-`true`:
-- The header is not set.
 
 ##### Impact and Feasibility (6/10)
 Easy to implement and no further adjustments on the website are needed.
@@ -194,22 +244,13 @@ X-Frame-Options response header improve the protection of web applications again
 ##### Best-Practice
 Best Practice is to set this header accordingly to your needs.
 
-Do not use `allow-from: *`
-
-##### Scan-Result
-
-`false`:
-- The header is set correctly.
-
-`true`:
-- The header is not set or contains wildcards `*`.
+Do not use `allow-from: *`. Do not use any wildcards.
 
 
 ##### Impact and Feasibility (9/10)
 Prevents Clickjacking attacks.
 
 Easy to implement and no further adjustments on the website are needed.
-
 
 
 
@@ -221,14 +262,6 @@ This header enables the Cross-site scripting (XSS) filter in the browser.
 ##### Best-Practice
 `1; mode=block`
 
-##### Scan-Result
-
-`false`:
-- The header is set correctly.
-
-`true`:
-- The header is not set.
-
 
 ##### Impact and Feasibility (9/10)
 Prevents reflected XSS attacks.
@@ -236,19 +269,67 @@ Prevents reflected XSS attacks.
 Easy to implement and no further adjustments on the website are needed.
 
 
+
 # DOMXSS-Scanner
 This module scans the given URL and checks for DOMXSS sinks and sources.
 
 ## API-Call
-`http://localhost/api/v1/domxss?url=http://siwecos.de`
+Send a POST-Request to `http://localhost/api/v1/domxss`:
+
+```
+POST /api/v1/domxss HTTP/1.1
+Host: localhost:8000
+Content-Type: application/json
+Cache-Control: no-cache
+
+{
+  "url": "https://siwecos.de",
+  "callbackurls": [
+    "http://localhost:9002"
+  ]
+}
+```
+
+The parameters `url` and `callbackurls` are required:
+- `url` must be a `string`.
+- `callbackurls` must be an `array` with only contains one or more `string`s.
+
 
 ### Sample output
 ```json
 {
-    "checks": {
-        "sinks":true,
-        "sources":true
+  "name": "DOMXSS",
+  "hasError": false,
+  "errorMessage": null,
+  "score": 100,
+  "tests": [
+    {
+      "name": "HAS_SINKS",
+      "hasError": false,
+      "errorMessage": null,
+      "score": 100,
+      "scoreType": "info",
+      "testDetails": [
+        {
+          "placeholder": "SINKS_FOUND",
+          "values": null
+        }
+      ]
+    },
+    {
+      "name": "HAS_SOURCES",
+      "hasError": false,
+      "errorMessage": null,
+      "score": 100,
+      "scoreType": "info",
+      "testDetails": [
+        {
+          "placeholder": "SOURCES_FOUND",
+          "values": null
+        }
+      ]
     }
+  ]
 }
 ```
 
@@ -260,12 +341,6 @@ This module scans the given URL and checks for DOMXSS sinks and sources.
 A source is an input that could be controlled by an external (untrusted) source.
  > https://github.com/wisec/domxsswiki/wiki/Glossary
 
-##### Scan-Result
-`true`:
- - At least one source was found on the scanned URL.
-
-`false`:
-- No sources were found on the scanned URL
 
 ##### Impact (1/10)
 The scan's result can only be used as an indication if there might be security vulnerabilities.
@@ -278,17 +353,9 @@ Further advanced tests would be needed to confirm if there are vulnerabilities o
 A sink is a potentially dangerous method that could lead to a vulnerability. In this case a DOM Based XSS.
  > https://github.com/wisec/domxsswiki/wiki/Glossary
 
-##### Scan-Result
-`true`:
- - At least one sink was found on the scanned URL.
-
-`false`:
-- No sinks were found on the scanned URL
-
 ##### Impact (2/10)
 The scan's result can only be used as an indication if there might be security vulnerabilities.
 Further advanced tests would be needed to confirm if there are vulnerabilities on the site or not.
-
 
 
 
@@ -296,7 +363,6 @@ Further advanced tests would be needed to confirm if there are vulnerabilities o
 
 ## HSHS-Scanner
 
-### Messages
 
 | Placeholder | Message                     |
 |-------------|-----------------------------|
@@ -334,3 +400,17 @@ Further advanced tests would be needed to confirm if there are vulnerabilities o
 | **X-XSS-PROTECTION** ||
 | XXSS_CORRECT | The header is set correctly. |
 | XXSS_BLOCK | `mode=block` is activated. |
+
+
+## DOMXSS-Scanner
+
+| Placeholder | Message                     |
+|-------------|-----------------------------|
+| **GENERAL** ||
+GOT_NO_RESPONSE | Got no response. Can't analyze sinks or sources.|
+| **HAS_SINKS** ||
+| SINKS_FOUND | The scanner found some sinks. |
+| NO_SINKS_FOUND | The scanner found no sinks. |
+| **HAS_SOURCES** ||
+| SOURCES_FOUND | The scanner found some sources. |
+| NO_SOURCES_FOUND | The scanner found no sources. |
