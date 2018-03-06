@@ -18,13 +18,14 @@ class HSTSRating extends Rating
     protected function rate()
     {
         $header = $this->getHeader('strict-transport-security');
-
+        
         if ($header === null) {
             $this->hasError = true;
             $this->errorMessage = "HEADER_NOT_SET";
         } elseif (count($header) > 1) {
             $this->hasError = true;
             $this->errorMessage = "HEADER_SET_MULTIPLE_TIMES";
+            $this->testDetails->push(['placeholder' => 'HEADER', 'values' => [ $header ]]);
         } else {
             $header = $header[0];
 
@@ -50,16 +51,15 @@ class HSTSRating extends Rating
                 $this->score = 0;
                 $this->hasError = true;
                 $this->errorMessage = 'MAX_AGE_ERROR';
+            }   
+
+            if (strpos($header, 'includeSubDomains') !== false) {
+                $this->testDetails->push(['placeholder' => 'INCLUDE_SUBDOMAINS']);
+            }
+
+            if (strpos($header, 'preload') !== false) {
+                $this->testDetails->push(['placeholder' => 'HSTS_PRELOAD']);
             }
         }
-
-        if (strpos($header, 'includeSubDomains') !== false) {
-            $this->testDetails->push(['placeholder' => 'INCLUDE_SUBDOMAINS']);
-        }
-
-        if (strpos($header, 'preload') !== false) {
-            $this->testDetails->push(['placeholder' => 'HSTS_PRELOAD']);
-        }
     }
-
 }

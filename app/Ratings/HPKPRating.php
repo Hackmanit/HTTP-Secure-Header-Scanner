@@ -25,6 +25,7 @@ class HPKPRating extends Rating
         } elseif (count($header) > 1) {
             $this->hasError = true;
             $this->errorMessage = "HEADER_SET_MULTIPLE_TIMES";
+            $this->testDetails->push(['placeholder' => 'HEADER', 'values' => [ $header ]]);
         } else {
             $header = $header[0];
 
@@ -60,5 +61,4 @@ class HPKPRating extends Rating
             }
         }
     }
-
 }
