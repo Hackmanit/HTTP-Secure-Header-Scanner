@@ -12,7 +12,7 @@ class XXSSProtectionRating extends Rating
         parent::__construct($url, $client);
 
         $this->name = "X_XSS_PROTECTION";
-        $this->scoreType = "critical";
+        $this->scoreType = "warning";
     }
 
     protected function rate()

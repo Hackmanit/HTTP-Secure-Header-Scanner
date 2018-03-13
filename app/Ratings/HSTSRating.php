@@ -12,7 +12,7 @@ class HSTSRating extends Rating
         parent::__construct($url, $client);
 
         $this->name = "STRICT_TRANSPORT_SECURITY";
-        $this->scoreType = "critical";
+        $this->scoreType = "warning";
     }
 
     protected function rate()

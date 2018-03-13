@@ -12,7 +12,7 @@ class ContentTypeRating extends Rating
         parent::__construct($url, $client);
 
         $this->name = "CONTENT_TYPE";
-        $this->scoreType = "critical";
+        $this->scoreType = "warning";
     }
 
     protected function rate()

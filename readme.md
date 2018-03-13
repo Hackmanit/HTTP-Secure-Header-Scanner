@@ -39,14 +39,14 @@ The parameters `url` and `callbackurls` are required:
   "name": "HEADER",
   "hasError": false,
   "errorMessage": null,
-  "score": 0,
+  "score": 66,
   "tests": [
     {
       "name": "CONTENT_SECURITY_POLICY",
       "hasError": true,
       "errorMessage": "HEADER_NOT_SET",
       "score": 0,
-      "scoreType": "critical",
+      "scoreType": "warning",
       "testDetails": []
     },
     {
@@ -54,7 +54,7 @@ The parameters `url` and `callbackurls` are required:
       "hasError": false,
       "errorMessage": null,
       "score": 100,
-      "scoreType": "critical",
+      "scoreType": "warning",
       "testDetails": [
         {
           "placeholder": "META",
@@ -89,7 +89,7 @@ The parameters `url` and `callbackurls` are required:
       "hasError": true,
       "errorMessage": "HEADER_NOT_SET",
       "score": 0,
-      "scoreType": "critical",
+      "scoreType": "warning",
       "testDetails": []
     },
     {
@@ -97,7 +97,7 @@ The parameters `url` and `callbackurls` are required:
       "hasError": false,
       "errorMessage": null,
       "score": 100,
-      "scoreType": "critical",
+      "scoreType": "warning",
       "testDetails": [
         {
           "placeholder": "HEADER",
@@ -115,7 +115,7 @@ The parameters `url` and `callbackurls` are required:
       "hasError": false,
       "errorMessage": null,
       "score": 100,
-      "scoreType": "critical",
+      "scoreType": "warning",
       "testDetails": [
         {
           "placeholder": "HEADER",
@@ -133,7 +133,7 @@ The parameters `url` and `callbackurls` are required:
       "hasError": false,
       "errorMessage": null,
       "score": 100,
-      "scoreType": "critical",
+      "scoreType": "warning",
       "testDetails": [
         {
           "placeholder": "HEADER",

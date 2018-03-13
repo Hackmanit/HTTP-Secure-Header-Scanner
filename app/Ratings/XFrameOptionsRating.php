@@ -12,7 +12,7 @@ class XFrameOptionsRating extends Rating
         parent::__construct($url, $client);
 
         $this->name = "X_FRAME_OPTIONS";
-        $this->scoreType = "critical";
+        $this->scoreType = "warning";
     }
 
     protected function rate()

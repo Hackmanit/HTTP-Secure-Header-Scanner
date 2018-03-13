@@ -12,7 +12,7 @@ class CSPRating extends Rating
         parent::__construct($url, $client);
 
         $this->name = "CONTENT_SECURITY_POLICY";
-        $this->scoreType = "critical";
+        $this->scoreType = "warning";
     }
 
 

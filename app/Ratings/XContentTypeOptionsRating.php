@@ -12,7 +12,7 @@ class XContentTypeOptionsRating extends Rating
         parent::__construct($url, $client);
 
         $this->name = "X_CONTENT_TYPE_OPTIONS";
-        $this->scoreType = "critical";
+        $this->scoreType = "warning";
     }
 
     protected function rate()

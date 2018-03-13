@@ -36,7 +36,16 @@ class HeaderCheck
         $xFrameOptionsRating = new XFrameOptionsRating($this->url);
         $xXssProtectionRating = new XXSSProtectionRating($this->url);
 
+
+        // Calculating score as an average of the single scores WITHOUT the HPKP scan
         $score = 0;
+        $score+= $cspRating->score;
+        $score+= $contentTypeRating->score;
+        $score+= $hstsRating->score;
+        $score+= $xContenTypeOptionsRating->score;
+        $score+= $xFrameOptionsRating->score;
+        $score+= $xXssProtectionRating->score;
+        $score = floor($score / 6);
 
         return [
             'name' => 'HEADER',
