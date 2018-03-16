@@ -8,6 +8,7 @@ use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Response;
 use Tests\TestCase;
+use App\HTTPResponse;
 
 class HSTSRatingTest extends TestCase
 {
@@ -17,7 +18,8 @@ class HSTSRatingTest extends TestCase
         $client = $this->getMockedGuzzleClient([
             new Response(200),
         ]);
-        $rating = new HSTSRating("http://testdomain", $client);
+        $response = new HTTPResponse('https://testdomain', $client);
+        $rating = new HSTSRating($response);
 
         $this->assertEquals(0, $rating->score);
         $this->assertEquals($rating->errorMessage, 'HEADER_NOT_SET');
@@ -31,7 +33,8 @@ class HSTSRatingTest extends TestCase
                 'Strict-Transport-Security' => 'max-age=30'
             ]),
         ]);
-        $rating = new HSTSRating("http://testdomain", $client);
+        $response = new HTTPResponse('https://testdomain', $client);
+        $rating = new HSTSRating($response);
 
         $this->assertEquals(60, $rating->score);
         $this->assertTrue(collect($rating)->flatten()->contains('HSTS_LESS_6'));
@@ -45,7 +48,8 @@ class HSTSRatingTest extends TestCase
                 'Strict-Transport-Security' => 'max-age=' . 6 * 31 * 24 * 60 * 60
             ]),
         ]);
-        $rating = new HSTSRating("http://testdomain", $client);
+        $response = new HTTPResponse('https://testdomain', $client);
+        $rating = new HSTSRating($response);
 
         $this->assertEquals(100, $rating->score);
         $this->assertTrue(collect($rating)->flatten()->contains('HSTS_MORE_6'));
@@ -59,7 +63,8 @@ class HSTSRatingTest extends TestCase
                 'Strict-Transport-Security' => 'max-age=30; includeSubDomains'
             ]),
         ]);
-        $rating = new HSTSRating("http://testdomain", $client);
+        $response = new HTTPResponse('https://testdomain', $client);
+        $rating = new HSTSRating($response);
 
         $this->assertTrue($rating->testDetails->flatten()->contains('INCLUDE_SUBDOMAINS'));
     }
@@ -72,7 +77,8 @@ class HSTSRatingTest extends TestCase
                 'Strict-Transport-Security' => 'max-age=30; preload'
             ]),
         ]);
-        $rating = new HSTSRating("http://testdomain", $client);
+        $response = new HTTPResponse('https://testdomain', $client);
+        $rating = new HSTSRating($response);
 
         $this->assertTrue($rating->testDetails->flatten()->contains('HSTS_PRELOAD'));
     }

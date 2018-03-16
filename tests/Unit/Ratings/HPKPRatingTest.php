@@ -8,6 +8,7 @@ use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Response;
 use Tests\TestCase;
+use App\HTTPResponse;
 
 class HPKPRatingTest extends TestCase
 {
@@ -17,7 +18,8 @@ class HPKPRatingTest extends TestCase
         $client = $this->getMockedGuzzleClient([
             new Response(200),
         ]);
-        $rating = new HPKPRating("http://testdomain", $client);
+        $response = new HTTPResponse('https://testdomain', $client);
+        $rating = new HPKPRating($response);
 
         $this->assertEquals(0, $rating->score);
         $this->assertEquals($rating->errorMessage, 'HEADER_NOT_SET');
@@ -32,7 +34,8 @@ class HPKPRatingTest extends TestCase
                 'Public-Key-Pins' => 'max-age=1000000; pin-sha256="E9CZ9INDbd+2eRQozYqqbQ2yXLVKB9+xcprMF+44U1g="; pin-sha256="LPJNul+wow4m6DsqxbninhsWHlwfp0JecwQzYpOLmCQ="; includeSubDomains'
             ]),
         ]);
-        $rating = new HPKPRating("http://testdomain", $client);
+        $response = new HTTPResponse('https://testdomain', $client);
+        $rating = new HPKPRating($response);
 
         $this->assertTrue($rating->testDetails->flatten()->contains('INCLUDE_SUBDOMAINS'));
     }
@@ -45,7 +48,8 @@ class HPKPRatingTest extends TestCase
                 'Public-Key-Pins' => 'max-age=1000000; pin-sha256="E9CZ9INDbd+2eRQozYqqbQ2yXLVKB9+xcprMF+44U1g="; pin-sha256="LPJNul+wow4m6DsqxbninhsWHlwfp0JecwQzYpOLmCQ="; report-uri="http://example.com/pkp-report";'
             ]),
         ]);
-        $rating = new HPKPRating("http://testdomain", $client);
+        $response = new HTTPResponse('https://testdomain', $client);
+        $rating = new HPKPRating($response);
 
         $this->assertTrue($rating->testDetails->flatten()->contains('HPKP_REPORT_URI'));
     }

@@ -13,19 +13,22 @@ class HTTPResponse
 {
     protected $url;
     protected $response = null;
+    protected $hasErrors = false;
 
     public function __construct($url, Client $client = null)
     {
         $this->url = $url;
         $this->client = $client;
+        
+        $this->calculateResponse();
     }
 
     /**
-     * Returns the (cached) GuzzleHttp Response
+     * Calculates the HTTPResponse
      *
+     * @return void
      */
-    public function response()
-    {
+    protected function calculateResponse() {
         if ($this->response === null) {
             if ($this->client === null) {
                 /**
@@ -56,9 +59,18 @@ class HTTPResponse
                     'http_errors' => false,
                 ]);
             } catch (\Exception $exception) {
-                \Log::critical($this->url . ": " . $exception);
+                \Log::debug($this->url . ": " . $exception);
+                $this->hasErrors = true;
             }
         }
+    }
+
+    /**
+     * Returns the (cached) GuzzleHttp Response
+     *
+     */
+    public function response()
+    {
         return $this->response;
     }
 
@@ -75,6 +87,8 @@ class HTTPResponse
      */
     public function statusCode()
     {
+        if($this->hasErrors())
+            return null;
         return $this->response()->getStatusCode();
     }
 
@@ -83,6 +97,9 @@ class HTTPResponse
      */
     public function headers()
     {
+        if($this->hasErrors())
+            return null;
+
         return collect($this->response()->getHeaders());
     }
 
@@ -92,6 +109,9 @@ class HTTPResponse
      */
     public function header($name)
     {
+        if($this->hasErrors())
+            return null;
+
         return $this->headers()->mapWithKeys(function ($value, $key) {
             return [strtolower($key) => $value];
         })->get(strtolower($name));
@@ -102,6 +122,21 @@ class HTTPResponse
      */
     public function body()
     {
+        if($this->hasErrors())
+            return null;
+
         return $this->response()->getBody()->getContents();
+    }
+
+    /**
+     * Returns error status.
+     *
+     * @return boolean
+     */
+    public function hasErrors() {
+        if( ($this->hasErrors == true) || ($this->response == null))
+            return true;
+
+        return false;
     }
 }

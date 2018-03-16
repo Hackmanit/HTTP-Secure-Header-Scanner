@@ -8,6 +8,7 @@ use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Response;
 use Tests\TestCase;
+use App\HTTPResponse;
 
 /**
  * CSPRating is not good. There are many ways to bypass this "secure" rating.
@@ -24,7 +25,8 @@ class CSPRatingTest extends TestCase
         $client = $this->getMockedGuzzleClient([
             new Response(200),
         ]);
-        $rating = new CSPRating("http://testdomain", $client);
+        $response = new HTTPResponse('https://testdomain', $client);
+        $rating = new CSPRating($response);
 
         $this->assertEquals(0, $rating->score);
         $this->assertEquals($rating->errorMessage, 'HEADER_NOT_SET');
@@ -38,7 +40,8 @@ class CSPRatingTest extends TestCase
                 "Content-Security-Policy" => "default-src 'none'; script-src 'unsafe-inline'; object-src 'none';",
             ]),
         ]);
-        $rating = new CSPRating("http://testdomain", $client);
+        $response = new HTTPResponse('https://testdomain', $client);
+        $rating = new CSPRating($response);
 
         $this->assertEquals(0, $rating->score);
         $this->assertTrue(collect($rating)->contains('CSP_UNSAFE_INCLUDED'));
@@ -52,7 +55,8 @@ class CSPRatingTest extends TestCase
                 "Content-Security-Policy" => "default-src 'none'; script-src 'unsafe-eval'; object-src 'none';",
             ]),
         ]);
-        $rating = new CSPRating("http://testdomain", $client);
+        $response = new HTTPResponse('https://testdomain', $client);
+        $rating = new CSPRating($response);
 
         $this->assertEquals(0, $rating->score);
         $this->assertTrue(collect($rating)->contains('CSP_UNSAFE_INCLUDED'));
@@ -66,7 +70,8 @@ class CSPRatingTest extends TestCase
                 "Content-Security-Policy" => "default-src 'self';",
             ]),
         ]);
-        $rating = new CSPRating("http://testdomain", $client);
+        $response = new HTTPResponse('https://testdomain', $client);
+        $rating = new CSPRating($response);
 
         $this->assertEquals(50, $rating->score);
     }
@@ -79,7 +84,8 @@ class CSPRatingTest extends TestCase
                 "Content-Security-Policy" => "default-src 'none';",
             ]),
         ]);
-        $rating = new CSPRating("http://testdomain", $client);
+        $response = new HTTPResponse('https://testdomain', $client);
+        $rating = new CSPRating($response);
 
         $this->assertEquals(100, $rating->score);
     }
@@ -93,7 +99,8 @@ class CSPRatingTest extends TestCase
                 "X-Content-Security-Policy" => "default-src 'none';",
             ]),
         ]);
-        $rating = new CSPRating("http://testdomain", $client);
+        $response = new HTTPResponse('https://testdomain', $client);
+        $rating = new CSPRating($response);
 
         $this->assertTrue(collect($rating)->contains('CSP_LEGACY_HEADER_SET'));
     }

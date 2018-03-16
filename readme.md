@@ -367,6 +367,7 @@ Further advanced tests would be needed to confirm if there are vulnerabilities o
 | Placeholder | Message                     |
 |-------------|-----------------------------|
 | **GENERAL** | |
+| NO_HTTP_RESPONSE | No HTTP-Response for the given URL. |
 | HEADER_NOT_SET | The header is not set. |
 | HEADER_SET_MULTIPLE_TIMES | The header is set multiple times. |
 | MAX_AGE_ERROR | An error occured while checking `max-age`. |
@@ -407,7 +408,7 @@ Further advanced tests would be needed to confirm if there are vulnerabilities o
 | Placeholder | Message                     |
 |-------------|-----------------------------|
 | **GENERAL** ||
-GOT_NO_RESPONSE | Got no response. Can't analyze sinks or sources.|
+| NO_HTTP_RESPONSE | No HTTP-Response for the given URL. |
 | **HAS_SINKS** ||
 | SINKS_FOUND | The scanner found some sinks. |
 | NO_SINKS_FOUND | The scanner found no sinks. |

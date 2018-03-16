@@ -16,25 +16,33 @@ use App\Ratings\XXSSProtectionRating;
  */
 class HeaderCheck
 {
-    public $url;
-    public $siteRating = null;
-    public $comment = null;
+    protected $response = null;
 
     public function __construct($url)
     {
-        $this->url = $url;
+        $this->response = new HTTPResponse($url);
     }
 
    
     public function report()
     {
-        $cspRating = new CSPRating($this->url);
-        $contentTypeRating = new ContentTypeRating($this->url);
-        $hpkpRating = new HPKPRating($this->url);
-        $hstsRating = new HSTSRating($this->url);
-        $xContenTypeOptionsRating = new XContentTypeOptionsRating($this->url);
-        $xFrameOptionsRating = new XFrameOptionsRating($this->url);
-        $xXssProtectionRating = new XXSSProtectionRating($this->url);
+        if($this->response->hasErrors()){
+            return [
+                'name' => 'HEADER',
+                'hasError' => true,
+                'errorMessage' => 'NO_HTTP_RESPONSE',
+                'score' => 0,
+                'tests' => []
+            ];
+        }
+
+        $cspRating = new CSPRating($this->response);
+        $contentTypeRating = new ContentTypeRating($this->response);
+        $hpkpRating = new HPKPRating($this->response);
+        $hstsRating = new HSTSRating($this->response);
+        $xContenTypeOptionsRating = new XContentTypeOptionsRating($this->response);
+        $xFrameOptionsRating = new XFrameOptionsRating($this->response);
+        $xXssProtectionRating = new XXSSProtectionRating($this->response);
 
 
         // Calculating score as an average of the single scores WITHOUT the HPKP scan

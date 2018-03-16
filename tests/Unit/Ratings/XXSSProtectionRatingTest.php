@@ -8,6 +8,7 @@ use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Response;
 use Tests\TestCase;
+use App\HTTPResponse;
 
 class XXSSProtectionRatingTest extends TestCase
 {
@@ -18,7 +19,8 @@ class XXSSProtectionRatingTest extends TestCase
         $client = $this->getMockedGuzzleClient([
             new Response(200),
         ]); 
-        $rating = new XXSSProtectionRating("http://testdomain", $client);
+        $response = new HTTPResponse('https://testdomain', $client);
+        $rating = new XXSSProtectionRating($response);
 
         $this->assertEquals(0, $rating->score);
         $this->assertEquals($rating->errorMessage, 'HEADER_NOT_SET');
@@ -32,12 +34,14 @@ class XXSSProtectionRatingTest extends TestCase
             new Response(200, [ "X-Xss-Protection" => "1"]),
         ]);
 
-        $rating = new XXSSProtectionRating("http://testdomain", $client);
+        $response = new HTTPResponse('https://testdomain', $client);
+        $rating = new XXSSProtectionRating($response);
 
         $this->assertEquals(50, $rating->score);
         $this->assertTrue(collect($rating)->flatten()->contains('XXSS_CORRECT'));
 
-        $rating = new XXSSProtectionRating("http://testdomain", $client);
+        $response = new HTTPResponse('https://testdomain', $client);
+        $rating = new XXSSProtectionRating($response);
 
         $this->assertEquals(50, $rating->score);
         $this->assertTrue(collect($rating)->flatten()->contains('XXSS_CORRECT'));
@@ -50,7 +54,8 @@ class XXSSProtectionRatingTest extends TestCase
             new Response(200, [ "X-Xss-Protection" => "1; mode=block"]),
         ]);
 
-        $rating = new XXSSProtectionRating("http://testdomain", $client);
+        $response = new HTTPResponse('https://testdomain', $client);
+        $rating = new XXSSProtectionRating($response);
 
         $this->assertEquals(100, $rating->score);
         $this->assertTrue(collect($rating)->flatten()->contains('XXSS_BLOCK'));

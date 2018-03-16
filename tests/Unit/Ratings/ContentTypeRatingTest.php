@@ -8,6 +8,7 @@ use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Response;
 use Tests\TestCase;
+use App\HTTPResponse;
 
 class ContentTypeRatingTest extends TestCase
 {
@@ -17,7 +18,9 @@ class ContentTypeRatingTest extends TestCase
         $client = $this->getMockedGuzzleClient([
             new Response(200),
         ]);
-        $rating = new ContentTypeRating("http://testdomain", $client);
+        
+        $response = new HTTPResponse('https://testdomain', $client);
+        $rating = new ContentTypeRating($response);
 
         $this->assertEquals(0, $rating->score);
         $this->assertEquals($rating->errorMessage, 'HEADER_NOT_SET');
@@ -29,7 +32,8 @@ class ContentTypeRatingTest extends TestCase
         $client = $this->getMockedGuzzleClient([
             new Response(200, [ "Content-Type" => "text/html" ]),
         ]);
-        $rating = new ContentTypeRating("http://testdomain", $client);
+        $response = new HTTPResponse('https://testdomain', $client);
+        $rating = new ContentTypeRating($response);
 
         $this->assertEquals(0, $rating->score);
         $this->assertTrue(collect($rating)->contains("CT_HEADER_WITHOUT_CHARSET"));
@@ -49,7 +53,8 @@ class ContentTypeRatingTest extends TestCase
         ]);
 
         for ($i = 1; $i <= 7; $i++) {
-            $rating = new ContentTypeRating("http://testdomain", $client);
+            $response = new HTTPResponse('https://testdomain', $client);
+        $rating = new ContentTypeRating($response);
 
             $this->assertEquals(0, $rating->score);
             $this->assertTrue(collect($rating)->contains('CT_WRONG_CHARSET'));
@@ -64,7 +69,8 @@ class ContentTypeRatingTest extends TestCase
             new Response(200, [ "Content-Type" => "text/html; charset=UTF-8" ]),
         ]);
 
-        $rating = new ContentTypeRating("http://testdomain", $client);
+        $response = new HTTPResponse('https://testdomain', $client);
+        $rating = new ContentTypeRating($response);
 
         for ($i = 1; $i <= 2; $i++) {
             $this->assertEquals(100, $rating->score);
@@ -80,7 +86,8 @@ class ContentTypeRatingTest extends TestCase
             new Response(200, [ ], $sampleBody)
         ]);
 
-        $rating = new ContentTypeRating("http://testdomain", $client);
+        $response = new HTTPResponse('https://testdomain', $client);
+        $rating = new ContentTypeRating($response);
 
         $this->assertEquals(60, $rating->score);
     }

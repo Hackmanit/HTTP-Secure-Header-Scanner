@@ -8,6 +8,7 @@ use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Response;
 use Tests\TestCase;
+use App\HTTPResponse;
 
 class XFrameOptionsRatingTest extends TestCase
 {
@@ -17,7 +18,8 @@ class XFrameOptionsRatingTest extends TestCase
         $client = $this->getMockedGuzzleClient([
             new Response(200),
         ]); 
-        $rating = new XFrameOptionsRating("http://testdomain", $client);
+        $response = new HTTPResponse('https://testdomain', $client);
+        $rating = new XFrameOptionsRating($response);
 
         $this->assertEquals(0, $rating->score);
         $this->assertEquals($rating->errorMessage, 'HEADER_NOT_SET');
@@ -31,7 +33,8 @@ class XFrameOptionsRatingTest extends TestCase
                 "X-Frame-Options" => "allow-from *"
             ]),
         ]);
-        $rating = new XFrameOptionsRating("http://testdomain", $client);
+        $response = new HTTPResponse('https://testdomain', $client);
+        $rating = new XFrameOptionsRating($response);
 
         $this->assertEquals(0, $rating->score);
         $this->assertTrue(collect($rating)->flatten()->contains('XFO_WILDCARDS'));
@@ -45,7 +48,8 @@ class XFrameOptionsRatingTest extends TestCase
                 "X-Frame-Options" => "deny"
             ]),
         ]);
-        $rating = new XFrameOptionsRating("http://testdomain", $client);
+        $response = new HTTPResponse('https://testdomain', $client);
+        $rating = new XFrameOptionsRating($response);
 
         $this->assertEquals(100, $rating->score);
         $this->assertTrue(collect($rating)->flatten()->contains('XFO_CORRECT'));

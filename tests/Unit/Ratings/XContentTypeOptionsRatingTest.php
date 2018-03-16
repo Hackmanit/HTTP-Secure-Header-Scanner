@@ -8,6 +8,7 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Response;
+use App\HTTPResponse;
 
 class XContentTypeOptionsRatingTest extends TestCase
 {
@@ -18,7 +19,8 @@ class XContentTypeOptionsRatingTest extends TestCase
         $client = $this->getMockedGuzzleClient([
             new Response(200),
         ]);
-        $rating = new XContentTypeOptionsRating("http://testdomain", $client);
+        $response = new HTTPResponse('https://testdomain', $client);
+        $rating = new XContentTypeOptionsRating($response);
 
         $this->assertEquals(0, $rating->score);
         $this->assertEquals($rating->errorMessage, 'HEADER_NOT_SET');
@@ -30,7 +32,8 @@ class XContentTypeOptionsRatingTest extends TestCase
         $client = $this->getMockedGuzzleClient([
             new Response(200, [ "X-Content-Type-Options" => "nosniff" ]),
         ]);
-        $rating = new XContentTypeOptionsRating("http://testdomain", $client);
+        $response = new HTTPResponse('https://testdomain', $client);
+        $rating = new XContentTypeOptionsRating($response);
 
         $this->assertEquals(100, $rating->score);
         $this->assertTrue(collect($rating)->flatten()->contains('XCTO_CORRECT'));
@@ -42,7 +45,8 @@ class XContentTypeOptionsRatingTest extends TestCase
         $client = $this->getMockedGuzzleClient([
             new Response(200, [ "X-Content-Type-Options" => "wrong entry" ]),
         ]);
-        $rating = new XContentTypeOptionsRating("http://testdomain", $client);
+        $response = new HTTPResponse('https://testdomain', $client);
+        $rating = new XContentTypeOptionsRating($response);
 
         $this->assertEquals(0, $rating->score);
         $this->assertTrue(collect($rating)->flatten()->contains('XCTO_NOT_CORRECT'));

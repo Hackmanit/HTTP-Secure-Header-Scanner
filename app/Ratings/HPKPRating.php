@@ -3,13 +3,14 @@
 namespace App\Ratings;
 
 use GuzzleHttp\Client;
+use App\HTTPResponse;
 
 
 class HPKPRating extends Rating
 {
 
-    public function __construct($url, Client $client = null) {
-        parent::__construct($url, $client);
+    public function __construct(HTTPResponse $response) {
+        parent::__construct($response);
 
         $this->name = "PUBLIC_KEY_PINS";
         $this->scoreType = "info";
