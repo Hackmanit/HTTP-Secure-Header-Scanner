@@ -367,23 +367,23 @@ Further advanced tests would be needed to confirm if there are vulnerabilities o
 | Placeholder | Message                     |
 |-------------|-----------------------------|
 | **GENERAL** | |
-| NO_HTTP_RESPONSE | No HTTP-Response for the given URL. |
 | HEADER_NOT_SET | The header is not set. |
 | HEADER_SET_MULTIPLE_TIMES | The header is set multiple times. |
-| MAX_AGE_ERROR | An error occured while checking `max-age`. |
 | INCLUDE_SUBDOMAINS | `includeSubDomains` is set. |
+| MAX_AGE_ERROR | An error occured while checking `max-age`. |
+| NO_HTTP_RESPONSE | No HTTP-Response for the given URL. |
 | **CONTENT-SECURITY-POLICY** | |
-| CSP_UNSAFE_INCLUDED | The header contains `unsafe-inline` or `unsafe-eval` directives. |
-| CSP_NO_UNSAFE_INCLUDED | The header is free of any `unsafe-` directives. |
 | CSP_CORRECT | The header is `unsafe-` free and includes `default-src 'none'`. | 
 | CSP_LEGACY_HEADER_SET | The legacy header `X-Content-Security-Policy` is set. The new and standardized header is `Content-Security-Policy`. |
+| CSP_NO_UNSAFE_INCLUDED | The header is free of any `unsafe-` directives. |
+| CSP_UNSAFE_INCLUDED | The header contains `unsafe-inline` or `unsafe-eval` directives. |
 | **CONTENT-TYPE** | |
-| CT_HEADER_WITHOUT_CHARSET | The header is set without the charset. |
-| CT_HEADER_WITH_CHARSET | The header is set with the charset. |
 | CT_CORRECT | The header is set with the charset and follows the best practice. |
-| CT_WRONG_CHARSET | The given charset is wrong and thereby ineffective. |
+| CT_HEADER_WITH_CHARSET | The header is set with the charset. |
+| CT_HEADER_WITHOUT_CHARSET | The header is set without the charset. |
 | CT_META_TAG_SET | A meta tag is set with a charset. |
 | CT_META_TAG_SET_CORRECT | A meta tag is set with a charset and follows the best practice. |
+| CT_WRONG_CHARSET | The given charset is wrong and thereby ineffective. |
 | **PUBLIC-KEY-PINS**||
 | HPKP_LESS_15 | The keys are pinned for less than 15 days. |
 | HPKP_MORE_15 | The keys are pinned for more than 15 days. |
@@ -410,8 +410,8 @@ Further advanced tests would be needed to confirm if there are vulnerabilities o
 | **GENERAL** ||
 | NO_HTTP_RESPONSE | No HTTP-Response for the given URL. |
 | **HAS_SINKS** ||
-| SINKS_FOUND | The scanner found some sinks. |
 | NO_SINKS_FOUND | The scanner found no sinks. |
+| SINKS_FOUND | The scanner found some sinks. |
 | **HAS_SOURCES** ||
-| SOURCES_FOUND | The scanner found some sources. |
 | NO_SOURCES_FOUND | The scanner found no sources. |
+| SOURCES_FOUND | The scanner found some sources. |
