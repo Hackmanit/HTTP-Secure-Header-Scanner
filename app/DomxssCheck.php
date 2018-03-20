@@ -57,12 +57,12 @@ class DomxssCheck
                 'tests' => []
             ];
         }
-        
-        $score = 0;
 
-        if ($this->hasSinks()) $score += 50;
-        if ($this->hasSources()) $score += 50;
-        
+        $score = 100;
+
+        if ($this->hasSinks()) $score -= 50;
+        if ($this->hasSources()) $score -= 50;
+
         return [
             'name' => 'DOMXSS',
             'hasError' => $this->hasError,
@@ -73,7 +73,7 @@ class DomxssCheck
                     'name' => "HAS_SINKS",
                     'hasError' => $this->hasSinkError,
                     'errorMessage' => $this->sinkErrorMessage,
-                    'score' => $this->hasSinks() ? 100 : 0,
+                    'score' => $this->hasSinks() ? 0 : 100,
                     'scoreType' => 'info',
                     'testDetails' => [
                         [
@@ -86,7 +86,7 @@ class DomxssCheck
                     'name' => "HAS_SOURCES",
                     'hasError' => $this->hasSourceError,
                     'errorMessage' => $this->sourceErrorMessage,
-                    'score' => $this->hasSources() ? 100 : 0,
+                    'score' => $this->hasSources() ? 0 : 100,
                     'scoreType' => 'info',
                     'testDetails' => [
                         [
