@@ -34,10 +34,12 @@ class CSPRating extends Rating
             $this->testDetails->push(['placeholder' => 'HEADER', 'values' => [ $header ]]);
 
             if (strpos($header, 'unsafe-inline') !== false || strpos($header, 'unsafe-eval') !== false) {
-                $this->score = 0;
-                $this->testDetails->push(['placeholder' => 'CSP_UNSAFE_INCLUDED']);
-            } elseif (strpos($header, 'unsafe-inline') === false && strpos($header, 'unsafe-eval') === false && strpos($header, "default-src 'none'") === false) {
                 $this->score = 50;
+                $this->testDetails->push(['placeholder' => 'CSP_UNSAFE_INCLUDED']);
+                $this->scoreType = "info";
+            } elseif (strpos($header, 'unsafe-inline') === false && strpos($header, 'unsafe-eval') === false && strpos($header, "default-src 'none'") === false) {
+                $this->score = 75;
+                $this->scoreType = "info";
                 $this->testDetails->push(['placeholder' => 'CSP_NO_UNSAFE_INCLUDED']);
             } elseif (strpos($header, 'unsafe-inline') === false && strpos($header, 'unsafe-eval') === false && strpos($header, "default-src 'none'") !== false) {
                 $this->score = 100;
