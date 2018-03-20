@@ -13,7 +13,7 @@ class HPKPRating extends Rating
         parent::__construct($response);
 
         $this->name = "PUBLIC_KEY_PINS";
-        $this->scoreType = "info";
+        $this->scoreType = "bonus";
     }
 
     protected function rate()
