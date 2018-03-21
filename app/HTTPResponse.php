@@ -31,22 +31,7 @@ class HTTPResponse
     protected function calculateResponse() {
         if ($this->response === null) {
             if ($this->client === null) {
-                /**
-                 * The $stack enables caching for the network traffic
-                 * BEST THANKS AND WISHES TO @Kevinrob for guzzle-cache-middleware
-                 */
-                $stack = HandlerStack::create();
-                $stack->push(
-                    new CacheMiddleware(
-                        new PrivateCacheStrategy(
-                            new LaravelCacheStorage(
-                                Cache::store(env('CACHE_DRIVER', 'file'))
-                            )
-                        )
-                    ),
-                    'cache'
-                );
-                $this->client = new Client(['handler' => $stack]);
+                $this->client = new Client();
             }
 
             try {
@@ -66,7 +51,7 @@ class HTTPResponse
     }
 
     /**
-     * Returns the (cached) GuzzleHttp Response
+     * Returns the GuzzleHttp Response
      *
      */
     public function response()
