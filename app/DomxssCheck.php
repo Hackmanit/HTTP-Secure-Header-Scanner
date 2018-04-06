@@ -52,7 +52,10 @@ class DomxssCheck
             return [
                 'name' => 'DOMXSS',
                 'hasError' => true,
-                'errorMessage' => 'NO_HTTP_RESPONSE',
+                'errorMessage' => [
+                	'placeholder' => 'NO_HTTP_RESPONSE',
+	                'values' => []
+	                ],
                 'score' => 0,
                 'tests' => []
             ];
@@ -60,8 +63,13 @@ class DomxssCheck
 
         $score = 100;
 
-        if ($this->hasSinks()) $score -= 50;
-        if ($this->hasSources()) $score -= 50;
+        if ($this->hasSinks()) {
+        	$score -= 50;
+        }
+
+        if ($this->hasSources()) {
+        	$score -= 50;
+        }
 
         return [
             'name' => 'DOMXSS',
