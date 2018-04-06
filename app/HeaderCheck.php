@@ -30,7 +30,10 @@ class HeaderCheck
             return [
                 'name' => 'HEADER',
                 'hasError' => true,
-                'errorMessage' => 'NO_HTTP_RESPONSE',
+                'errorMessage' => [
+					'placeholder' => 'NO_HTTP_RESPONSE',
+					'values'      => []
+				],
                 'score' => 0,
                 'tests' => []
             ];
