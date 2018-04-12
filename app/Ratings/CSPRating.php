@@ -27,11 +27,11 @@ class CSPRating extends Rating
         } elseif (count($header) > 1) {
             $this->hasError = true;
             $this->errorMessage = "HEADER_SET_MULTIPLE_TIMES";
-            $this->testDetails->push(['placeholder' => 'HEADER', 'values' => [ $header ]]);
+            $this->testDetails->push(['placeholder' => 'HEADER', 'values' => [ ['scanned' => json_encode($header)] ]]);
         } else {
             $header = $header[0];
 
-            $this->testDetails->push(['placeholder' => 'HEADER', 'values' => [ $header ]]);
+            $this->testDetails->push(['placeholder' => 'HEADER', 'values' => [ ['scanned' => json_encode($header)] ]]);
 
             if (strpos($header, 'unsafe-inline') !== false || strpos($header, 'unsafe-eval') !== false) {
                 $this->score = 50;
