@@ -33,7 +33,7 @@ class CSPRatingTest extends TestCase
     }
 
     /** @test */
-    public function cspRating_rates_c_because_header_is_set_with_unsafe_inline()
+    public function cspRating_rates_50_because_header_is_set_with_unsafe_inline()
     {
         $client = $this->getMockedGuzzleClient([
             new Response(200, [
@@ -43,12 +43,12 @@ class CSPRatingTest extends TestCase
         $response = new HTTPResponse('https://testdomain', $client);
         $rating = new CSPRating($response);
 
-        $this->assertEquals(0, $rating->score);
-        $this->assertTrue(collect($rating)->contains('CSP_UNSAFE_INCLUDED'));
+        $this->assertEquals(50, $rating->score);
+        $this->assertTrue(collect($rating)->flatten()->contains('CSP_UNSAFE_INCLUDED'));
     }
 
     /** @test */
-    public function cspRating_rates_c_because_header_is_set_with_unsafe_eval()
+    public function cspRating_rates_50_because_header_is_set_with_unsafe_eval()
     {
         $client = $this->getMockedGuzzleClient([
             new Response(200, [
@@ -58,12 +58,12 @@ class CSPRatingTest extends TestCase
         $response = new HTTPResponse('https://testdomain', $client);
         $rating = new CSPRating($response);
 
-        $this->assertEquals(0, $rating->score);
-        $this->assertTrue(collect($rating)->contains('CSP_UNSAFE_INCLUDED'));
+        $this->assertEquals(50, $rating->score);
+        $this->assertTrue(collect($rating)->flatten()->contains('CSP_UNSAFE_INCLUDED'));
     }
 
     /** @test */
-    public function cspRating_rates_b_because_header_is_set_without_unsafes_but_without_default_src_none()
+    public function cspRating_rates_75_because_header_is_set_without_unsafes_but_without_default_src_none()
     {
         $client = $this->getMockedGuzzleClient([
             new Response(200, [
@@ -73,7 +73,7 @@ class CSPRatingTest extends TestCase
         $response = new HTTPResponse('https://testdomain', $client);
         $rating = new CSPRating($response);
 
-        $this->assertEquals(50, $rating->score);
+        $this->assertEquals(75, $rating->score);
     }
 
     /** @test */
@@ -103,6 +103,20 @@ class CSPRatingTest extends TestCase
         $rating = new CSPRating($response);
 
         $this->assertTrue(collect($rating)->contains('CSP_LEGACY_HEADER_SET'));
+    }
+
+    /** @test */
+    public function cspRating_can_handle_whitespaces()
+    {
+        $client = $this->getMockedGuzzleClient([
+            new Response(200, [
+                "Content-Security-Policy" => "default-src   'none';",
+            ]),
+        ]);
+        $response = new HTTPResponse('https://testdomain', $client);
+        $rating = new CSPRating($response);
+
+        $this->assertEquals(100, $rating->score);
     }
 
 
