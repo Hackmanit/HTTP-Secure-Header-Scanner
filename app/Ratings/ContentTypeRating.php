@@ -28,15 +28,15 @@ class ContentTypeRating extends Rating
         } elseif (count($header) > 1) {
             $this->hasError = true;
             $this->errorMessage = "HEADER_SET_MULTIPLE_TIMES";
-            $this->testDetails->push(['placeholder' => 'HEADER', 'values' => [ ['scanned' => $header] ]]);
+            $this->testDetails->push([ 'placeholder' => 'HEADER_SET_MULTIPLE_TIMES', 'values' => ['HEADER' => $header] ]);
+
+            $this->checkMetaTag();
         } else {
             $detail = "CT_HEADER_WITHOUT_CHARSET";
 
             $this->checkMetaTag();
 
             $header = $header[0];
-
-            $this->testDetails->push(['placeholder' => 'HEADER', 'values' => [ ['scanned' => $header] ]]);
 
             if (stripos($header, 'charset=') !== false) {
                 $this->score = 50;
@@ -63,15 +63,15 @@ class ContentTypeRating extends Rating
                 $detail = "CT_WRONG_CHARSET";
             }
 
-            $this->testDetails->push(['placeholder' => $detail]);
+            $this->testDetails->push([ 'placeholder' => $detail, 'values' => ['HEADER' => $header] ]);
         }
     }
 
     protected function checkMetaTag()
     {
         $dom = HtmlDomParser::str_get_html($this->response->body());
-        $detailMeta = null; 
-        
+        $detailMeta = null;
+
         // case: <meta charset="utf-8">
         if ($finding = $dom->find('meta[charset]')) {
             $this->score = 30;
@@ -81,11 +81,11 @@ class ContentTypeRating extends Rating
                 $this->score = 60;
                 $detailMeta = "CT_META_TAG_SET_CORRECT";
             }
-            
-            $this->testDetails->push(['placeholder' => 'META', 'values' => [ ['scanned' => json_encode($finding[0]->__toString())] ]]);
+
+            $this->testDetails->push([ 'placeholder' => $detailMeta, 'values' => ['META' => $finding[0]->__toString()] ]);
         }
         // case: <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-        elseif ($finding = $dom->find('meta[http-equiv=Content-Type]')) {
+        if ($finding = $dom->find('meta[http-equiv=Content-Type]')) {
             if (stripos($finding[0]->content, 'charset=utf-8') !== false) {
                 $this->score = 60;
                 $detailMeta = "CT_META_TAG_SET_CORRECT";
@@ -94,10 +94,7 @@ class ContentTypeRating extends Rating
                 $this->score = 30;
             }
 
-            $this->testDetails->push(['placeholder' => 'META', 'values' => [ $finding[0]->__toString() ]]);
+            $this->testDetails->push([ 'placeholder' => $detailMeta, 'values' => ['META' => $finding[0]->__toString()] ]);
         }
-
-        if ($detailMeta)
-            $this->testDetails->push(['placeholder' => $detailMeta]);
     }
 }

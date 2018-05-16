@@ -26,11 +26,9 @@ class HPKPRating extends Rating
         } elseif (count($header) > 1) {
             $this->hasError = true;
             $this->errorMessage = "HEADER_SET_MULTIPLE_TIMES";
-            $this->testDetails->push(['placeholder' => 'HEADER', 'values' => [ ['scanned' => json_encode($header)] ]]);
+            $this->testDetails->push([ 'placeholder' => 'HEADER_SET_MULTIPLE_TIMES', 'values' => ['HEADER' => $header]] );
         } else {
             $header = $header[0];
-
-            $this->testDetails->push(['placeholder' => 'HEADER', 'values' => [ ['scanned' => json_encode($header)] ]]);
 
             $beginAge = strpos($header, 'max-age=') + 8;
             $endAge = strpos($header, ';', $beginAge);
@@ -44,9 +42,9 @@ class HPKPRating extends Rating
             $this->score = 100;
 
             if ($maxAge < 1296000) {
-                $this->testDetails->push(['placeholder' => 'HPKP_LESS_15']);
+                $this->testDetails->push(['placeholder' => 'HPKP_LESS_15', 'values' => ['HEADER' => $header]]);
             } elseif ($maxAge >= 1296000) {
-                $this->testDetails->push(['placeholder' => 'HPKP_MORE_15']);
+                $this->testDetails->push(['placeholder' => 'HPKP_MORE_15', 'values' => ['HEADER' => $header]]);
             } else {
                 $this->score   = 0;
                 $this->hasError = true;
@@ -54,11 +52,11 @@ class HPKPRating extends Rating
             }
 
             if (strpos($header, 'includeSubDomains') !== false) {
-                $this->testDetails->push(['placeholder' => 'INCLUDE_SUBDOMAINS']);
+                $this->testDetails->push(['placeholder' => 'INCLUDE_SUBDOMAINS', 'values' => ['HEADER' => $header]]);
             }
 
             if (strpos($header, 'report-uri') !== false) {
-                $this->testDetails->push(['placeholder' => 'HPKP_REPORT_URI']);
+                $this->testDetails->push(['placeholder' => 'HPKP_REPORT_URI', 'values' => ['HEADER' => $header]]);
             }
         }
     }

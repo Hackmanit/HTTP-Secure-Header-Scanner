@@ -27,29 +27,28 @@ class CSPRating extends Rating
         } elseif (count($header) > 1) {
             $this->hasError = true;
             $this->errorMessage = "HEADER_SET_MULTIPLE_TIMES";
-            $this->testDetails->push(['placeholder' => 'HEADER', 'values' => [ ['scanned' => json_encode($header)] ]]);
+            $this->testDetails->push(['placeholder' => 'HEADER_SET_MULTIPLE_TIMES', 'values' => ['HEADER' => $header] ]);
         } else {
             $header = $header[0];
 
-            $this->testDetails->push(['placeholder' => 'HEADER', 'values' => [ ['scanned' => json_encode($header)] ]]);
-
             if (strpos($header, 'unsafe-inline') !== false || strpos($header, 'unsafe-eval') !== false) {
                 $this->score = 50;
-                $this->testDetails->push(['placeholder' => 'CSP_UNSAFE_INCLUDED']);
+                $this->testDetails->push(['placeholder' => 'CSP_UNSAFE_INCLUDED', 'values' => ['HEADER' => $header]]);
                 $this->scoreType = "info";
             } elseif (strpos($header, 'unsafe-inline') === false && strpos($header, 'unsafe-eval') === false && strpos($header, "default-src 'none'") === false) {
                 $this->score = 75;
                 $this->scoreType = "info";
-                $this->testDetails->push(['placeholder' => 'CSP_NO_UNSAFE_INCLUDED']);
+                $this->testDetails->push(['placeholder' => 'CSP_NO_UNSAFE_INCLUDED', 'values' => ['HEADER' => $header]]);
             } elseif (strpos($header, 'unsafe-inline') === false && strpos($header, 'unsafe-eval') === false && strpos($header, "default-src 'none'") !== false) {
                 $this->score = 100;
-                $this->testDetails->push(['placeholder' => 'CSP_CORRECT']);
+                $this->testDetails->push(['placeholder' => 'CSP_CORRECT', 'values' => ['HEADER' => $header]]);
             }
         }
 
         // Check if legacy header is available
-        if (count($this->getHeader("x-content-security-policy")) > 0) {
-            $this->testDetails->push(['placeholder' => 'CSP_LEGACY_HEADER_SET']);
+        $legacyHeader = $this->getHeader("x-content-security-policy");
+        if (count($legacyHeader) > 0) {
+            $this->testDetails->push(['placeholder' => 'CSP_LEGACY_HEADER_SET', 'values' => ['HEADER' => json_encode($legacyHeader)]]);
         }
     }
 }

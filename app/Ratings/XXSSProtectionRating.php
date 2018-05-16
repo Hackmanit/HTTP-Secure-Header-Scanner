@@ -8,7 +8,7 @@ use App\HTTPResponse;
 
 class XXSSProtectionRating extends Rating
 {
-    
+
     public function __construct(HTTPResponse $response) {
         parent::__construct($response);
 
@@ -26,18 +26,16 @@ class XXSSProtectionRating extends Rating
         } elseif (count($header) > 1) {
             $this->hasError = true;
             $this->errorMessage = "HEADER_SET_MULTIPLE_TIMES";
-            $this->testDetails->push(['placeholder' => 'HEADER', 'values' => [ ['scanned' => json_encode($header)] ]]);
+            $this->testDetails->push(['placeholder' => 'HEADER_SET_MULTIPLE_TIMES', 'values' => ['HEADER' => $header]]);
         } else {
             $header = $header[0];
 
-            $this->testDetails->push(['placeholder' => 'HEADER', 'values' => [ ['scanned' => json_encode($header)] ]]);
-
             $this->score = 50;
-            $this->testDetails->push(['placeholder' => 'XXSS_CORRECT']);
+            $this->testDetails->push(['placeholder' => 'XXSS_CORRECT', 'values' => ['HEADER' => $header]]);
 
             if (strpos($header, 'mode=block') !== false) {
                 $this->score = 100;
-                $this->testDetails->push(['placeholder' => 'XXSS_BLOCK']);
+                $this->testDetails->push(['placeholder' => 'XXSS_BLOCK', 'values' => ['HEADER' => $header]]);
             }
         }
     }
