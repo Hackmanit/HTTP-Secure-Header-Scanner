@@ -39,7 +39,7 @@ class XContentTypeOptionsRating extends Rating
         } else {
             $header = $header[0];
 
-            if (strpos($header, 'nosniff') !== false) {
+            if ($header === 'nosniff') {
                 $this->score = 100;
                 $this->testDetails->push(['placeholder' => 'XCTO_CORRECT', 'values' => ['HEADER' => $header]]);
             }
