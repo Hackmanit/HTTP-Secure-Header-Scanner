@@ -13,7 +13,7 @@ class ApiController extends Controller
 {
 
     public function headerReport(Request $request) {
-        
+
         $this->checkSiwecosRequest($request);
 
         $check = new HeaderCheck($request->json('url'));
@@ -24,7 +24,7 @@ class ApiController extends Controller
     }
 
     public function domxssReport(Request $request){
-        
+
         $this->checkSiwecosRequest($request);
 
         $check = new DomxssCheck($request->json('url'));
@@ -62,6 +62,27 @@ class ApiController extends Controller
             }
             catch (\Exception $e) {
                 Log::debug($e);
+                Log::warning("Trying to send an error");
+                try {
+                    $client = new Client();
+                    $client->post($url, [
+                        'http_errors' => false,
+                        'timeout' => 60,
+                        'json' => [
+                            "name" => "HEADER",
+                            "hasError" => "true",
+                            "score" => 0,
+                            "errorMessage" => [
+                                "placeholder" => "GENERAL_ERROR",
+                                "values" => [
+                                    "ERRORTEXT" => $e->getMessage()
+                                ]
+                            ]
+                        ]
+                    ]);
+                } catch (\Exception $e) {
+                    Log::critical($e);
+                }
             }
         }
     }

@@ -18,7 +18,7 @@ class ContentTypeRatingTest extends TestCase
         $client = $this->getMockedGuzzleClient([
             new Response(200),
         ]);
-        
+
         $response = new HTTPResponse('https://testdomain', $client);
         $rating = new ContentTypeRating($response);
 
@@ -90,6 +90,21 @@ class ContentTypeRatingTest extends TestCase
         $rating = new ContentTypeRating($response);
 
         $this->assertEquals(60, $rating->score);
+        $this->assertTrue(collect($rating->testDetails)->flatten()->contains('CT_META_TAG_SET_CORRECT'));
+    }
+
+    /** @test */
+    public function ContentTypeRating_detects_wrong_encoding()
+    {
+        $client = $this->getMockedGuzzleClient([
+            // Producing an encoding error
+            new Response(200, ["Content-Type" => zlib_encode("SGVsbG8gV29ybGQ=", ZLIB_ENCODING_RAW)]),
+        ]);
+        $response = new HTTPResponse('https://testdomain', $client);
+        $rating = new ContentTypeRating($response);
+
+        $this->assertEquals(0, $rating->score);
+        $this->assertTrue(collect($rating->testDetails)->flatten()->contains('HEADER_ENCODING_ERROR'));
     }
 
     /**

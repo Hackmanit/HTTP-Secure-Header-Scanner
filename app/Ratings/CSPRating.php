@@ -24,6 +24,15 @@ class CSPRating extends Rating
         if ($header === null) {
             $this->hasError = true;
             $this->errorMessage = "HEADER_NOT_SET";
+        } elseif ($header === "ERROR") {
+            $this->hasError = true;
+            $this->errorMessage = "HEADER_ENCODING_ERROR";
+            $this->testDetails->push([
+                'placeholder' => 'HEADER_ENCODING_ERROR',
+                'values' => [
+                    'HEADER_NAME' => "Content-Security-Policy"
+                ]
+            ]);
         } elseif (count($header) > 1) {
             $this->hasError = true;
             $this->errorMessage = "HEADER_SET_MULTIPLE_TIMES";

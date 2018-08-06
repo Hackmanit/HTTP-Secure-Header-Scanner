@@ -369,11 +369,13 @@ Further advanced tests would be needed to confirm if there are vulnerabilities o
 | **GENERAL** | |
 | HEADER_NOT_SET | The header is not set. |
 | HEADER_SET_MULTIPLE_TIMES | The header is set multiple times. |
+| HEADER_ENCODING_ERROR | The header is not correctly encoded. |
+| HEADER_NAME | (Only set with the `HEADER_ENCODING_ERROR`) [The header name.]
 | INCLUDE_SUBDOMAINS | `includeSubDomains` is set. |
 | MAX_AGE_ERROR | An error occured while checking `max-age`. |
 | NO_HTTP_RESPONSE | No HTTP-Response for the given URL. |
 | **CONTENT-SECURITY-POLICY** | |
-| CSP_CORRECT | The header is `unsafe-` free and includes `default-src 'none'`. | 
+| CSP_CORRECT | The header is `unsafe-` free and includes `default-src 'none'`. |
 | CSP_LEGACY_HEADER_SET | The legacy header `X-Content-Security-Policy` is set. The new and standardized header is `Content-Security-Policy`. |
 | CSP_NO_UNSAFE_INCLUDED | The header is free of any `unsafe-` directives. |
 | CSP_UNSAFE_INCLUDED | The header contains `unsafe-inline` or `unsafe-eval` directives. |

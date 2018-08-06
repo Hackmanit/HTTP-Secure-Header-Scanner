@@ -31,7 +31,8 @@ abstract class Rating
 
     public function getHeader($header)
     {
-        return $this->response->header($header);
+        $result = $this->response->header($header);
+        return json_encode($result) ? $result : 'ERROR';
     }
 
 }

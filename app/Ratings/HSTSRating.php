@@ -23,6 +23,15 @@ class HSTSRating extends Rating
         if ($header === null) {
             $this->hasError = true;
             $this->errorMessage = "HEADER_NOT_SET";
+        } elseif ($header === "ERROR") {
+            $this->hasError = true;
+            $this->errorMessage = "HEADER_ENCODING_ERROR";
+            $this->testDetails->push([
+                'placeholder' => 'HEADER_ENCODING_ERROR',
+                'values' => [
+                    'HEADER_NAME' => "Strict-Transport-Security"
+                ]
+            ]);
         } elseif (count($header) > 1) {
             $this->hasError = true;
             $this->errorMessage = "HEADER_SET_MULTIPLE_TIMES";

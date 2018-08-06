@@ -25,7 +25,7 @@ class HPKPRatingTest extends TestCase
         $this->assertEquals($rating->errorMessage, 'HEADER_NOT_SET');
     }
 
-    
+
     /** @test */
     public function hpkpRating_rates_includeSubDomains()
     {
@@ -37,7 +37,7 @@ class HPKPRatingTest extends TestCase
         $response = new HTTPResponse('https://testdomain', $client);
         $rating = new HPKPRating($response);
 
-        $this->assertTrue($rating->testDetails->flatten()->contains('INCLUDE_SUBDOMAINS'));
+        $this->assertTrue(collect($rating->testDetails)->flatten()->contains('INCLUDE_SUBDOMAINS'));
     }
 
     /** @test */
@@ -51,7 +51,21 @@ class HPKPRatingTest extends TestCase
         $response = new HTTPResponse('https://testdomain', $client);
         $rating = new HPKPRating($response);
 
-        $this->assertTrue($rating->testDetails->flatten()->contains('HPKP_REPORT_URI'));
+        $this->assertTrue(collect($rating->testDetails)->flatten()->contains('HPKP_REPORT_URI'));
+    }
+
+    /** @test */
+    public function HPKPRating_detects_wrong_encoding()
+    {
+        $client = $this->getMockedGuzzleClient([
+            // Producing an encoding error
+            new Response(200, ["Public-Key-Pins" => zlib_encode("SGVsbG8gV29ybGQ=", ZLIB_ENCODING_RAW)]),
+        ]);
+        $response = new HTTPResponse('https://testdomain', $client);
+        $rating = new HPKPRating($response);
+
+        $this->assertEquals(0, $rating->score);
+        $this->assertTrue(collect($rating->testDetails)->flatten()->contains('HEADER_ENCODING_ERROR'));
     }
 
     /**

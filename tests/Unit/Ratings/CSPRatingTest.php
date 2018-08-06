@@ -44,7 +44,7 @@ class CSPRatingTest extends TestCase
         $rating = new CSPRating($response);
 
         $this->assertEquals(50, $rating->score);
-        $this->assertTrue(collect($rating)->flatten()->contains('CSP_UNSAFE_INCLUDED'));
+        $this->assertTrue(collect($rating->testDetails)->flatten()->contains('CSP_UNSAFE_INCLUDED'));
     }
 
     /** @test */
@@ -59,7 +59,7 @@ class CSPRatingTest extends TestCase
         $rating = new CSPRating($response);
 
         $this->assertEquals(50, $rating->score);
-        $this->assertTrue(collect($rating)->flatten()->contains('CSP_UNSAFE_INCLUDED'));
+        $this->assertTrue(collect($rating->testDetails)->flatten()->contains('CSP_UNSAFE_INCLUDED'));
     }
 
     /** @test */
@@ -119,6 +119,19 @@ class CSPRatingTest extends TestCase
         $this->assertEquals(100, $rating->score);
     }
 
+    /** @test */
+    public function CSPRating_detects_wrong_encoding()
+    {
+        $client = $this->getMockedGuzzleClient([
+            // Producing an encoding error
+            new Response(200, ["Content-Security-Policy" => zlib_encode("SGVsbG8gV29ybGQ=", ZLIB_ENCODING_RAW)]),
+        ]);
+        $response = new HTTPResponse('https://testdomain', $client);
+        $rating = new CSPRating($response);
+
+        $this->assertEquals(0, $rating->score);
+        $this->assertTrue(collect($rating->testDetails)->flatten()->contains('HEADER_ENCODING_ERROR'));
+    }
 
     /**
      * This method sets and activates the GuzzleHttp Mocking functionality.

@@ -17,7 +17,7 @@ class XFrameOptionsRatingTest extends TestCase
     {
         $client = $this->getMockedGuzzleClient([
             new Response(200),
-        ]); 
+        ]);
         $response = new HTTPResponse('https://testdomain', $client);
         $rating = new XFrameOptionsRating($response);
 
@@ -37,7 +37,7 @@ class XFrameOptionsRatingTest extends TestCase
         $rating = new XFrameOptionsRating($response);
 
         $this->assertEquals(0, $rating->score);
-        $this->assertTrue(collect($rating)->flatten()->contains('XFO_WILDCARDS'));
+        $this->assertTrue(collect($rating->testDetails)->flatten()->contains('XFO_WILDCARDS'));
     }
 
     /** @test */
@@ -52,7 +52,21 @@ class XFrameOptionsRatingTest extends TestCase
         $rating = new XFrameOptionsRating($response);
 
         $this->assertEquals(100, $rating->score);
-        $this->assertTrue(collect($rating)->flatten()->contains('XFO_CORRECT'));
+        $this->assertTrue(collect($rating->testDetails)->flatten()->contains('XFO_CORRECT'));
+    }
+
+    /** @test */
+    public function XFrameOptionsRating_detects_wrong_encoding()
+    {
+        $client = $this->getMockedGuzzleClient([
+            // Producing an encoding error
+            new Response(200, ["X-Frame-Options" => zlib_encode("SGVsbG8gV29ybGQ=", ZLIB_ENCODING_RAW)]),
+        ]);
+        $response = new HTTPResponse('https://testdomain', $client);
+        $rating = new XFrameOptionsRating($response);
+
+        $this->assertEquals(0, $rating->score);
+        $this->assertTrue(collect($rating->testDetails)->flatten()->contains('HEADER_ENCODING_ERROR'));
     }
 
     /**

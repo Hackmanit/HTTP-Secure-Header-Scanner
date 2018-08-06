@@ -37,7 +37,7 @@ class HSTSRatingTest extends TestCase
         $rating = new HSTSRating($response);
 
         $this->assertEquals(60, $rating->score);
-        $this->assertTrue(collect($rating)->flatten()->contains('HSTS_LESS_6'));
+        $this->assertTrue(collect($rating->testDetails)->flatten()->contains('HSTS_LESS_6'));
     }
 
     /** @test */
@@ -52,7 +52,7 @@ class HSTSRatingTest extends TestCase
         $rating = new HSTSRating($response);
 
         $this->assertEquals(100, $rating->score);
-        $this->assertTrue(collect($rating)->flatten()->contains('HSTS_MORE_6'));
+        $this->assertTrue(collect($rating->testDetails)->flatten()->contains('HSTS_MORE_6'));
     }
 
     /** @test */
@@ -66,7 +66,7 @@ class HSTSRatingTest extends TestCase
         $response = new HTTPResponse('https://testdomain', $client);
         $rating = new HSTSRating($response);
 
-        $this->assertTrue($rating->testDetails->flatten()->contains('INCLUDE_SUBDOMAINS'));
+        $this->assertTrue(collect($rating->testDetails)->flatten()->contains('INCLUDE_SUBDOMAINS'));
     }
 
     /** @test */
@@ -80,7 +80,21 @@ class HSTSRatingTest extends TestCase
         $response = new HTTPResponse('https://testdomain', $client);
         $rating = new HSTSRating($response);
 
-        $this->assertTrue($rating->testDetails->flatten()->contains('HSTS_PRELOAD'));
+        $this->assertTrue(collect($rating->testDetails)->flatten()->contains('HSTS_PRELOAD'));
+    }
+
+    /** @test */
+    public function HSTSRating_detects_wrong_encoding()
+    {
+        $client = $this->getMockedGuzzleClient([
+            // Producing an encoding error
+            new Response(200, ["Strict-Transport-Security" => zlib_encode("SGVsbG8gV29ybGQ=", ZLIB_ENCODING_RAW)]),
+        ]);
+        $response = new HTTPResponse('https://testdomain', $client);
+        $rating = new HSTSRating($response);
+
+        $this->assertEquals(0, $rating->score);
+        $this->assertTrue(collect($rating->testDetails)->flatten()->contains('HEADER_ENCODING_ERROR'));
     }
 
     /**

@@ -36,7 +36,7 @@ class XContentTypeOptionsRatingTest extends TestCase
         $rating = new XContentTypeOptionsRating($response);
 
         $this->assertEquals(100, $rating->score);
-        $this->assertTrue(collect($rating)->flatten()->contains('XCTO_CORRECT'));
+        $this->assertTrue(collect($rating->testDetails)->flatten()->contains('XCTO_CORRECT'));
     }
 
     /** @test */
@@ -49,7 +49,21 @@ class XContentTypeOptionsRatingTest extends TestCase
         $rating = new XContentTypeOptionsRating($response);
 
         $this->assertEquals(0, $rating->score);
-        $this->assertTrue(collect($rating)->flatten()->contains('XCTO_NOT_CORRECT'));
+        $this->assertTrue(collect($rating->testDetails)->flatten()->contains('XCTO_NOT_CORRECT'));
+    }
+
+    /** @test */
+    public function xContentTypeOptionsRating_detects_wrong_encoding()
+    {
+        $client = $this->getMockedGuzzleClient([
+            // Producing an encoding error
+            new Response(200, ["X-Content-Type-Options" => zlib_encode("SGVsbG8gV29ybGQ=", ZLIB_ENCODING_RAW)]),
+        ]);
+        $response = new HTTPResponse('https://testdomain', $client);
+        $rating = new XContentTypeOptionsRating($response);
+
+        $this->assertEquals(0, $rating->score);
+        $this->assertTrue(collect($rating->testDetails)->flatten()->contains('HEADER_ENCODING_ERROR'));
     }
 
     /**

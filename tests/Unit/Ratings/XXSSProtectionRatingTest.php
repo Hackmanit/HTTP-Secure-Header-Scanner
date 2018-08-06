@@ -18,7 +18,7 @@ class XXSSProtectionRatingTest extends TestCase
     {
         $client = $this->getMockedGuzzleClient([
             new Response(200),
-        ]); 
+        ]);
         $response = new HTTPResponse('https://testdomain', $client);
         $rating = new XXSSProtectionRating($response);
 
@@ -38,13 +38,13 @@ class XXSSProtectionRatingTest extends TestCase
         $rating = new XXSSProtectionRating($response);
 
         $this->assertEquals(50, $rating->score);
-        $this->assertTrue(collect($rating)->flatten()->contains('XXSS_CORRECT'));
+        $this->assertTrue(collect($rating->testDetails)->flatten()->contains('XXSS_CORRECT'));
 
         $response = new HTTPResponse('https://testdomain', $client);
         $rating = new XXSSProtectionRating($response);
 
         $this->assertEquals(50, $rating->score);
-        $this->assertTrue(collect($rating)->flatten()->contains('XXSS_CORRECT'));
+        $this->assertTrue(collect($rating->testDetails)->flatten()->contains('XXSS_CORRECT'));
     }
 
     /** @test */
@@ -58,7 +58,21 @@ class XXSSProtectionRatingTest extends TestCase
         $rating = new XXSSProtectionRating($response);
 
         $this->assertEquals(100, $rating->score);
-        $this->assertTrue(collect($rating)->flatten()->contains('XXSS_BLOCK'));
+        $this->assertTrue(collect($rating->testDetails)->flatten()->contains('XXSS_BLOCK'));
+    }
+
+    /** @test */
+    public function XXSSProtectionRating_detects_wrong_encoding()
+    {
+        $client = $this->getMockedGuzzleClient([
+            // Producing an encoding error
+            new Response(200, ["X-XSS-Protection" => zlib_encode("SGVsbG8gV29ybGQ=", ZLIB_ENCODING_RAW)]),
+        ]);
+        $response = new HTTPResponse('https://testdomain', $client);
+        $rating = new XXSSProtectionRating($response);
+
+        $this->assertEquals(0, $rating->score);
+        $this->assertTrue(collect($rating->testDetails)->flatten()->contains('HEADER_ENCODING_ERROR'));
     }
 
     /**

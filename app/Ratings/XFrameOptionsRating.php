@@ -27,6 +27,15 @@ class XFrameOptionsRating extends Rating
             $this->hasError = true;
             $this->errorMessage = "HEADER_SET_MULTIPLE_TIMES";
             $this->testDetails->push(['placeholder' => 'HEADER_SET_MULTIPLE_TIMES', 'values' => ['HEADER' => $header]]);
+        } elseif ($header === "ERROR") {
+            $this->hasError = true;
+            $this->errorMessage = "HEADER_ENCODING_ERROR";
+            $this->testDetails->push([
+                'placeholder' => 'HEADER_ENCODING_ERROR',
+                'values' => [
+                    'HEADER_NAME' => 'X-Frame-Options'
+                ]
+            ]);
         } else {
             $header = $header[0];
 

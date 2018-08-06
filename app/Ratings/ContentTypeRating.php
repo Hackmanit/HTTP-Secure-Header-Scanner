@@ -14,6 +14,8 @@ class ContentTypeRating extends Rating
 
         $this->name = "CONTENT_TYPE";
         $this->scoreType = "warning";
+
+        $this->checkMetaTag();
     }
 
     protected function rate()
@@ -24,17 +26,22 @@ class ContentTypeRating extends Rating
             $this->hasError = true;
             $this->errorMessage = "HEADER_NOT_SET";
 
-            $this->checkMetaTag();
+        } elseif ($header === "ERROR") {
+            $this->hasError = true;
+            $this->errorMessage = "HEADER_ENCODING_ERROR";
+            $this->testDetails->push([
+                'placeholder' => 'HEADER_ENCODING_ERROR',
+                'values' => [
+                    'HEADER_NAME' => "Content-Type"
+                ]
+            ]);
         } elseif (count($header) > 1) {
             $this->hasError = true;
             $this->errorMessage = "HEADER_SET_MULTIPLE_TIMES";
             $this->testDetails->push([ 'placeholder' => 'HEADER_SET_MULTIPLE_TIMES', 'values' => ['HEADER' => $header] ]);
 
-            $this->checkMetaTag();
         } else {
             $detail = "CT_HEADER_WITHOUT_CHARSET";
-
-            $this->checkMetaTag();
 
             $header = $header[0];
 
