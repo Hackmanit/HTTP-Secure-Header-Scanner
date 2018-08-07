@@ -1,13 +1,16 @@
-FROM php:7.1
-RUN apt-get update -y && apt-get install -y openssl zip unzip git
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
-RUN docker-php-ext-install pdo mbstring
+FROM abiosoft/caddy:0.11.0-php-no-stats
 
-WORKDIR /app
-COPY . /app
-COPY .env.example /app/.env
+LABEL MAINTAINER="Sascha Brendel <mail@lednerb.eu>"
 
-RUN composer install && php artisan key:generate
+RUN apk --update add bash php7-mcrypt php7-mysqli php7-pdo_mysql php7-ctype php7-xml php7-xmlwriter && rm /var/cache/apk/*
 
-CMD php artisan serve --host=0.0.0.0 --port=8181
-EXPOSE 8181
+COPY Caddyfile /etc/Caddyfile
+
+COPY . /scanner
+COPY .env.example /scanner/.env
+
+WORKDIR /scanner
+RUN composer install \
+    && chmod -R 777 /scanner/storage
+
+EXPOSE 2015

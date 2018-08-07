@@ -4,7 +4,7 @@ This documentation describes the two modules "HTTP Secure Header Scanner" and "D
 
 # Startup using Docker
 
-`docker run -d -p 80:8181 siwecos/hshs-domxss-scanner`
+`docker run --rm --name siwecos-hshs-domxss-scanner -p 8000:2015 siwecos/hshs-domxss-scanner`
 
 
 # HTTP Secure Header Scanner
