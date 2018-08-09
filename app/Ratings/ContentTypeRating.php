@@ -15,7 +15,6 @@ class ContentTypeRating extends Rating
         $this->name = "CONTENT_TYPE";
         $this->scoreType = "warning";
 
-        $this->checkMetaTag();
     }
 
     protected function rate()
@@ -25,6 +24,8 @@ class ContentTypeRating extends Rating
         if ($header === null) {
             $this->hasError = true;
             $this->errorMessage = "HEADER_NOT_SET";
+
+            $this->checkMetaTag();
 
         } elseif ($header === "ERROR") {
             $this->hasError = true;
@@ -48,26 +49,18 @@ class ContentTypeRating extends Rating
             if (stripos($header, 'charset=') !== false) {
                 $this->score = 50;
                 $detail = "CT_HEADER_WITH_CHARSET";
+
+                // HASEGAWA
+                // http://openmya.hacker.jp/hasegawa/public/20071107/s6/h6.html?file=datae.txt
+                if ((stripos($header, 'utf8') !== false) || (stripos($header, 'Windows-31J') !== false) || (stripos($header, 'CP932') !== false) || (stripos($header, 'MS932') !== false) || (stripos($header, 'MS942C') !== false) || (stripos($header, 'sjis') !== false) || (stripos($header, 'jis') !== false)) {
+                    $this->score = 0;
+                    $detail = "CT_WRONG_CHARSET";
+                }
             }
 
             if (stripos($header, 'charset=utf-8') !== false) {
                 $this->score = 100;
                 $detail = "CT_CORRECT";
-            }
-
-            // HASEGAWA
-            // http://openmya.hacker.jp/hasegawa/public/20071107/s6/h6.html?file=datae.txt
-            elseif (
-                (stripos($header, 'utf8') !== false) ||
-                (stripos($header, 'Windows-31J') !== false) ||
-                (stripos($header, 'CP932') !== false) ||
-                (stripos($header, 'MS932') !== false) ||
-                (stripos($header, 'MS942C') !== false) ||
-                (stripos($header, 'sjis') !== false) ||
-                (stripos($header, 'jis') !== false)
-            ) {
-                $this->score = 0;
-                $detail = "CT_WRONG_CHARSET";
             }
 
             $this->testDetails->push([ 'placeholder' => $detail, 'values' => ['HEADER' => $header] ]);

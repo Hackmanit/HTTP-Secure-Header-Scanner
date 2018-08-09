@@ -13,7 +13,7 @@ use App\HTTPResponse;
 class ContentTypeRatingTest extends TestCase
 {
     /** @test */
-    public function contentTypeRating_rates_c_for_a_missing_header()
+    public function contentTypeRating_rates_0_for_a_missing_header()
     {
         $client = $this->getMockedGuzzleClient([
             new Response(200),
@@ -27,7 +27,7 @@ class ContentTypeRatingTest extends TestCase
     }
 
     /** @test */
-    public function contentTypeRating_rates_c_when_the_charset_is_missing()
+    public function contentTypeRating_rates_0_when_the_charset_is_missing()
     {
         $client = $this->getMockedGuzzleClient([
             new Response(200, [ "Content-Type" => "text/html" ]),
@@ -40,7 +40,7 @@ class ContentTypeRatingTest extends TestCase
     }
 
     /** @test */
-    public function contentTypeRating_rates_c_when_a_wrong_charset_definition_is_given_see_HASEGAWA()
+    public function contentTypeRating_rates_0_when_a_wrong_charset_definition_is_given_see_HASEGAWA()
     {
         $client = $this->getMockedGuzzleClient([
             new Response(200, [ "Content-Type" => "text/html; charset=utf8" ]),
@@ -62,7 +62,7 @@ class ContentTypeRatingTest extends TestCase
     }
 
     /** @test */
-    public function contentTypeRating_rates_a_when_the_charset_is_utf_8()
+    public function contentTypeRating_rates_100_when_the_charset_is_utf_8()
     {
         $client = $this->getMockedGuzzleClient([
             new Response(200, [ "Content-Type" => "text/html; charset=utf-8" ]),
@@ -91,6 +91,22 @@ class ContentTypeRatingTest extends TestCase
 
         $this->assertEquals(60, $rating->score);
         $this->assertTrue(collect($rating->testDetails)->flatten()->contains('CT_META_TAG_SET_CORRECT'));
+    }
+
+    /** @test */
+    public function if_the_header_is_set_the_meta_tag_is_not_rated()
+    {
+        $sampleBody = file_get_contents(base_path() . "/tests/Unit/example.org.html");
+
+        $client = $this->getMockedGuzzleClient([
+            new Response(200, ["Content-Type" => "text/html; charset=utf-8"], $sampleBody),
+        ]);
+
+        $response = new HTTPResponse('https://testdomain', $client);
+        $rating = new ContentTypeRating($response);
+
+        $this->assertEquals(100, $rating->score);
+        $this->assertFalse(collect($rating->testDetails)->flatten()->contains('CT_META_TAG_SET_CORRECT'));
     }
 
     /** @test */
