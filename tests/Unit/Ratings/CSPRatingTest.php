@@ -20,7 +20,7 @@ use App\HTTPResponse;
 class CSPRatingTest extends TestCase
 {
     /** @test */
-    public function cspRating_rates_c_because_header_is_not_set()
+    public function cspRating_rates_0_because_header_is_not_set()
     {
         $client = $this->getMockedGuzzleClient([
             new Response(200),
@@ -63,21 +63,22 @@ class CSPRatingTest extends TestCase
     }
 
     /** @test */
-    public function cspRating_rates_75_because_header_is_set_without_unsafes_but_without_default_src_none()
+    public function cspRating_rates_0_because_header_is_set_without_unsafes_but_without_default_src()
     {
         $client = $this->getMockedGuzzleClient([
             new Response(200, [
-                "Content-Security-Policy" => "default-src 'self';",
+                "Content-Security-Policy" => "image-src 'self';",
             ]),
         ]);
         $response = new HTTPResponse('https://testdomain', $client);
         $rating = new CSPRating($response);
 
-        $this->assertEquals(75, $rating->score);
+        $this->assertEquals(0, $rating->score);
+        $this->assertTrue(collect($rating->testDetails)->flatten()->contains('CSP_DEFAULT_SRC_MISSING'));
     }
 
     /** @test */
-    public function cspRating_rates_a_because_header_is_set_without_unsafes_and_with_default_src_none()
+    public function cspRating_rates_100_because_header_is_set_without_unsafes_and_with_default_src_none()
     {
         $client = $this->getMockedGuzzleClient([
             new Response(200, [
@@ -131,6 +132,20 @@ class CSPRatingTest extends TestCase
 
         $this->assertEquals(0, $rating->score);
         $this->assertTrue(collect($rating->testDetails)->flatten()->contains('HEADER_ENCODING_ERROR'));
+    }
+
+    /** @test */
+    public function cspRating_rates_100_because_header_is_set_without_unsafes_and_with_default_src_self()
+    {
+        $client = $this->getMockedGuzzleClient([
+            new Response(200, [
+                "Content-Security-Policy" => "default-src 'self';",
+            ]),
+        ]);
+        $response = new HTTPResponse('https://testdomain', $client);
+        $rating = new CSPRating($response);
+
+        $this->assertEquals(100, $rating->score);
     }
 
     /**

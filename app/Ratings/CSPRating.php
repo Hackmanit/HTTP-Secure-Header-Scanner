@@ -44,11 +44,15 @@ class CSPRating extends Rating
                 $this->score = 50;
                 $this->testDetails->push(['placeholder' => 'CSP_UNSAFE_INCLUDED', 'values' => ['HEADER' => $header]]);
                 $this->scoreType = "info";
-            } elseif (strpos($header, 'unsafe-inline') === false && strpos($header, 'unsafe-eval') === false && preg_match("/default-src\s+'none'/", $header) === 0) {
+            } elseif (strpos($header, 'default-src') === false) {
+                $this->score = 0;
+                $this->testDetails->push(['placeholder' => 'CSP_DEFAULT_SRC_MISSING', 'values' => ['HEADER' => $header]]);
+                $this->scoreType = "info";
+            } elseif (strpos($header, 'unsafe-inline') === false && strpos($header, 'unsafe-eval') === false && preg_match("/default-src\s+('none'|'self')/", $header) === 0) {
                 $this->score = 75;
                 $this->scoreType = "info";
                 $this->testDetails->push(['placeholder' => 'CSP_NO_UNSAFE_INCLUDED', 'values' => ['HEADER' => $header]]);
-            } elseif (strpos($header, 'unsafe-inline') === false && strpos($header, 'unsafe-eval') === false && preg_match("/default-src\s+'none'/", $header) === 1) {
+            } elseif (strpos($header, 'unsafe-inline') === false && strpos($header, 'unsafe-eval') === false && preg_match("/default-src\s+('none'|'self')/", $header) === 1) {
                 $this->score = 100;
                 $this->testDetails->push(['placeholder' => 'CSP_CORRECT', 'values' => ['HEADER' => $header]]);
             }
