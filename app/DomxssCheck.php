@@ -77,13 +77,13 @@ class DomxssCheck {
 			'name'         => 'DOMXSS',
 			'hasError'     => $this->hasError,
 			'errorMessage' => null,
-			'score'        => $score,
+			'score'        => 100, # $score,
 			'tests'        => [
 				[
 					'name'         => "HAS_SINKS",
 					'hasError'     => $this->hasSinkError,
 					'errorMessage' => $this->sinkErrorMessage,
-					'score'        => $this->hasSinks() ? 0 : 100,
+					'score'        => 100, # $this->hasSinks() ? 0 : 100,
 					'scoreType'    => 'info',
 					'testDetails'  => [
 						[
@@ -96,7 +96,7 @@ class DomxssCheck {
 					'name'         => "HAS_SOURCES",
 					'hasError'     => $this->hasSourceError,
 					'errorMessage' => $this->sourceErrorMessage,
-					'score'        => $this->hasSources() ? 0 : 100,
+					'score'        => 100, # $this->hasSources() ? 0 : 100,
 					'scoreType'    => 'info',
 					'testDetails'  => [
 						[
