@@ -9,19 +9,21 @@ class DomxssCheck {
 	protected $hasSourceError = false;
 	protected $sourceErrorMessage = null;
 	protected $response = null;
+	protected $body = null;
 
 	public function __construct( $url ) {
 		$this->response = new HTTPResponse( $url );
+		// Save response body for enhanced performance and reliability
+		$this->body = $this->response->body();
 	}
 
 	public function hasSources() {
 		// RegEx from original authors
 		// https://github.com/wisec/domxsswiki/wiki/Finding-DOMXSS
-		$sourcePattern = "/(location\s*[\[.])|([.\[]\s*[\"']?\s*(arguments|dialogArguments|innerHTML|write(ln)?|open(Dialog)?|showModalDialog|cookie|URL|documentURI|baseURI|referrer|name|opener|parent|top|content|self|frames)\W)|(localStorage|sessionStorage|Database)/";
+		$sourcePattern = '/(location\s*[\[.])|([.\[]\s*[\"\']?\s*(arguments|dialogArguments|innerHTML|write(ln)?|open(Dialog)?|showModalDialog|cookie|URL|documentURI|baseURI|referrer|name|opener|parent|top|content|self|frames)\W)|(localStorage|sessionStorage|Database)/';
+		$findings = preg_match_all( $sourcePattern, $this->body );
 
-		$findings = preg_match( $sourcePattern, $this->response->body() );
-
-		if ( $findings !== false && $findings > 0 ) {
+		if ( $findings > 0 ) {
 			return true;
 		}
 
@@ -31,11 +33,17 @@ class DomxssCheck {
 	public function hasSinks() {
 		// RegEx from original authors
 		// https://github.com/wisec/domxsswiki/wiki/Finding-DOMXSS
-		$sourcePattern = "/((src|href|data|location|code|value|action)\s*[\"'\]]*\s*\+?\s*=)|((replace|assign|navigate|getResponseHeader|open(Dialog)?|showModalDialog|eval|evaluate|execCommand|execScript|setTimeout|setInterval)\s*[\"'\]]*\s*\()/";
+		$sinksPattern = '/((src|href|data|location|code|value|action)\s*[\"\'\]]*\s*\+?\s*=)|((replace|assign|navigate|getResponseHeader|open(Dialog)?|showModalDialog|eval|evaluate|execCommand|execScript|setTimeout|setInterval)\s*[\"\'\]]*\s*\()/';
+		$findings = preg_match_all( $sinksPattern, $this->body );
 
-		$findings = preg_match( $sourcePattern, $this->response->body() );
+		if ( $findings > 0 ) {
+			return true;
+		}
 
-		if ( $findings !== false && $findings > 0 ) {
+		$sinksPattern = '/after\(|\.append\(|\.before\(|\.html\(|\.prepend\(|\.replaceWith\(|\.wrap\(|\.wrapAll\(|\$\(|\.globalEval\(|\.add\(|jQUery\(|\$\(|\.parseHTML\(/';
+		$findings = preg_match_all($sinksPattern, $this->body);
+
+		if ($findings > 0) {
 			return true;
 		}
 
@@ -58,18 +66,12 @@ class DomxssCheck {
 		}
 
 		$score = 100;
-
-		if ( ! $this->hasSinks() && ! $this->hasSources() ) {
-			$score = 100;
-		} else {
-			if ( $this->hasSinks() ) {
-				$score -= 50;
-			}
-			if ( $this->hasSources() ) {
-				$score -= 50;
-			}
+		if ( $this->hasSinks() ) {
+			$score -= 50;
 		}
-
+		if ( $this->hasSources() ) {
+			$score -= 50;
+		}
 
 		return [
 			'name'         => 'DOMXSS',
