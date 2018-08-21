@@ -33,7 +33,7 @@ class CSPRating extends Rating
                     'HEADER_NAME' => "Content-Security-Policy"
                 ]
             ]);
-        } elseif (count($header) > 1) {
+        } elseif (is_array($header) && count($header) > 1) {
             $this->hasError = true;
             $this->errorMessage = "HEADER_SET_MULTIPLE_TIMES";
             $this->testDetails->push(['placeholder' => 'HEADER_SET_MULTIPLE_TIMES', 'values' => ['HEADER' => $header] ]);
@@ -60,7 +60,7 @@ class CSPRating extends Rating
 
         // Check if legacy header is available
         $legacyHeader = $this->getHeader("x-content-security-policy");
-        if (count($legacyHeader) > 0) {
+        if (is_array($legacyHeader) && count ($legacyHeader) > 1) {
             $this->testDetails->push(['placeholder' => 'CSP_LEGACY_HEADER_SET', 'values' => ['HEADER' => json_encode($legacyHeader)]]);
         }
     }

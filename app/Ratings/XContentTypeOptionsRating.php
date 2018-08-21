@@ -32,7 +32,7 @@ class XContentTypeOptionsRating extends Rating
                     'HEADER_NAME' => "X-Content-Type-Options"
                 ]
             ]);
-        } elseif (count($header) > 1) {
+        } elseif (is_array($header) && count($header) > 1) {
             $this->hasError = true;
             $this->errorMessage = "HEADER_SET_MULTIPLE_TIMES";
             $this->testDetails->push(['placeholder' => 'HEADER_SET_MULTIPLE_TIMES', 'values' => ['HEADER' => $header]]);

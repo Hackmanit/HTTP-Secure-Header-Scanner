@@ -23,7 +23,7 @@ class XFrameOptionsRating extends Rating
         if ($header === null) {
             $this->hasError = true;
             $this->errorMessage = "HEADER_NOT_SET";
-        } elseif (count($header) > 1) {
+        } elseif (is_array($header) && count($header) > 1) {
             $this->hasError = true;
             $this->errorMessage = "HEADER_SET_MULTIPLE_TIMES";
             $this->testDetails->push(['placeholder' => 'HEADER_SET_MULTIPLE_TIMES', 'values' => ['HEADER' => $header]]);
