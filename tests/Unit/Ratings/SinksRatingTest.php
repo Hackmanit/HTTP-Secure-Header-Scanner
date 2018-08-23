@@ -25,7 +25,7 @@ class SinksRatingTest extends TestCase
 
         $this->assertEquals(0, $rating->score);
         $this->assertTrue($rating->hasError);
-        $this->assertTrue(collect($rating->errorMessage)->flatten()->contains('DOMXSS_NO_CONTENT'));
+        $this->assertTrue(collect($rating->errorMessage)->flatten()->contains('NO_CONTENT'));
     }
 
     /** @test */
@@ -41,7 +41,7 @@ class SinksRatingTest extends TestCase
 
         $this->assertEquals(100, $rating->score);
         $this->assertFalse($rating->hasError);
-        $this->assertTrue(collect($rating->testDetails)->flatten()->contains('DOMXSS_NO_SCRIPT_TAGS'));
+        $this->assertTrue(collect($rating->testDetails)->flatten()->contains('NO_SCRIPT_TAGS'));
     }
 
     /** @test */
