@@ -28,7 +28,7 @@ class SourcesRating extends Rating
         if ($html->size === 0) {
             $this->hasError = true;
             $this->errorMessage = [
-                'placeholder' => 'DOMXSS_NO_CONTENT',
+                'placeholder' => 'NO_CONTENT',
                 'values' => []
             ];
 
@@ -38,7 +38,7 @@ class SourcesRating extends Rating
 
             if (count($scriptTags) == 0) {
                 $this->score = 100;
-                $this->testDetails->push(['placeholder' => 'DOMXSS_NO_SCRIPT_TAGS', 'values' => []]);
+                $this->testDetails->push(['placeholder' => 'NO_SCRIPT_TAGS', 'values' => []]);
 
             } else {
 
@@ -54,13 +54,13 @@ class SourcesRating extends Rating
                 if ($sourceCounter > 0) {
                     $this->score = 0;
                     $this->testDetails->push([
-                        'placeholder' => 'DOMXSS_SOURCES_FOUND',
+                        'placeholder' => 'SOURCES_FOUND',
                         'values' => [
                             'AMOUNT' => $sourceCounter
                         ]
                     ]);
                 } else {
-                    $this->testDetails->push(['placeholder' => 'DOMXSS_NO_SOURCES_FOUND', 'values' => []]);
+                    $this->testDetails->push(['placeholder' => 'NO_SOURCES_FOUND', 'values' => []]);
                 }
             }
         }
