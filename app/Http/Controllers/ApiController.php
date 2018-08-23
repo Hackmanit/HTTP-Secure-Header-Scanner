@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\HeaderCheck;
-use App\DomxssCheck;
+use App\DOMXSSCheck;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use GuzzleHttp\Client;
@@ -27,7 +27,7 @@ class ApiController extends Controller
 
         $this->checkSiwecosRequest($request);
 
-        $check = new DomxssCheck($request->json('url'));
+        $check = new DOMXSSCheck($request->json('url'));
 
         $this->notifyCallbacks($request->json('callbackurls'), $check);
 

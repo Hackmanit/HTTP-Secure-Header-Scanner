@@ -107,7 +107,9 @@ class HTTPResponse
         if($this->hasErrors())
             return null;
 
-        return $this->response()->getBody()->getContents();
+        # Fixed empty body
+        # See: https://stackoverflow.com/questions/30549226/guzzlehttp-how-get-the-body-of-a-response-from-guzzle-6#30549372
+        return (string) $this->response()->getBody();
     }
 
     /**
