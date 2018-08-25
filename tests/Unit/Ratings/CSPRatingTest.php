@@ -95,15 +95,24 @@ class CSPRatingTest extends TestCase
     /** @test */
     public function cspRating_adds_comment_for_legacy_header()
     {
+        // X-Content-Security-Policy
         $client = $this->getMockedGuzzleClient([
-            new Response(200, [
-                "X-Content-Security-Policy" => "default-src 'none';",
-            ]),
+            new Response(200, ["X-Content-Security-Policy" => "default-src 'none';"]),
+            new Response(200, ["X-WebKit-CSP" => "default-src 'none';"]),
+            new Response(200, ["X-Content-Security-Policy" => "default-src 'none';", "X-WebKit-CSP" => "default-src 'none';"]),
         ]);
-        $response = new HTTPResponse('https://testdomain', $client);
-        $rating = new CSPRating($response);
+        // Finds only X-Content-Security-Policy
+        $rating = new CSPRating(new HTTPResponse('https://testdomain', $client));
+        $this->assertTrue($rating->testDetails->flatten()->contains('CSP_LEGACY_HEADER_SET'));
 
-        $this->assertTrue(collect($rating)->contains('CSP_LEGACY_HEADER_SET'));
+        // Finds only X-WebKit-CSP
+        $rating = new CSPRating(new HTTPResponse('https://testdomain', $client));
+        $this->assertTrue($rating->testDetails->flatten()->contains('CSP_LEGACY_HEADER_SET'));
+
+        // Finds both legacy headers.
+        $rating = new CSPRating(new HTTPResponse('https://testdomain', $client));
+        $this->assertTrue($rating->testDetails->contains(["placeholder" => "CSP_LEGACY_HEADER_SET", "values" => ["HEADER_NAME" => "X-Content-Security-Policy"]]));
+        $this->assertTrue($rating->testDetails->contains(["placeholder" => "CSP_LEGACY_HEADER_SET", "values" => ["HEADER_NAME" => "X-WebKit-CSP"]]));
     }
 
     /** @test */

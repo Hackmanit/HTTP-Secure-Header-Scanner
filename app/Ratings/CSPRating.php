@@ -69,9 +69,15 @@ class CSPRating extends Rating
         }
 
         // Check if legacy header is available
-        $legacyHeader = $this->getHeader("x-content-security-policy");
-        if (is_array($legacyHeader) && count ($legacyHeader) > 1) {
-            $this->testDetails->push(['placeholder' => 'CSP_LEGACY_HEADER_SET', 'values' => ['HEADER' => json_encode($legacyHeader)]]);
+        $legacyHeader = $this->getHeader("X-Content-Security-Policy");
+        if (is_array($legacyHeader) && count($legacyHeader) > 0) {
+            $this->testDetails->push(['placeholder' => 'CSP_LEGACY_HEADER_SET', 'values' => ['HEADER_NAME' => 'X-Content-Security-Policy']]);
+        }
+
+        // Check if legacy header X-WebKit-CSP is available
+        $legacyHeader = $this->getHeader("X-WebKit-CSP");
+        if (is_array($legacyHeader) && count($legacyHeader) > 0) {
+            $this->testDetails->push(['placeholder' => 'CSP_LEGACY_HEADER_SET', 'values' => ['HEADER_NAME' => 'X-WebKit-CSP']]);
         }
     }
 }
