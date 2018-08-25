@@ -67,7 +67,7 @@ class CSPRatingTest extends TestCase
     {
         $client = $this->getMockedGuzzleClient([
             new Response(200, [
-                "Content-Security-Policy" => "image-src 'self';",
+                "Content-Security-Policy" => "img-src 'self';",
             ]),
         ]);
         $response = new HTTPResponse('https://testdomain', $client);
@@ -95,15 +95,24 @@ class CSPRatingTest extends TestCase
     /** @test */
     public function cspRating_adds_comment_for_legacy_header()
     {
+        // X-Content-Security-Policy
         $client = $this->getMockedGuzzleClient([
-            new Response(200, [
-                "X-Content-Security-Policy" => "default-src 'none';",
-            ]),
+            new Response(200, ["X-Content-Security-Policy" => "default-src 'none';"]),
+            new Response(200, ["X-WebKit-CSP" => "default-src 'none';"]),
+            new Response(200, ["X-Content-Security-Policy" => "default-src 'none';", "X-WebKit-CSP" => "default-src 'none';"]),
         ]);
-        $response = new HTTPResponse('https://testdomain', $client);
-        $rating = new CSPRating($response);
+        // Finds only X-Content-Security-Policy
+        $rating = new CSPRating(new HTTPResponse('https://testdomain', $client));
+        $this->assertTrue($rating->testDetails->flatten()->contains('CSP_LEGACY_HEADER_SET'));
 
-        $this->assertTrue(collect($rating)->contains('CSP_LEGACY_HEADER_SET'));
+        // Finds only X-WebKit-CSP
+        $rating = new CSPRating(new HTTPResponse('https://testdomain', $client));
+        $this->assertTrue($rating->testDetails->flatten()->contains('CSP_LEGACY_HEADER_SET'));
+
+        // Finds both legacy headers.
+        $rating = new CSPRating(new HTTPResponse('https://testdomain', $client));
+        $this->assertTrue($rating->testDetails->contains(["placeholder" => "CSP_LEGACY_HEADER_SET", "values" => ["HEADER_NAME" => "X-Content-Security-Policy"]]));
+        $this->assertTrue($rating->testDetails->contains(["placeholder" => "CSP_LEGACY_HEADER_SET", "values" => ["HEADER_NAME" => "X-WebKit-CSP"]]));
     }
 
     /** @test */
@@ -146,6 +155,22 @@ class CSPRatingTest extends TestCase
         $rating = new CSPRating($response);
 
         $this->assertEquals(100, $rating->score);
+    }
+
+    /** @test */
+    public function cspRating_rates_0_if_the_policy_is_not_valid()
+    {
+        $client = $this->getMockedGuzzleClient([
+            new Response(200, [
+                "Content-Security-Policy" => "#default-src 'self'; font-src 'self'",
+            ]),
+        ]);
+        $response = new HTTPResponse('https://testdomain', $client);
+        $rating = new CSPRating($response);
+
+        $this->assertEquals(0, $rating->score);
+        $this->assertTrue($rating->testDetails->flatten()->contains('CSP_IS_NOT_VALID'));
+        $this->assertTrue($rating->hasError);
     }
 
     /**

@@ -2,8 +2,9 @@
 
 namespace App\Ratings;
 
-use GuzzleHttp\Client;
+use App\CSPParser;
 use App\HTTPResponse;
+use GuzzleHttp\Client;
 
 
 class CSPRating extends Rating
@@ -39,29 +40,44 @@ class CSPRating extends Rating
             $this->testDetails->push(['placeholder' => 'HEADER_SET_MULTIPLE_TIMES', 'values' => ['HEADER' => $header] ]);
         } else {
             $header = $header[0];
+            $csp = new CSPParser($header);
 
-            if (strpos($header, 'unsafe-inline') !== false || strpos($header, 'unsafe-eval') !== false) {
+            if ( ! $csp->isValid() ) {
+                $this->score = 0;
+                $this->hasError = true;
+                $this->testDetails->push(['placeholder' => 'CSP_IS_NOT_VALID', 'values' => ['HEADER' => $header]]);
+            } elseif ($csp->containsUnsafeValues()) {
                 $this->score = 50;
                 $this->testDetails->push(['placeholder' => 'CSP_UNSAFE_INCLUDED', 'values' => ['HEADER' => $header]]);
                 $this->scoreType = "info";
-            } elseif (strpos($header, 'default-src') === false) {
+            } elseif ( ! $csp->directives->has('default-src')) {
                 $this->score = 0;
                 $this->testDetails->push(['placeholder' => 'CSP_DEFAULT_SRC_MISSING', 'values' => ['HEADER' => $header]]);
                 $this->scoreType = "info";
-            } elseif (strpos($header, 'unsafe-inline') === false && strpos($header, 'unsafe-eval') === false && preg_match("/default-src\s+('none'|'self')/", $header) === 0) {
+            } elseif ( ! $csp->containsUnsafeValues() && ! $csp->directives->get('default-src')->contains(function ($value, $key) {
+                return ($value === "'self'") || ($value === "'none'");
+            })) {
                 $this->score = 75;
                 $this->scoreType = "info";
                 $this->testDetails->push(['placeholder' => 'CSP_NO_UNSAFE_INCLUDED', 'values' => ['HEADER' => $header]]);
-            } elseif (strpos($header, 'unsafe-inline') === false && strpos($header, 'unsafe-eval') === false && preg_match("/default-src\s+('none'|'self')/", $header) === 1) {
+            } elseif (! $csp->containsUnsafeValues() && $csp->directives->get('default-src')->contains(function ($value, $key) {
+                return ($value === "'self'") || ($value === "'none'");
+            })) {
                 $this->score = 100;
                 $this->testDetails->push(['placeholder' => 'CSP_CORRECT', 'values' => ['HEADER' => $header]]);
             }
         }
 
         // Check if legacy header is available
-        $legacyHeader = $this->getHeader("x-content-security-policy");
-        if (is_array($legacyHeader) && count ($legacyHeader) > 1) {
-            $this->testDetails->push(['placeholder' => 'CSP_LEGACY_HEADER_SET', 'values' => ['HEADER' => json_encode($legacyHeader)]]);
+        $legacyHeader = $this->getHeader("X-Content-Security-Policy");
+        if (is_array($legacyHeader) && count($legacyHeader) > 0) {
+            $this->testDetails->push(['placeholder' => 'CSP_LEGACY_HEADER_SET', 'values' => ['HEADER_NAME' => 'X-Content-Security-Policy']]);
+        }
+
+        // Check if legacy header X-WebKit-CSP is available
+        $legacyHeader = $this->getHeader("X-WebKit-CSP");
+        if (is_array($legacyHeader) && count($legacyHeader) > 0) {
+            $this->testDetails->push(['placeholder' => 'CSP_LEGACY_HEADER_SET', 'values' => ['HEADER_NAME' => 'X-WebKit-CSP']]);
         }
     }
 }
