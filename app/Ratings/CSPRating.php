@@ -46,20 +46,23 @@ class CSPRating extends Rating
                 $this->score = 0;
                 $this->hasError = true;
                 $this->testDetails->push(['placeholder' => 'CSP_IS_NOT_VALID', 'values' => ['HEADER' => $header]]);
-            }
-            else if (strpos($header, 'unsafe-inline') !== false || strpos($header, 'unsafe-eval') !== false) {
+            } elseif ($csp->containsUnsafeValues()) {
                 $this->score = 50;
                 $this->testDetails->push(['placeholder' => 'CSP_UNSAFE_INCLUDED', 'values' => ['HEADER' => $header]]);
                 $this->scoreType = "info";
-            } elseif (strpos($header, 'default-src') === false) {
+            } elseif ( ! $csp->directives->has('default-src')) {
                 $this->score = 0;
                 $this->testDetails->push(['placeholder' => 'CSP_DEFAULT_SRC_MISSING', 'values' => ['HEADER' => $header]]);
                 $this->scoreType = "info";
-            } elseif (strpos($header, 'unsafe-inline') === false && strpos($header, 'unsafe-eval') === false && preg_match("/default-src\s+('none'|'self')/", $header) === 0) {
+            } elseif ( ! $csp->containsUnsafeValues() && ! $csp->directives->get('default-src')->contains(function ($value, $key) {
+                return ($value === "'self'") || ($value === "'none'");
+            })) {
                 $this->score = 75;
                 $this->scoreType = "info";
                 $this->testDetails->push(['placeholder' => 'CSP_NO_UNSAFE_INCLUDED', 'values' => ['HEADER' => $header]]);
-            } elseif (strpos($header, 'unsafe-inline') === false && strpos($header, 'unsafe-eval') === false && preg_match("/default-src\s+('none'|'self')/", $header) === 1) {
+            } elseif (! $csp->containsUnsafeValues() && $csp->directives->get('default-src')->contains(function ($value, $key) {
+                return ($value === "'self'") || ($value === "'none'");
+            })) {
                 $this->score = 100;
                 $this->testDetails->push(['placeholder' => 'CSP_CORRECT', 'values' => ['HEADER' => $header]]);
             }

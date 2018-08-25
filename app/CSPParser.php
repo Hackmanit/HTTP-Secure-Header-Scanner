@@ -33,6 +33,15 @@ class CSPParser
     }
 
     /**
+     * Returns if 'unsafe-inline' or 'unsafe-eval' are used in the given CSP-Header.
+     * @return bool containing unsafe-* values.
+     */
+    public function containsUnsafeValues()
+    {
+        return $this->directives->flatten()->contains("'unsafe-inline'") || $this->directives->flatten()->contains("'unsafe-eval'");
+    }
+
+    /**
      * @param  String $header
      * @return void
      */
@@ -82,7 +91,7 @@ class CSPParser
             // remove doubled whitespace
             $directiveValues = preg_replace('/\s+/', ' ', $directiveValues);
             // Put the directive with it's values to the directives collection
-            $this->directives->put($directiveName, explode(' ', $directiveValues));
+            $this->directives->put($directiveName, collect(explode(' ', $directiveValues)));
         }
     }
 

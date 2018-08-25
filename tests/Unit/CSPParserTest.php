@@ -58,9 +58,9 @@ class CSPParserTest extends TestCase
 
         $csp = new CSPParser($header);
 
-        $this->assertEquals(["'none'"], $csp->directives->get('default-src'));
-        $this->assertEquals(["'self'"], $csp->directives->get('script-src'));
-        $this->assertEquals(["'self'", "*.gstatic.com", "data:"], $csp->directives->get('font-src'));
+        $this->assertEquals(collect(["'none'"]), $csp->directives->get('default-src'));
+        $this->assertEquals(collect(["'self'"]), $csp->directives->get('script-src'));
+        $this->assertEquals(collect(["'self'", "*.gstatic.com", "data:"]), $csp->directives->get('font-src'));
     }
 
     /** @test */
@@ -70,9 +70,9 @@ class CSPParserTest extends TestCase
 
         $csp = new CSPParser($header);
 
-        $this->assertEquals(["'none'"], $csp->directives->get('default-src'));
-        $this->assertEquals(["'self'"], $csp->directives->get('script-src'));
-        $this->assertEquals(["'self'", "*.gstatic.com", "data:"], $csp->directives->get('font-src'));
+        $this->assertEquals(collect(["'none'"]), $csp->directives->get('default-src'));
+        $this->assertEquals(collect(["'self'"]), $csp->directives->get('script-src'));
+        $this->assertEquals(collect(["'self'", "*.gstatic.com", "data:"]), $csp->directives->get('font-src'));
     }
 
     /** @test */
