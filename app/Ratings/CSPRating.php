@@ -2,8 +2,9 @@
 
 namespace App\Ratings;
 
-use GuzzleHttp\Client;
+use App\CSPParser;
 use App\HTTPResponse;
+use GuzzleHttp\Client;
 
 
 class CSPRating extends Rating
@@ -39,8 +40,14 @@ class CSPRating extends Rating
             $this->testDetails->push(['placeholder' => 'HEADER_SET_MULTIPLE_TIMES', 'values' => ['HEADER' => $header] ]);
         } else {
             $header = $header[0];
+            $csp = new CSPParser($header);
 
-            if (strpos($header, 'unsafe-inline') !== false || strpos($header, 'unsafe-eval') !== false) {
+            if ( ! $csp->isValid() ) {
+                $this->score = 0;
+                $this->hasError = true;
+                $this->testDetails->push(['placeholder' => 'CSP_IS_NOT_VALID', 'values' => ['HEADER' => $header]]);
+            }
+            else if (strpos($header, 'unsafe-inline') !== false || strpos($header, 'unsafe-eval') !== false) {
                 $this->score = 50;
                 $this->testDetails->push(['placeholder' => 'CSP_UNSAFE_INCLUDED', 'values' => ['HEADER' => $header]]);
                 $this->scoreType = "info";

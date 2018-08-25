@@ -67,7 +67,7 @@ class CSPRatingTest extends TestCase
     {
         $client = $this->getMockedGuzzleClient([
             new Response(200, [
-                "Content-Security-Policy" => "image-src 'self';",
+                "Content-Security-Policy" => "img-src 'self';",
             ]),
         ]);
         $response = new HTTPResponse('https://testdomain', $client);
@@ -146,6 +146,22 @@ class CSPRatingTest extends TestCase
         $rating = new CSPRating($response);
 
         $this->assertEquals(100, $rating->score);
+    }
+
+    /** @test */
+    public function cspRating_rates_0_if_the_policy_is_not_valid()
+    {
+        $client = $this->getMockedGuzzleClient([
+            new Response(200, [
+                "Content-Security-Policy" => "#default-src 'self'; font-src 'self'",
+            ]),
+        ]);
+        $response = new HTTPResponse('https://testdomain', $client);
+        $rating = new CSPRating($response);
+
+        $this->assertEquals(0, $rating->score);
+        $this->assertTrue($rating->testDetails->flatten()->contains('CSP_IS_NOT_VALID'));
+        $this->assertTrue($rating->hasError);
     }
 
     /**
