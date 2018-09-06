@@ -23,7 +23,7 @@ class HeaderCheck
         $this->response = new HTTPResponse($url);
     }
 
-   
+
     public function report()
     {
         if($this->response->hasErrors()){
@@ -39,39 +39,35 @@ class HeaderCheck
             ];
         }
 
-        $cspRating = new CSPRating($this->response);
-        $contentTypeRating = new ContentTypeRating($this->response);
-        $hpkpRating = new HPKPRating($this->response);
-        $hstsRating = new HSTSRating($this->response);
-        $xContenTypeOptionsRating = new XContentTypeOptionsRating($this->response);
-        $xFrameOptionsRating = new XFrameOptionsRating($this->response);
-        $xXssProtectionRating = new XXSSProtectionRating($this->response);
+        $ratings = collect([
+            new CSPRating($this->response),
+            new ContentTypeRating($this->response),
+            new HPKPRating($this->response),
+            new HSTSRating($this->response),
+            new XContentTypeOptionsRating($this->response),
+            new XFrameOptionsRating($this->response),
+            new XXSSProtectionRating($this->response)
+        ]);
 
 
-        // Calculating score as an average of the single scores WITHOUT the HPKP scan
+        // Calculating score as an average of the single scores WITHOUT `scoreType = 'bonus'` Ratings.
         $score = 0;
-        $score+= $cspRating->score;
-        $score+= $contentTypeRating->score;
-        $score+= $hstsRating->score;
-        $score+= $xContenTypeOptionsRating->score;
-        $score+= $xFrameOptionsRating->score;
-        $score+= $xXssProtectionRating->score;
-        $score = floor($score / 6);
+        $scoredRatings = 0;
+        foreach($ratings as $rating) {
+            if($rating->scoreType === 'bonus')
+                continue;
+            $score += $rating->score;
+            $scoredRatings++;
+        }
+
+        $score = floor($score / $scoredRatings);
 
         return [
             'name' => 'HEADER',
-            'hasError' => false,
+            'hasError' => $ratings->whereIn('scoreType', ['warning'])->contains('hasError', true),
             'errorMessage' => null,
             'score' => $score,
-            'tests' => [
-                $cspRating,
-                $contentTypeRating,
-                $hpkpRating,
-                $hstsRating,
-                $xContenTypeOptionsRating,
-                $xFrameOptionsRating,
-                $xXssProtectionRating,
-            ]
+            'tests' => $ratings
         ];
     }
 }
