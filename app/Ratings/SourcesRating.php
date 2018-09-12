@@ -5,7 +5,7 @@ namespace App\Ratings;
 use voku\helper\HtmlDomParser;
 use GuzzleHttp\Client;
 use App\HTTPResponse;
-use App\DomxssCheck;
+use App\DOMXSSCheck;
 
 class SourcesRating extends Rating
 {
@@ -25,7 +25,7 @@ class SourcesRating extends Rating
          */
         $html = $this->getBody();
 
-        if ($html->size === 0) {
+        if ($html->getIsDOMDocumentCreatedWithoutHtml()) {
             $this->hasError = true;
             $this->errorMessage = [
                 'placeholder' => 'NO_CONTENT',

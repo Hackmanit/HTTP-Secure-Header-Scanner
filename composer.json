@@ -10,7 +10,7 @@
         "laravel/framework": "5.5.*",
         "predis/predis": "^1.1",
         "shipping-docker/vessel": "^3.0",
-        "voku/simple_html_dom": "^1.5"
+        "voku/simple_html_dom": "^4.1"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",

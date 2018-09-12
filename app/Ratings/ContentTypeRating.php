@@ -73,7 +73,10 @@ class ContentTypeRating extends Rating
         $detailMeta = null;
 
         // case: <meta charset="utf-8">
-        if ($finding = $dom->find('meta[charset]')) {
+
+        $finding = $dom->find('meta[charset]');
+
+        if (count($finding) > 0) {
             $this->score = 30;
             $detailMeta = "CT_META_TAG_SET";
 
@@ -85,7 +88,8 @@ class ContentTypeRating extends Rating
             $this->testDetails->push([ 'placeholder' => $detailMeta, 'values' => ['META' => $finding[0]->__toString()] ]);
         }
         // case: <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-        if ($finding = $dom->find('meta[http-equiv=Content-Type]')) {
+        $finding = $dom->find('meta[http-equiv=Content-Type]');
+        if ($finding->isDOMDocumentCreatedWithoutHtml) {
             if (stripos($finding[0]->content, 'charset=utf-8') !== false) {
                 $this->score = 60;
                 $detailMeta = "CT_META_TAG_SET_CORRECT";

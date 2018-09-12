@@ -25,7 +25,7 @@ class SinksRating extends Rating
          */
         $html = $this->getBody();
 
-        if ($html->size === 0) {
+        if ($html->getIsDOMDocumentCreatedWithoutHtml()) {
             $this->hasError = true;
             $this->errorMessage = [
                 'placeholder' => 'NO_CONTENT',
