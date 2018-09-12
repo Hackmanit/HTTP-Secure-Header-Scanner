@@ -73,29 +73,28 @@ class ContentTypeRating extends Rating
         $detailMeta = null;
 
         // case: <meta charset="utf-8">
-
         $finding = $dom->find('meta[charset]');
+            if (count($finding) > 0) {
+                $this->score = 30;
+                $detailMeta = "CT_META_TAG_SET";
 
-        if (count($finding) > 0) {
-            $this->score = 30;
-            $detailMeta = "CT_META_TAG_SET";
+                if (stripos($finding[0]->charset, 'utf-8') !== false) {
+                    $this->score = 60;
+                    $detailMeta = "CT_META_TAG_SET_CORRECT";
+                }
 
-            if (stripos($finding[0]->charset, 'utf-8') !== false) {
-                $this->score = 60;
-                $detailMeta = "CT_META_TAG_SET_CORRECT";
+                $this->testDetails->push([ 'placeholder' => $detailMeta, 'values' => ['META' => $finding[0]->__toString()] ]);
             }
 
-            $this->testDetails->push([ 'placeholder' => $detailMeta, 'values' => ['META' => $finding[0]->__toString()] ]);
-        }
         // case: <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
         $finding = $dom->find('meta[http-equiv=Content-Type]');
-        if ($finding->isDOMDocumentCreatedWithoutHtml) {
+        if (count($finding)) {
+            $detailMeta = "CT_META_TAG_SET";
+            $this->score = 30;
+
             if (stripos($finding[0]->content, 'charset=utf-8') !== false) {
                 $this->score = 60;
                 $detailMeta = "CT_META_TAG_SET_CORRECT";
-            } elseif (stripos($finding[0]->content, 'charset=') !== false) {
-                $detailMeta = "CT_META_TAG_SET";
-                $this->score = 30;
             }
 
             $this->testDetails->push([ 'placeholder' => $detailMeta, 'values' => ['META' => $finding[0]->__toString()] ]);

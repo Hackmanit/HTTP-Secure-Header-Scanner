@@ -110,6 +110,77 @@ class ContentTypeRatingTest extends TestCase
     }
 
     /** @test */
+    public function ContentTypeRating_rates_30_if_only_the_meta_tag_is_set_but_without_an_charset() {
+        $sampleBody = '
+            <html><head><meta http-equiv="Content-Type" content="text/html" /></head><body></body></html>
+        ';
+
+        $client = $this->getMockedGuzzleClient([
+            new Response(200, [], $sampleBody),
+        ]);
+
+        $response = new HTTPResponse('https://testdomain', $client);
+        $rating = new ContentTypeRating($response);
+
+        $this->assertEquals(30, $rating->score);
+        $this->assertTrue(collect($rating->testDetails)->flatten()->contains('CT_META_TAG_SET'));
+    }
+
+    /** @test */
+    public function ContentTypeRating_rates_60_if_only_the_meta_tag_is_set_but_with_the_correct_charset()
+    {
+        $sampleBody = '
+            <html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /></head><body></body></html>
+        ';
+
+        $client = $this->getMockedGuzzleClient([
+            new Response(200, [], $sampleBody),
+        ]);
+
+        $response = new HTTPResponse('https://testdomain', $client);
+        $rating = new ContentTypeRating($response);
+
+        $this->assertEquals(60, $rating->score);
+        $this->assertTrue(collect($rating->testDetails)->flatten()->contains('CT_META_TAG_SET_CORRECT'));
+    }
+
+    /** @test */
+    public function ContentTypeRating_rates_30_if_only_the_short_meta_tag_is_set_but_with_another_charset()
+    {
+        $sampleBody = '
+            <html><head><meta charset="ISO-8859-1" /></head><body></body></html>
+        ';
+
+        $client = $this->getMockedGuzzleClient([
+            new Response(200, [], $sampleBody),
+        ]);
+
+        $response = new HTTPResponse('https://testdomain', $client);
+        $rating = new ContentTypeRating($response);
+
+        $this->assertEquals(30, $rating->score);
+        $this->assertTrue(collect($rating->testDetails)->flatten()->contains('CT_META_TAG_SET'));
+    }
+
+    /** @test */
+    public function ContentTypeRating_rates_60_if_only_the_short_meta_tag_is_set_but_with_the_correct_charset()
+    {
+        $sampleBody = '
+            <html><head><meta charset="UTF-8" /></head><body></body></html>
+        ';
+
+        $client = $this->getMockedGuzzleClient([
+            new Response(200, [], $sampleBody),
+        ]);
+
+        $response = new HTTPResponse('https://testdomain', $client);
+        $rating = new ContentTypeRating($response);
+
+        $this->assertEquals(60, $rating->score);
+        $this->assertTrue(collect($rating->testDetails)->flatten()->contains('CT_META_TAG_SET_CORRECT'));
+    }
+
+    /** @test */
     public function ContentTypeRating_detects_wrong_encoding()
     {
         $client = $this->getMockedGuzzleClient([
