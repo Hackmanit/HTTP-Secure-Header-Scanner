@@ -6,6 +6,15 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [1.0.1] - 2018-09-12
+### Fixed
+- Bugs in ContentTypeRating when only the `meta` tags are set.
+- Rating of sources and sinks with comments (#41).
+
+### Changed
+- Upgraded `voku/simple_html_dom` to actual version.
+
+
 ## [1.0.0] - 2018-09-07
 ### Added
 - CHANGELOG.md and semantic versioning
