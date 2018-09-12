@@ -5,7 +5,7 @@ namespace App\Ratings;
 use voku\helper\HtmlDomParser;
 use GuzzleHttp\Client;
 use App\HTTPResponse;
-use App\DomxssCheck;
+use App\DOMXSSCheck;
 
 class SinksRating extends Rating
 {

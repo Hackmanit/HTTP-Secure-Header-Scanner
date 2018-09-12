@@ -57,7 +57,7 @@ class SinksRatingTest extends TestCase
 
         // Sinks total
         $sinks = DOMXSSCheck::hasSinks($sampleBody, true);
-        $this->assertEquals(8, $sinks);
+        $this->assertEquals(9, $sinks);
 
         // Sinks in script-Tags
         $this->assertEquals(1, $rating->testDetails->first()['values']['AMOUNT']);

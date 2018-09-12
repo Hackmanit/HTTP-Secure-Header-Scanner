@@ -58,7 +58,7 @@ class SourcesRatingTest extends TestCase
 
         // Sources total
         $sources = DOMXSSCheck::hasSources($sampleBody, true);
-        $this->assertEquals(4, $sources);
+        $this->assertEquals(6, $sources);
 
         // Sources in script-Tags
         $this->assertEquals(2, $rating->testDetails->first()['values']['AMOUNT']);
