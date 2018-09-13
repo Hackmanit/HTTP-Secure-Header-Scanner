@@ -65,7 +65,7 @@ class HeaderCheck
 
         return [
             'name' => 'HEADER',
-            'version' => file('../VERSION', FILE_IGNORE_NEW_LINES)[0],
+            'version' =>  file(base_path('VERSION'), FILE_IGNORE_NEW_LINES)[0],
             'hasError' => $ratings->whereIn('scoreType', ['warning'])->contains('hasError', true),
             'errorMessage' => null,
             'score' => $score,
