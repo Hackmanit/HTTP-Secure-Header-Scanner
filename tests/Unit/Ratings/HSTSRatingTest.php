@@ -3,9 +3,6 @@
 namespace Tests\Unit;
 
 use App\Ratings\HSTSRating;
-use GuzzleHttp\Client;
-use GuzzleHttp\Handler\MockHandler;
-use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Response;
 use Tests\TestCase;
 use App\HTTPResponse;
@@ -97,15 +94,4 @@ class HSTSRatingTest extends TestCase
         $this->assertTrue(collect($rating->testDetails)->flatten()->contains('HEADER_ENCODING_ERROR'));
     }
 
-    /**
-     * This method sets and activates the GuzzleHttp Mocking functionality.
-     * @param array $responses
-     * @return Client
-     */
-    protected function getMockedGuzzleClient(array $responses)
-    {
-        $mock = new MockHandler($responses);
-        $handler = HandlerStack::create($mock);
-        return (new Client(["handler" => $handler])) ;
-    }
 }

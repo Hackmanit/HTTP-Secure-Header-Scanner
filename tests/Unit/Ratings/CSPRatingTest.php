@@ -3,9 +3,6 @@
 namespace Tests\Unit;
 
 use App\Ratings\CSPRating;
-use GuzzleHttp\Client;
-use GuzzleHttp\Handler\MockHandler;
-use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Response;
 use Tests\TestCase;
 use App\HTTPResponse;
@@ -173,15 +170,4 @@ class CSPRatingTest extends TestCase
         $this->assertTrue($rating->hasError);
     }
 
-    /**
-     * This method sets and activates the GuzzleHttp Mocking functionality.
-     * @param array $responses
-     * @return Client
-     */
-    protected function getMockedGuzzleClient(array $responses)
-    {
-        $mock = new MockHandler($responses);
-        $handler = HandlerStack::create($mock);
-        return (new Client(["handler" => $handler])) ;
-    }
 }

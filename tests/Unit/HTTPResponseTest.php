@@ -117,10 +117,6 @@ class HTTPResponseTest extends TestCase
      */
     protected function getMockedHTTPResponse(array $responses)
     {
-        $mock = new MockHandler($responses);
-        $handler = HandlerStack::create($mock);
-        $client = new Client(["handler" => $handler]) ;
-
-        return new HTTPResponse("http://testdomain", $client);
+        return new HTTPResponse("http://testdomain", $this->getMockedGuzzleClient($responses));
     }
 }
