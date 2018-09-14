@@ -2,44 +2,44 @@
 
 namespace App\Http\Controllers;
 
-use App\HeaderCheck;
 use App\DOMXSSCheck;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
+use App\HeaderCheck;
 use GuzzleHttp\Client;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Validator;
 
 class ApiController extends Controller
 {
-
-    public function headerReport(Request $request) {
-
+    public function headerReport(Request $request)
+    {
         $this->checkSiwecosRequest($request);
 
         $check = new HeaderCheck($request->json('url'));
 
         $this->notifyCallbacks($request->json('callbackurls'), $check);
 
-        return "OK";
+        return 'OK';
     }
 
-    public function domxssReport(Request $request){
-
+    public function domxssReport(Request $request)
+    {
         $this->checkSiwecosRequest($request);
 
         $check = new DOMXSSCheck($request->json('url'));
 
         $this->notifyCallbacks($request->json('callbackurls'), $check);
 
-        return "OK";
+        return 'OK';
     }
 
-    protected function checkSiwecosRequest(Request $request) {
+    protected function checkSiwecosRequest(Request $request)
+    {
         $validator = Validator::make($request->all(), [
-            'url' => 'required|url',
-            'dangerLevel' => 'integer|min:0|max:10',
-            'callbackurls' => 'required|array',
-            'callbackurls.*' => 'url'
+            'url'            => 'required|url',
+            'dangerLevel'    => 'integer|min:0|max:10',
+            'callbackurls'   => 'required|array',
+            'callbackurls.*' => 'url',
         ]);
 
         if ($validator->fails()) {
@@ -49,36 +49,37 @@ class ApiController extends Controller
         return true;
     }
 
-    protected function notifyCallbacks(array $callbackurls, $check) {
+    protected function notifyCallbacks(array $callbackurls, $check)
+    {
         $report = $check->report();
         foreach ($callbackurls as $url) {
             try {
                 $client = new Client();
                 $client->post($url, [
                     'http_errors' => false,
-                    'timeout' => 60,
-                    'json' => $report
+                    'timeout'     => 60,
+                    'json'        => $report,
                 ]);
-            }
-            catch (\Exception $e) {
+            } catch (\Exception $e) {
                 Log::debug($e);
-                Log::warning("Trying to send an error");
+                Log::warning('Trying to send an error');
+
                 try {
                     $client = new Client();
                     $client->post($url, [
                         'http_errors' => false,
-                        'timeout' => 60,
-                        'json' => [
-                            "name" => "HEADER",
-                            "hasError" => "true",
-                            "score" => 0,
-                            "errorMessage" => [
-                                "placeholder" => "GENERAL_ERROR",
-                                "values" => [
-                                    "ERRORTEXT" => $e->getMessage()
-                                ]
-                            ]
-                        ]
+                        'timeout'     => 60,
+                        'json'        => [
+                            'name'         => 'HEADER',
+                            'hasError'     => 'true',
+                            'score'        => 0,
+                            'errorMessage' => [
+                                'placeholder' => 'GENERAL_ERROR',
+                                'values'      => [
+                                    'ERRORTEXT' => $e->getMessage(),
+                                ],
+                            ],
+                        ],
                     ]);
                 } catch (\Exception $e) {
                     Log::critical($e);
@@ -86,5 +87,4 @@ class ApiController extends Controller
             }
         }
     }
-
 }

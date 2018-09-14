@@ -2,13 +2,13 @@
 
 namespace Tests\Unit;
 
+use App\HTTPResponse;
 use App\Ratings\XFrameOptionsRating;
 use GuzzleHttp\Client;
 use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Response;
 use Tests\TestCase;
-use App\HTTPResponse;
 
 class XFrameOptionsRatingTest extends TestCase
 {
@@ -30,7 +30,7 @@ class XFrameOptionsRatingTest extends TestCase
     {
         $client = $this->getMockedGuzzleClient([
             new Response(200, [
-                "X-Frame-Options" => "allow-from *"
+                'X-Frame-Options' => 'allow-from *',
             ]),
         ]);
         $response = new HTTPResponse('https://testdomain', $client);
@@ -45,7 +45,7 @@ class XFrameOptionsRatingTest extends TestCase
     {
         $client = $this->getMockedGuzzleClient([
             new Response(200, [
-                "X-Frame-Options" => "deny"
+                'X-Frame-Options' => 'deny',
             ]),
         ]);
         $response = new HTTPResponse('https://testdomain', $client);
@@ -60,7 +60,7 @@ class XFrameOptionsRatingTest extends TestCase
     {
         $client = $this->getMockedGuzzleClient([
             // Producing an encoding error
-            new Response(200, ["X-Frame-Options" => zlib_encode("SGVsbG8gV29ybGQ=", ZLIB_ENCODING_RAW)]),
+            new Response(200, ['X-Frame-Options' => zlib_encode('SGVsbG8gV29ybGQ=', ZLIB_ENCODING_RAW)]),
         ]);
         $response = new HTTPResponse('https://testdomain', $client);
         $rating = new XFrameOptionsRating($response);
@@ -71,13 +71,16 @@ class XFrameOptionsRatingTest extends TestCase
 
     /**
      * This method sets and activates the GuzzleHttp Mocking functionality.
+     *
      * @param array $responses
+     *
      * @return Client
      */
     protected function getMockedGuzzleClient(array $responses)
     {
         $mock = new MockHandler($responses);
         $handler = HandlerStack::create($mock);
-        return (new Client(["handler" => $handler])) ;
+
+        return new Client(['handler' => $handler]);
     }
 }

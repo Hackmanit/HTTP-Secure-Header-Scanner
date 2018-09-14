@@ -2,14 +2,14 @@
 
 namespace Tests\Unit;
 
-use Tests\TestCase;
 use App\DOMXSSCheck;
 use App\HTTPResponse;
-use GuzzleHttp\Client;
 use App\Ratings\SinksRating;
+use GuzzleHttp\Client;
+use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Response;
-use GuzzleHttp\Handler\MockHandler;
+use Tests\TestCase;
 
 class SinksRatingTest extends TestCase
 {
@@ -31,7 +31,7 @@ class SinksRatingTest extends TestCase
     /** @test */
     public function sinksRatingRates100IfThereIsNoScriptTagOnThePage()
     {
-        $sampleBody = file_get_contents(base_path() . "/tests/Unit/example.org.html");
+        $sampleBody = file_get_contents(base_path().'/tests/Unit/example.org.html');
         $client = $this->getMockedGuzzleClient([
             new Response(200, [], $sampleBody),
         ]);
@@ -47,7 +47,7 @@ class SinksRatingTest extends TestCase
     /** @test */
     public function sinksRatingDoesNotFindSinksOutsideOfSearchContext()
     {
-        $sampleBody = file_get_contents(base_path() . "/tests/Unit/hradek.test.html");
+        $sampleBody = file_get_contents(base_path().'/tests/Unit/hradek.test.html');
         $client = $this->getMockedGuzzleClient([
             new Response(200, [], $sampleBody),
         ]);
@@ -63,16 +63,18 @@ class SinksRatingTest extends TestCase
         $this->assertEquals(1, $rating->testDetails->first()['values']['AMOUNT']);
     }
 
-
     /**
      * This method sets and activates the GuzzleHttp Mocking functionality.
+     *
      * @param array $responses
+     *
      * @return Client
      */
     protected function getMockedGuzzleClient(array $responses)
     {
         $mock = new MockHandler($responses);
         $handler = HandlerStack::create($mock);
-        return (new Client(["handler" => $handler]));
+
+        return new Client(['handler' => $handler]);
     }
 }
