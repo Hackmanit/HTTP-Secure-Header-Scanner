@@ -11,7 +11,7 @@ class XXSSProtectionRatingTest extends TestCase
 {
 
     /** @test */
-    public function xXSSProtection_rates_c_for_a_missing_header()
+    public function xXSSProtection_rates_0_for_a_missing_header()
     {
         $client = $this->getMockedGuzzleClient([
             new Response(200),
@@ -20,7 +20,11 @@ class XXSSProtectionRatingTest extends TestCase
         $rating = new XXSSProtectionRating($response);
 
         $this->assertEquals(0, $rating->score);
-        $this->assertEquals($rating->errorMessage, 'HEADER_NOT_SET');
+        $expected = [
+            'placeholder' => 'HEADER_NOT_SET',
+            'values' => null
+        ];
+        $this->assertEquals($expected, $rating->errorMessage);
     }
 
     /** @test */
@@ -69,6 +73,7 @@ class XXSSProtectionRatingTest extends TestCase
         $rating = new XXSSProtectionRating($response);
 
         $this->assertEquals(0, $rating->score);
-        $this->assertTrue(collect($rating->testDetails)->flatten()->contains('HEADER_ENCODING_ERROR'));
+        $this->assertTrue(collect($rating->errorMessage)->contains('HEADER_ENCODING_ERROR'));
+        $this->assertTrue($rating->hasError);
     }
 }

@@ -18,12 +18,9 @@ class DOMXSSCheck {
 		if ( $this->response->hasErrors() ) {
 			return [
 				'name'         => 'DOMXSS',
-				'version' 	   => file('../VERSION', FILE_IGNORE_NEW_LINES)[0],
+				'version' 	   => file(base_path('VERSION'), FILE_IGNORE_NEW_LINES)[0],
 				'hasError'     => true,
-				'errorMessage' => [
-					'placeholder' => 'NO_HTTP_RESPONSE',
-					'values'      => []
-				],
+				'errorMessage' => TranslateableMessage::get('NO_HTTP_RESPONSE'),
 				'score'        => 0,
 				'tests'        => []
 			];

@@ -5,6 +5,7 @@ namespace App\Ratings;
 use voku\helper\HtmlDomParser;
 use GuzzleHttp\Client;
 use App\HTTPResponse;
+use App\TranslateableMessage;
 
 class ContentTypeRating extends Rating
 {
@@ -23,23 +24,16 @@ class ContentTypeRating extends Rating
 
         if ($header === null) {
             $this->hasError = true;
-            $this->errorMessage = "HEADER_NOT_SET";
+            $this->errorMessage = TranslateableMessage::get("HEADER_NOT_SET");
 
             $this->checkMetaTag();
 
         } elseif ($header === "ERROR") {
             $this->hasError = true;
-            $this->errorMessage = "HEADER_ENCODING_ERROR";
-            $this->testDetails->push([
-                'placeholder' => 'HEADER_ENCODING_ERROR',
-                'values' => [
-                    'HEADER_NAME' => "Content-Type"
-                ]
-            ]);
+            $this->errorMessage = TranslateableMessage::get("HEADER_ENCODING_ERROR", ['HEADER_NAME' => "Content-Type"]);
         } elseif (is_array($header) && count($header) > 1) {
             $this->hasError = true;
-            $this->errorMessage = "HEADER_SET_MULTIPLE_TIMES";
-            $this->testDetails->push([ 'placeholder' => 'HEADER_SET_MULTIPLE_TIMES', 'values' => ['HEADER' => $header] ]);
+            $this->errorMessage = TranslateableMessage::get("HEADER_SET_MULTIPLE_TIMES", ['HEADER' => $header]);
 
         } else {
             $detail = "CT_HEADER_WITHOUT_CHARSET";
@@ -63,7 +57,7 @@ class ContentTypeRating extends Rating
                 $detail = "CT_CORRECT";
             }
 
-            $this->testDetails->push([ 'placeholder' => $detail, 'values' => ['HEADER' => $header] ]);
+            $this->testDetails->push(TranslateableMessage::get($detail, ['HEADER' => $header] ));
         }
     }
 
@@ -83,7 +77,7 @@ class ContentTypeRating extends Rating
                     $detailMeta = "CT_META_TAG_SET_CORRECT";
                 }
 
-                $this->testDetails->push([ 'placeholder' => $detailMeta, 'values' => ['META' => $finding[0]->__toString()] ]);
+                $this->testDetails->push(TranslateableMessage::get($detailMeta, ['META' => $finding[0]->__toString()] ));
             }
 
         // case: <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
@@ -97,7 +91,7 @@ class ContentTypeRating extends Rating
                 $detailMeta = "CT_META_TAG_SET_CORRECT";
             }
 
-            $this->testDetails->push([ 'placeholder' => $detailMeta, 'values' => ['META' => $finding[0]->__toString()] ]);
+            $this->testDetails->push(TranslateableMessage::get($detailMeta, ['META' => $finding[0]->__toString()]));
         }
     }
 }

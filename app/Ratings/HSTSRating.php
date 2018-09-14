@@ -4,6 +4,7 @@ namespace App\Ratings;
 
 use GuzzleHttp\Client;
 use App\HTTPResponse;
+use App\TranslateableMessage;
 
 
 class HSTSRating extends Rating
@@ -22,20 +23,13 @@ class HSTSRating extends Rating
 
         if ($header === null) {
             $this->hasError = true;
-            $this->errorMessage = "HEADER_NOT_SET";
+            $this->errorMessage = TranslateableMessage::get("HEADER_NOT_SET");
         } elseif ($header === "ERROR") {
             $this->hasError = true;
-            $this->errorMessage = "HEADER_ENCODING_ERROR";
-            $this->testDetails->push([
-                'placeholder' => 'HEADER_ENCODING_ERROR',
-                'values' => [
-                    'HEADER_NAME' => "Strict-Transport-Security"
-                ]
-            ]);
+            $this->errorMessage = TranslateableMessage::get("HEADER_ENCODING_ERROR", ["HEADER_NAME" => "Strict-Transport-Security"]);
         } elseif (is_array($header) && count($header) > 1) {
             $this->hasError = true;
-            $this->errorMessage = "HEADER_SET_MULTIPLE_TIMES";
-            $this->testDetails->push(['placeholder' => 'HEADER_SET_MULTIPLE_TIMES', 'values' => ['HEADER' => $header]]);
+            $this->errorMessage = TranslateableMessage::get("HEADER_SET_MULTIPLE_TIMES", ['HEADER' => $header]);
         } else {
             $header = $header[0];
 
@@ -51,22 +45,22 @@ class HSTSRating extends Rating
 
             if ($maxAge < 15768000) {
                 $this->score = 60;
-                $this->testDetails->push(['placeholder' => 'HSTS_LESS_6', 'values' => ['HEADER' => $header]]);
+                $this->testDetails->push(TranslateableMessage::get('HSTS_LESS_6', ['HEADER' => $header]));
             } elseif ($maxAge >= 15768000) {
                 $this->score = 100;
-                $this->testDetails->push(['placeholder' => 'HSTS_MORE_6', 'values' => ['HEADER' => $header]]);
+                $this->testDetails->push(TranslateableMessage::get('HSTS_MORE_6', ['HEADER' => $header]));
             } else {
                 $this->score = 0;
                 $this->hasError = true;
-                $this->errorMessage = 'MAX_AGE_ERROR';
+                $this->errorMessage = TranslateableMessage('MAX_AGE_ERROR');
             }
 
             if (strpos($header, 'includeSubDomains') !== false) {
-                $this->testDetails->push(['placeholder' => 'INCLUDE_SUBDOMAINS', 'values' => ['HEADER' => $header]]);
+                $this->testDetails->push(TranslateableMessage::get('INCLUDE_SUBDOMAINS', ['HEADER' => $header]));
             }
 
             if (strpos($header, 'preload') !== false) {
-                $this->testDetails->push(['placeholder' => 'HSTS_PRELOAD', 'values' => ['HEADER' => $header]]);
+                $this->testDetails->push(TranslateableMessage::get('HSTS_PRELOAD', ['HEADER' => $header]));
             }
         }
     }

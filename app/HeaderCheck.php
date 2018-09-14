@@ -9,6 +9,7 @@ use App\Ratings\HSTSRating;
 use App\Ratings\XContentTypeOptionsRating;
 use App\Ratings\XFrameOptionsRating;
 use App\Ratings\XXSSProtectionRating;
+use GuzzleHttp\Client;
 
 
 /**
@@ -18,9 +19,9 @@ class HeaderCheck
 {
     protected $response = null;
 
-    public function __construct($url)
+    public function __construct($url, Client $client = null)
     {
-        $this->response = new HTTPResponse($url);
+        $this->response = new HTTPResponse($url, $client);
     }
 
 
@@ -31,10 +32,7 @@ class HeaderCheck
                 'name' => 'HEADER',
                 'version' => file(base_path('VERSION'), FILE_IGNORE_NEW_LINES)[0],
                 'hasError' => true,
-                'errorMessage' => [
-					'placeholder' => 'NO_HTTP_RESPONSE',
-					'values'      => []
-				],
+                'errorMessage' => TranslateableMessage::get('NO_HTTP_RESPONSE'),
                 'score' => 0,
                 'tests' => []
             ];
