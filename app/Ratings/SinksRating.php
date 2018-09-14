@@ -4,6 +4,7 @@ namespace App\Ratings;
 
 use App\DOMXSSCheck;
 use App\HTTPResponse;
+use App\TranslateableMessage;
 
 class SinksRating extends Rating
 {
@@ -24,16 +25,13 @@ class SinksRating extends Rating
 
         if ($html->getIsDOMDocumentCreatedWithoutHtml()) {
             $this->hasError = true;
-            $this->errorMessage = [
-                'placeholder' => 'NO_CONTENT',
-                'values'      => [],
-            ];
+            $this->errorMessage = TranslateableMessage::get('NO_CONTENT');
         } else {
             $scriptTags = $html->find('script');
 
             if (count($scriptTags) == 0) {
                 $this->score = 100;
-                $this->testDetails->push(['placeholder' => 'NO_SCRIPT_TAGS', 'values' => []]);
+                $this->testDetails->push(TranslateableMessage::get('NO_SCRIPT_TAGS'));
             } else {
                 $this->score = 100;
 
@@ -47,14 +45,9 @@ class SinksRating extends Rating
 
                 if ($sinkCounter > 0) {
                     $this->score = 0;
-                    $this->testDetails->push([
-                        'placeholder' => 'SINKSS_FOUND',
-                        'values'      => [
-                            'AMOUNT' => $sinkCounter,
-                        ],
-                    ]);
+                    $this->testDetails->push(TranslateableMessage::get('SINKSS_FOUND', ['AMOUNT' => $sinkCounter]));
                 } else {
-                    $this->testDetails->push(['placeholder' => 'NO_SINKS_FOUND', 'values' => []]);
+                    $this->testDetails->push(TranslateableMessage::get('NO_SINKS_FOUND'));
                 }
             }
         }

@@ -9,6 +9,7 @@ use App\Ratings\HSTSRating;
 use App\Ratings\XContentTypeOptionsRating;
 use App\Ratings\XFrameOptionsRating;
 use App\Ratings\XXSSProtectionRating;
+use GuzzleHttp\Client;
 
 /**
  * Returns a HeaderReport / Rating for the given URL.
@@ -17,9 +18,9 @@ class HeaderCheck
 {
     protected $response = null;
 
-    public function __construct($url)
+    public function __construct($url, Client $client = null)
     {
-        $this->response = new HTTPResponse($url);
+        $this->response = new HTTPResponse($url, $client);
     }
 
     public function report()
@@ -27,14 +28,11 @@ class HeaderCheck
         if ($this->response->hasErrors()) {
             return [
                 'name'         => 'HEADER',
-                'version'      => file('../VERSION', FILE_IGNORE_NEW_LINES)[0],
+                'version'      => file(base_path('VERSION'), FILE_IGNORE_NEW_LINES)[0],
                 'hasError'     => true,
-                'errorMessage' => [
-                    'placeholder' => 'NO_HTTP_RESPONSE',
-                    'values'      => [],
-                ],
-                'score' => 0,
-                'tests' => [],
+                'errorMessage' => TranslateableMessage::get('NO_HTTP_RESPONSE'),
+                'score'        => 0,
+                'tests'        => [],
             ];
         }
 
@@ -63,7 +61,7 @@ class HeaderCheck
 
         return [
             'name'         => 'HEADER',
-            'version'      => file('../VERSION', FILE_IGNORE_NEW_LINES)[0],
+            'version'      => file(base_path('VERSION'), FILE_IGNORE_NEW_LINES)[0],
             'hasError'     => $ratings->whereIn('scoreType', ['warning'])->contains('hasError', true),
             'errorMessage' => null,
             'score'        => $score,

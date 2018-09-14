@@ -3,6 +3,7 @@
 namespace App\Ratings;
 
 use App\HTTPResponse;
+use App\TranslateableMessage;
 
 class HPKPRating extends Rating
 {
@@ -20,20 +21,13 @@ class HPKPRating extends Rating
 
         if ($header === null) {
             $this->hasError = true;
-            $this->errorMessage = 'HEADER_NOT_SET';
+            $this->errorMessage = TranslateableMessage::get('HEADER_NOT_SET');
         } elseif ($header === 'ERROR') {
             $this->hasError = true;
-            $this->errorMessage = 'HEADER_ENCODING_ERROR';
-            $this->testDetails->push([
-                'placeholder' => 'HEADER_ENCODING_ERROR',
-                'values'      => [
-                    'HEADER_NAME' => 'Public-Key-Pins',
-                ],
-            ]);
+            $this->errorMessage = TranslateableMessage::get('HEADER_ENCODING_ERROR', ['HEADER_NAME' => 'Public-Key-Pins']);
         } elseif (is_array($header) && count($header) > 1) {
             $this->hasError = true;
-            $this->errorMessage = 'HEADER_SET_MULTIPLE_TIMES';
-            $this->testDetails->push(['placeholder' => 'HEADER_SET_MULTIPLE_TIMES', 'values' => ['HEADER' => $header]]);
+            $this->errorMessage = TranslateableMessage::get('HEADER_SET_MULTIPLE_TIMES', ['HEADER' => $header]);
         } else {
             $header = $header[0];
 
@@ -49,21 +43,21 @@ class HPKPRating extends Rating
             $this->score = 100;
 
             if ($maxAge < 1296000) {
-                $this->testDetails->push(['placeholder' => 'HPKP_LESS_15', 'values' => ['HEADER' => $header]]);
+                $this->testDetails->push(TranslateableMessage::get('HPKP_LESS_15', ['HEADER' => $header]));
             } elseif ($maxAge >= 1296000) {
-                $this->testDetails->push(['placeholder' => 'HPKP_MORE_15', 'values' => ['HEADER' => $header]]);
+                $this->testDetails->push(TranslateableMessage::get('HPKP_MORE_15', ['HEADER' => $header]));
             } else {
                 $this->score = 0;
                 $this->hasError = true;
-                $this->errorMessage = 'MAX_AGE_ERROR';
+                $this->errorMessage = TranslateableMessage::get('MAX_AGE_ERROR');
             }
 
             if (strpos($header, 'includeSubDomains') !== false) {
-                $this->testDetails->push(['placeholder' => 'INCLUDE_SUBDOMAINS', 'values' => ['HEADER' => $header]]);
+                $this->testDetails->push(TranslateableMessage::get('INCLUDE_SUBDOMAINS', ['HEADER' => $header]));
             }
 
             if (strpos($header, 'report-uri') !== false) {
-                $this->testDetails->push(['placeholder' => 'HPKP_REPORT_URI', 'values' => ['HEADER' => $header]]);
+                $this->testDetails->push(TranslateableMessage::get('HPKP_REPORT_URI', ['HEADER' => $header]));
             }
         }
     }

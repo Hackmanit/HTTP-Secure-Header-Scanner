@@ -4,16 +4,13 @@ namespace Tests\Unit;
 
 use App\HTTPResponse;
 use App\Ratings\HPKPRating;
-use GuzzleHttp\Client;
-use GuzzleHttp\Handler\MockHandler;
-use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Response;
 use Tests\TestCase;
 
 class HPKPRatingTest extends TestCase
 {
     /** @test */
-    public function hpkpRating_rates_c_for_a_missing_header()
+    public function hpkpRating_rates_0_for_a_missing_header()
     {
         $client = $this->getMockedGuzzleClient([
             new Response(200),
@@ -22,7 +19,11 @@ class HPKPRatingTest extends TestCase
         $rating = new HPKPRating($response);
 
         $this->assertEquals(0, $rating->score);
-        $this->assertEquals($rating->errorMessage, 'HEADER_NOT_SET');
+        $expected = [
+            'placeholder' => 'HEADER_NOT_SET',
+            'values'      => null,
+        ];
+        $this->assertEquals($expected, $rating->errorMessage);
     }
 
     /** @test */
@@ -64,21 +65,7 @@ class HPKPRatingTest extends TestCase
         $rating = new HPKPRating($response);
 
         $this->assertEquals(0, $rating->score);
-        $this->assertTrue(collect($rating->testDetails)->flatten()->contains('HEADER_ENCODING_ERROR'));
-    }
-
-    /**
-     * This method sets and activates the GuzzleHttp Mocking functionality.
-     *
-     * @param array $responses
-     *
-     * @return Client
-     */
-    protected function getMockedGuzzleClient(array $responses)
-    {
-        $mock = new MockHandler($responses);
-        $handler = HandlerStack::create($mock);
-
-        return new Client(['handler' => $handler]);
+        $this->assertTrue(collect($rating->errorMessage)->contains('HEADER_ENCODING_ERROR'));
+        $this->assertTrue($rating->hasError);
     }
 }

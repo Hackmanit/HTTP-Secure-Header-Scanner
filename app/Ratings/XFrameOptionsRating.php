@@ -3,6 +3,7 @@
 namespace App\Ratings;
 
 use App\HTTPResponse;
+use App\TranslateableMessage;
 
 class XFrameOptionsRating extends Rating
 {
@@ -20,29 +21,22 @@ class XFrameOptionsRating extends Rating
 
         if ($header === null) {
             $this->hasError = true;
-            $this->errorMessage = 'HEADER_NOT_SET';
+            $this->errorMessage = TranslateableMessage::get('HEADER_NOT_SET');
         } elseif (is_array($header) && count($header) > 1) {
             $this->hasError = true;
-            $this->errorMessage = 'HEADER_SET_MULTIPLE_TIMES';
-            $this->testDetails->push(['placeholder' => 'HEADER_SET_MULTIPLE_TIMES', 'values' => ['HEADER' => $header]]);
+            $this->errorMessage = TranslateableMessage::get('HEADER_SET_MULTIPLE_TIMES', ['HEADER' => $header]);
         } elseif ($header === 'ERROR') {
             $this->hasError = true;
-            $this->errorMessage = 'HEADER_ENCODING_ERROR';
-            $this->testDetails->push([
-                'placeholder' => 'HEADER_ENCODING_ERROR',
-                'values'      => [
-                    'HEADER_NAME' => 'X-Frame-Options',
-                ],
-            ]);
+            $this->errorMessage = TranslateableMessage::get('HEADER_ENCODING_ERROR', ['HEADER_NAME' => 'X-Frame-Options']);
         } else {
             $header = $header[0];
 
             if (strpos($header, '*') !== false) {
                 $this->score = 0;
-                $this->testDetails->push(['placeholder' => 'XFO_WILDCARDS', 'values' => ['HEADER' => $header]]);
+                $this->testDetails->push(TranslateableMessage::get('XFO_WILDCARDS', ['HEADER' => $header]));
             } else {
                 $this->score = 100;
-                $this->testDetails->push(['placeholder' => 'XFO_CORRECT', 'values' => ['HEADER' => $header]]);
+                $this->testDetails->push(TranslateableMessage::get('XFO_CORRECT', ['HEADER' => $header]));
             }
         }
     }

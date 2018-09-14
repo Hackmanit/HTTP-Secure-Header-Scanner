@@ -5,9 +5,6 @@ namespace Tests\Unit;
 use App\DOMXSSCheck;
 use App\HTTPResponse;
 use App\Ratings\SourcesRating;
-use GuzzleHttp\Client;
-use GuzzleHttp\Handler\MockHandler;
-use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Response;
 use Tests\TestCase;
 
@@ -61,20 +58,5 @@ class SourcesRatingTest extends TestCase
 
         // Sources in script-Tags
         $this->assertEquals(2, $rating->testDetails->first()['values']['AMOUNT']);
-    }
-
-    /**
-     * This method sets and activates the GuzzleHttp Mocking functionality.
-     *
-     * @param array $responses
-     *
-     * @return Client
-     */
-    protected function getMockedGuzzleClient(array $responses)
-    {
-        $mock = new MockHandler($responses);
-        $handler = HandlerStack::create($mock);
-
-        return new Client(['handler' => $handler]);
     }
 }

@@ -3,9 +3,6 @@
 namespace Tests\Unit;
 
 use App\HTTPResponse;
-use GuzzleHttp\Client;
-use GuzzleHttp\Handler\MockHandler;
-use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Response;
 use Mockery;
 use Tests\TestCase;
@@ -118,10 +115,6 @@ class HTTPResponseTest extends TestCase
      */
     protected function getMockedHTTPResponse(array $responses)
     {
-        $mock = new MockHandler($responses);
-        $handler = HandlerStack::create($mock);
-        $client = new Client(['handler' => $handler]);
-
-        return new HTTPResponse('http://testdomain', $client);
+        return new HTTPResponse('http://testdomain', $this->getMockedGuzzleClient($responses));
     }
 }

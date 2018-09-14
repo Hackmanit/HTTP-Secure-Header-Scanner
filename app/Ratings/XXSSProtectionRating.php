@@ -3,6 +3,7 @@
 namespace App\Ratings;
 
 use App\HTTPResponse;
+use App\TranslateableMessage;
 
 class XXSSProtectionRating extends Rating
 {
@@ -20,29 +21,22 @@ class XXSSProtectionRating extends Rating
 
         if ($header === null) {
             $this->hasError = true;
-            $this->errorMessage = 'HEADER_NOT_SET';
+            $this->errorMessage = TranslateableMessage::get('HEADER_NOT_SET');
         } elseif ($header === 'ERROR') {
             $this->hasError = true;
-            $this->errorMessage = 'HEADER_ENCODING_ERROR';
-            $this->testDetails->push([
-                'placeholder' => 'HEADER_ENCODING_ERROR',
-                'values'      => [
-                    'HEADER_NAME' => 'X-XSS-Protection',
-                ],
-            ]);
+            $this->errorMessage = TranslateableMessage::get('HEADER_ENCODING_ERROR', ['HEADER_NAME' => 'X-XSS-Protection']);
         } elseif (is_array($header) && count($header) > 1) {
             $this->hasError = true;
-            $this->errorMessage = 'HEADER_SET_MULTIPLE_TIMES';
-            $this->testDetails->push(['placeholder' => 'HEADER_SET_MULTIPLE_TIMES', 'values' => ['HEADER' => $header]]);
+            $this->errorMessage = TranslateableMessage::get('HEADER_SET_MULTIPLE_TIMES', ['HEADER' => $header]);
         } else {
             $header = $header[0];
 
             $this->score = 50;
-            $this->testDetails->push(['placeholder' => 'XXSS_CORRECT', 'values' => ['HEADER' => $header]]);
+            $this->testDetails->push(TranslateableMessage::get('XXSS_CORRECT', ['HEADER' => $header]));
 
             if (strpos($header, 'mode=block') !== false) {
                 $this->score = 100;
-                $this->testDetails->push(['placeholder' => 'XXSS_BLOCK', 'values' => ['HEADER' => $header]]);
+                $this->testDetails->push(TranslateableMessage::get('XXSS_BLOCK', ['HEADER' => $header]));
             }
         }
     }

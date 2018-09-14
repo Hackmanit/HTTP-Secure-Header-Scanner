@@ -4,9 +4,6 @@ namespace Tests\Unit;
 
 use App\HTTPResponse;
 use App\Ratings\CSPRating;
-use GuzzleHttp\Client;
-use GuzzleHttp\Handler\MockHandler;
-use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Response;
 use Tests\TestCase;
 
@@ -28,7 +25,11 @@ class CSPRatingTest extends TestCase
         $rating = new CSPRating($response);
 
         $this->assertEquals(0, $rating->score);
-        $this->assertEquals($rating->errorMessage, 'HEADER_NOT_SET');
+        $expected = [
+            'placeholder' => 'HEADER_NOT_SET',
+            'values'      => null,
+        ];
+        $this->assertEquals($expected, $rating->errorMessage);
     }
 
     /** @test */
@@ -138,7 +139,8 @@ class CSPRatingTest extends TestCase
         $rating = new CSPRating($response);
 
         $this->assertEquals(0, $rating->score);
-        $this->assertTrue(collect($rating->testDetails)->flatten()->contains('HEADER_ENCODING_ERROR'));
+        $this->assertTrue(collect($rating->errorMessage)->contains('HEADER_ENCODING_ERROR'));
+        $this->assertTrue($rating->hasError);
     }
 
     /** @test */
@@ -167,22 +169,7 @@ class CSPRatingTest extends TestCase
         $rating = new CSPRating($response);
 
         $this->assertEquals(0, $rating->score);
-        $this->assertTrue($rating->testDetails->flatten()->contains('CSP_IS_NOT_VALID'));
+        $this->assertTrue(collect($rating->errorMessage)->contains('CSP_IS_NOT_VALID'));
         $this->assertTrue($rating->hasError);
-    }
-
-    /**
-     * This method sets and activates the GuzzleHttp Mocking functionality.
-     *
-     * @param array $responses
-     *
-     * @return Client
-     */
-    protected function getMockedGuzzleClient(array $responses)
-    {
-        $mock = new MockHandler($responses);
-        $handler = HandlerStack::create($mock);
-
-        return new Client(['handler' => $handler]);
     }
 }
