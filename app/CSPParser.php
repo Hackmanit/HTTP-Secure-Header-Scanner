@@ -12,9 +12,9 @@ class CSPParser
     /**
      * The CSP header that should be parsed.
      *
-     * @param String $header
+     * @param string $header
      */
-    function __construct(String $header)
+    public function __construct(String $header)
     {
         $this->directives = collect();
         $this->parse($header);
@@ -23,7 +23,8 @@ class CSPParser
     /**
      * Parse the CSP and set the different parameters to it's values.
      *
-     * @param  String $header
+     * @param string $header
+     *
      * @return void
      */
     protected function parse(String $header)
@@ -34,6 +35,7 @@ class CSPParser
 
     /**
      * Returns if 'unsafe-inline' or 'unsafe-eval' are used in the given CSP-Header.
+     *
      * @return bool containing unsafe-* values.
      */
     public function containsUnsafeValues()
@@ -42,7 +44,8 @@ class CSPParser
     }
 
     /**
-     * @param  String $header
+     * @param string $header
+     *
      * @return void
      */
     protected function splitHeaderAndDirectives(String $header)
@@ -75,8 +78,9 @@ class CSPParser
         $directivesString = trim($this->originalDirectivesString);
 
         // remove last ; in order to use the explode function without getting an empty value
-        if(substr($directivesString, -1, 1) === ";")
+        if (substr($directivesString, -1, 1) === ';') {
             $directivesString = substr($directivesString, 0, -1);
+        }
 
         $splittedDirectives = explode(';', $directivesString);
 
@@ -98,60 +102,65 @@ class CSPParser
     /**
      * Checks, if the submitted CSP is valid.
      *
-     * @return boolean
+     * @return bool
      */
     public function isValid()
     {
         // only valid directives exist
-        if($this->notValidDirectives()->count() == 0) {
+        if ($this->notValidDirectives()->count() == 0) {
             // each directive's values only have valid characters
-            foreach ($this->directives as $directive => $values){
+            foreach ($this->directives as $directive => $values) {
                 foreach ($values as $value) {
-                    if( ! $this->hasOnlyValidCharacters($value)) {
+                    if (!$this->hasOnlyValidCharacters($value)) {
                         return false;
                     }
                 }
             }
+
             return true;
         }
 
         return false;
     }
 
-
-    protected function hasOnlyValidCharacters(String $check){
+    protected function hasOnlyValidCharacters(String $check)
+    {
         // Valid chars: (\x09|([\x20-\x2B])|([\x2D-\x3A])|([\x3C-\x7E]))
         // https://www.w3.org/TR/CSP/#framework-directives
         // VARCHAR and whitespace without ',' and ';'
-            // Note:
-            // Inversing the valid chars does not work with REGEX, but:
-            // whitepsace is stripped
-            // directives are exploded via ';'
+        // Note:
+        // Inversing the valid chars does not work with REGEX, but:
+        // whitepsace is stripped
+        // directives are exploded via ';'
         // Therefore we can search for not printable ASCII-Chars or the ',' in the values list
-        if(preg_match('/[^\x21-\x7E]|,|;/', $check) === 0)
+        if (preg_match('/[^\x21-\x7E]|,|;/', $check) === 0) {
             return true;
+        }
+
         return false;
     }
 
     /**
-     * Get a collection of notValidDirectives
+     * Get a collection of notValidDirectives.
      *
      * @return Collection
      */
-    public function notValidDirectives() {
+    public function notValidDirectives()
+    {
         // check if $this->directives KEY is listed on allowed VALUES
-        return $this->directives->filter(function ($item, $key){
-            return ! $this->getAllowedDirectives()->flatten()->contains($key);
+        return $this->directives->filter(function ($item, $key) {
+            return !$this->getAllowedDirectives()->flatten()->contains($key);
         });
     }
 
     /**
      * Returns a Collection of allowed directives for the CSP.
-     * https://developer.mozilla.org/de/docs/Web/HTTP/Headers/Content-Security-Policy
+     * https://developer.mozilla.org/de/docs/Web/HTTP/Headers/Content-Security-Policy.
      *
      * @return Collection allowedDirectives
      */
-    protected function getAllowedDirectives() {
+    protected function getAllowedDirectives()
+    {
         return collect([
             'fetch-directives' => [
                 'child-src', // deprecated
@@ -166,30 +175,29 @@ class CSPParser
                 'prefetch-src',
                 'script-src',
                 'style-src',
-                'worker-src'
+                'worker-src',
             ],
             'document-directives' => [
                 'base-uri',
                 'plugin-types',
                 'sandbox',
-                'disown-opener' // experimental
+                'disown-opener', // experimental
             ],
             'navigation-directives' => [
                 'form-action',
                 'frame-ancestors',
-                'navigate-to' // experimental
+                'navigate-to', // experimental
             ],
             'reporting-directives' => [
                 'report-uri', // deprectated
-                'report-to'
+                'report-to',
             ],
             'other-directives' => [
                 'block-all-mixed-content',
                 'referrer', // deprecated
                 'required-sri-for',
-                'upgrade-insecure-requests'
-            ]
+                'upgrade-insecure-requests',
+            ],
         ]);
     }
-
 }

@@ -2,19 +2,17 @@
 
 namespace App\Ratings;
 
-use GuzzleHttp\Client;
 use App\HTTPResponse;
 use App\TranslateableMessage;
 
-
 class HPKPRating extends Rating
 {
-
-    public function __construct(HTTPResponse $response) {
+    public function __construct(HTTPResponse $response)
+    {
         parent::__construct($response);
 
-        $this->name = "PUBLIC_KEY_PINS";
-        $this->scoreType = "bonus";
+        $this->name = 'PUBLIC_KEY_PINS';
+        $this->scoreType = 'bonus';
     }
 
     protected function rate()
@@ -23,10 +21,10 @@ class HPKPRating extends Rating
 
         if ($header === null) {
             $this->hasError = true;
-            $this->errorMessage = TranslateableMessage::get("HEADER_NOT_SET");
-        } elseif ($header === "ERROR") {
+            $this->errorMessage = TranslateableMessage::get('HEADER_NOT_SET');
+        } elseif ($header === 'ERROR') {
             $this->hasError = true;
-            $this->errorMessage = TranslateableMessage::get('HEADER_ENCODING_ERROR', ['HEADER_NAME' => "Public-Key-Pins"]);
+            $this->errorMessage = TranslateableMessage::get('HEADER_ENCODING_ERROR', ['HEADER_NAME' => 'Public-Key-Pins']);
         } elseif (is_array($header) && count($header) > 1) {
             $this->hasError = true;
             $this->errorMessage = TranslateableMessage::get('HEADER_SET_MULTIPLE_TIMES', ['HEADER' => $header]);
@@ -49,7 +47,7 @@ class HPKPRating extends Rating
             } elseif ($maxAge >= 1296000) {
                 $this->testDetails->push(TranslateableMessage::get('HPKP_MORE_15', ['HEADER' => $header]));
             } else {
-                $this->score   = 0;
+                $this->score = 0;
                 $this->hasError = true;
                 $this->errorMessage = TranslateableMessage::get('MAX_AGE_ERROR');
             }

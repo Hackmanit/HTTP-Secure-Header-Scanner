@@ -2,10 +2,10 @@
 
 namespace Tests\Unit;
 
+use App\HTTPResponse;
 use App\Ratings\HSTSRating;
 use GuzzleHttp\Psr7\Response;
 use Tests\TestCase;
-use App\HTTPResponse;
 
 class HSTSRatingTest extends TestCase
 {
@@ -22,7 +22,7 @@ class HSTSRatingTest extends TestCase
 
         $expected = [
             'placeholder' => 'HEADER_NOT_SET',
-            'values' => null
+            'values'      => null,
         ];
         $this->assertEquals($expected, $rating->errorMessage);
     }
@@ -32,7 +32,7 @@ class HSTSRatingTest extends TestCase
     {
         $client = $this->getMockedGuzzleClient([
             new Response(200, [
-                'Strict-Transport-Security' => 'max-age=30'
+                'Strict-Transport-Security' => 'max-age=30',
             ]),
         ]);
         $response = new HTTPResponse('https://testdomain', $client);
@@ -47,7 +47,7 @@ class HSTSRatingTest extends TestCase
     {
         $client = $this->getMockedGuzzleClient([
             new Response(200, [
-                'Strict-Transport-Security' => 'max-age=' . 6 * 31 * 24 * 60 * 60
+                'Strict-Transport-Security' => 'max-age='. 6 * 31 * 24 * 60 * 60,
             ]),
         ]);
         $response = new HTTPResponse('https://testdomain', $client);
@@ -62,7 +62,7 @@ class HSTSRatingTest extends TestCase
     {
         $client = $this->getMockedGuzzleClient([
             new Response(200, [
-                'Strict-Transport-Security' => 'max-age=30; includeSubDomains'
+                'Strict-Transport-Security' => 'max-age=30; includeSubDomains',
             ]),
         ]);
         $response = new HTTPResponse('https://testdomain', $client);
@@ -76,7 +76,7 @@ class HSTSRatingTest extends TestCase
     {
         $client = $this->getMockedGuzzleClient([
             new Response(200, [
-                'Strict-Transport-Security' => 'max-age=30; preload'
+                'Strict-Transport-Security' => 'max-age=30; preload',
             ]),
         ]);
         $response = new HTTPResponse('https://testdomain', $client);
@@ -90,7 +90,7 @@ class HSTSRatingTest extends TestCase
     {
         $client = $this->getMockedGuzzleClient([
             // Producing an encoding error
-            new Response(200, ["Strict-Transport-Security" => zlib_encode("SGVsbG8gV29ybGQ=", ZLIB_ENCODING_RAW)]),
+            new Response(200, ['Strict-Transport-Security' => zlib_encode('SGVsbG8gV29ybGQ=', ZLIB_ENCODING_RAW)]),
         ]);
         $response = new HTTPResponse('https://testdomain', $client);
         $rating = new HSTSRating($response);
@@ -99,5 +99,4 @@ class HSTSRatingTest extends TestCase
         $this->assertTrue(collect($rating->errorMessage)->contains('HEADER_ENCODING_ERROR'));
         $this->assertTrue($rating->hasError);
     }
-
 }

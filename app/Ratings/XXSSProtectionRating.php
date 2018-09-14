@@ -2,19 +2,17 @@
 
 namespace App\Ratings;
 
-use GuzzleHttp\Client;
 use App\HTTPResponse;
 use App\TranslateableMessage;
 
-
 class XXSSProtectionRating extends Rating
 {
-
-    public function __construct(HTTPResponse $response) {
+    public function __construct(HTTPResponse $response)
+    {
         parent::__construct($response);
 
-        $this->name = "X_XSS_PROTECTION";
-        $this->scoreType = "warning";
+        $this->name = 'X_XSS_PROTECTION';
+        $this->scoreType = 'warning';
     }
 
     protected function rate()
@@ -23,8 +21,8 @@ class XXSSProtectionRating extends Rating
 
         if ($header === null) {
             $this->hasError = true;
-            $this->errorMessage = TranslateableMessage::get("HEADER_NOT_SET");
-        } elseif ($header === "ERROR") {
+            $this->errorMessage = TranslateableMessage::get('HEADER_NOT_SET');
+        } elseif ($header === 'ERROR') {
             $this->hasError = true;
             $this->errorMessage = TranslateableMessage::get('HEADER_ENCODING_ERROR', ['HEADER_NAME' => 'X-XSS-Protection']);
         } elseif (is_array($header) && count($header) > 1) {
@@ -42,5 +40,4 @@ class XXSSProtectionRating extends Rating
             }
         }
     }
-
 }

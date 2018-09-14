@@ -60,7 +60,7 @@ class CSPParserTest extends TestCase
 
         $this->assertEquals(collect(["'none'"]), $csp->directives->get('default-src'));
         $this->assertEquals(collect(["'self'"]), $csp->directives->get('script-src'));
-        $this->assertEquals(collect(["'self'", "*.gstatic.com", "data:"]), $csp->directives->get('font-src'));
+        $this->assertEquals(collect(["'self'", '*.gstatic.com', 'data:']), $csp->directives->get('font-src'));
     }
 
     /** @test */
@@ -72,7 +72,7 @@ class CSPParserTest extends TestCase
 
         $this->assertEquals(collect(["'none'"]), $csp->directives->get('default-src'));
         $this->assertEquals(collect(["'self'"]), $csp->directives->get('script-src'));
-        $this->assertEquals(collect(["'self'", "*.gstatic.com", "data:"]), $csp->directives->get('font-src'));
+        $this->assertEquals(collect(["'self'", '*.gstatic.com', 'data:']), $csp->directives->get('font-src'));
     }
 
     /** @test */
@@ -97,7 +97,7 @@ class CSPParserTest extends TestCase
             "Content-Security-Policy: default-src 'none'; script-src hallo,welt.de",
         ];
 
-        foreach($headers as $header) {
+        foreach ($headers as $header) {
             $csp = new CSPParser($header);
             $this->assertFalse($csp->isValid());
         }

@@ -2,19 +2,17 @@
 
 namespace App\Ratings;
 
-use GuzzleHttp\Client;
 use App\HTTPResponse;
 use App\TranslateableMessage;
 
-
 class HSTSRating extends Rating
 {
-
-    public function __construct(HTTPResponse $response) {
+    public function __construct(HTTPResponse $response)
+    {
         parent::__construct($response);
 
-        $this->name = "STRICT_TRANSPORT_SECURITY";
-        $this->scoreType = "warning";
+        $this->name = 'STRICT_TRANSPORT_SECURITY';
+        $this->scoreType = 'warning';
     }
 
     protected function rate()
@@ -23,25 +21,25 @@ class HSTSRating extends Rating
 
         if ($header === null) {
             $this->hasError = true;
-            $this->errorMessage = TranslateableMessage::get("HEADER_NOT_SET");
-        } elseif ($header === "ERROR") {
+            $this->errorMessage = TranslateableMessage::get('HEADER_NOT_SET');
+        } elseif ($header === 'ERROR') {
             $this->hasError = true;
-            $this->errorMessage = TranslateableMessage::get("HEADER_ENCODING_ERROR", ["HEADER_NAME" => "Strict-Transport-Security"]);
+            $this->errorMessage = TranslateableMessage::get('HEADER_ENCODING_ERROR', ['HEADER_NAME' => 'Strict-Transport-Security']);
         } elseif (is_array($header) && count($header) > 1) {
             $this->hasError = true;
-            $this->errorMessage = TranslateableMessage::get("HEADER_SET_MULTIPLE_TIMES", ['HEADER' => $header]);
+            $this->errorMessage = TranslateableMessage::get('HEADER_SET_MULTIPLE_TIMES', ['HEADER' => $header]);
         } else {
             $header = $header[0];
 
-            $beginAge   = strpos($header, 'max-age=') + 8;
-            $endAge     = strpos($header, ';', $beginAge);
+            $beginAge = strpos($header, 'max-age=') + 8;
+            $endAge = strpos($header, ';', $beginAge);
 
             // if there is no semicolon | max-age=300
             if ($endAge === false) {
                 $endAge = strlen($header);
             }
 
-            $maxAge     = substr($header, $beginAge, $endAge - $beginAge);
+            $maxAge = substr($header, $beginAge, $endAge - $beginAge);
 
             if ($maxAge < 15768000) {
                 $this->score = 60;

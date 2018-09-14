@@ -2,19 +2,17 @@
 
 namespace App\Ratings;
 
-use GuzzleHttp\Client;
 use App\HTTPResponse;
 use App\TranslateableMessage;
 
-
 class XFrameOptionsRating extends Rating
 {
-
-    public function __construct(HTTPResponse $response) {
+    public function __construct(HTTPResponse $response)
+    {
         parent::__construct($response);
 
-        $this->name = "X_FRAME_OPTIONS";
-        $this->scoreType = "warning";
+        $this->name = 'X_FRAME_OPTIONS';
+        $this->scoreType = 'warning';
     }
 
     protected function rate()
@@ -23,11 +21,11 @@ class XFrameOptionsRating extends Rating
 
         if ($header === null) {
             $this->hasError = true;
-            $this->errorMessage = TranslateableMessage::get("HEADER_NOT_SET");
+            $this->errorMessage = TranslateableMessage::get('HEADER_NOT_SET');
         } elseif (is_array($header) && count($header) > 1) {
             $this->hasError = true;
             $this->errorMessage = TranslateableMessage::get('HEADER_SET_MULTIPLE_TIMES', ['HEADER' => $header]);
-        } elseif ($header === "ERROR") {
+        } elseif ($header === 'ERROR') {
             $this->hasError = true;
             $this->errorMessage = TranslateableMessage::get('HEADER_ENCODING_ERROR', ['HEADER_NAME' => 'X-Frame-Options']);
         } else {
@@ -36,8 +34,7 @@ class XFrameOptionsRating extends Rating
             if (strpos($header, '*') !== false) {
                 $this->score = 0;
                 $this->testDetails->push(TranslateableMessage::get('XFO_WILDCARDS', ['HEADER' => $header]));
-            }
-            else {
+            } else {
                 $this->score = 100;
                 $this->testDetails->push(TranslateableMessage::get('XFO_CORRECT', ['HEADER' => $header]));
             }

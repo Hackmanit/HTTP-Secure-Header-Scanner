@@ -2,14 +2,13 @@
 
 namespace Tests\Unit;
 
+use App\HTTPResponse;
 use App\Ratings\XXSSProtectionRating;
 use GuzzleHttp\Psr7\Response;
 use Tests\TestCase;
-use App\HTTPResponse;
 
 class XXSSProtectionRatingTest extends TestCase
 {
-
     /** @test */
     public function xXSSProtection_rates_0_for_a_missing_header()
     {
@@ -22,7 +21,7 @@ class XXSSProtectionRatingTest extends TestCase
         $this->assertEquals(0, $rating->score);
         $expected = [
             'placeholder' => 'HEADER_NOT_SET',
-            'values' => null
+            'values'      => null,
         ];
         $this->assertEquals($expected, $rating->errorMessage);
     }
@@ -31,8 +30,8 @@ class XXSSProtectionRatingTest extends TestCase
     public function xXSSProtection_rates_a_set_header()
     {
         $client = $this->getMockedGuzzleClient([
-            new Response(200, [ "X-Xss-Protection" => "0"]),
-            new Response(200, [ "X-Xss-Protection" => "1"]),
+            new Response(200, ['X-Xss-Protection' => '0']),
+            new Response(200, ['X-Xss-Protection' => '1']),
         ]);
 
         $response = new HTTPResponse('https://testdomain', $client);
@@ -52,7 +51,7 @@ class XXSSProtectionRatingTest extends TestCase
     public function xXSSProtection_rates_mode_block()
     {
         $client = $this->getMockedGuzzleClient([
-            new Response(200, [ "X-Xss-Protection" => "1; mode=block"]),
+            new Response(200, ['X-Xss-Protection' => '1; mode=block']),
         ]);
 
         $response = new HTTPResponse('https://testdomain', $client);
@@ -67,7 +66,7 @@ class XXSSProtectionRatingTest extends TestCase
     {
         $client = $this->getMockedGuzzleClient([
             // Producing an encoding error
-            new Response(200, ["X-XSS-Protection" => zlib_encode("SGVsbG8gV29ybGQ=", ZLIB_ENCODING_RAW)]),
+            new Response(200, ['X-XSS-Protection' => zlib_encode('SGVsbG8gV29ybGQ=', ZLIB_ENCODING_RAW)]),
         ]);
         $response = new HTTPResponse('https://testdomain', $client);
         $rating = new XXSSProtectionRating($response);

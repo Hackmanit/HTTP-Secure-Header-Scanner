@@ -2,20 +2,18 @@
 
 namespace Tests\Feature;
 
-use Tests\TestCase;
-use Illuminate\Foundation\Testing\WithFaker;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Log;
+use Tests\TestCase;
 
 class ScanStartTest extends TestCase
 {
-
     /** @test */
-    public function a_header_scan_can_be_started_if_the_correct_parameters_are_sent() {
+    public function a_header_scan_can_be_started_if_the_correct_parameters_are_sent()
+    {
         $response = $this->json('POST', '/api/v1/header', [
-            "url" => "https://siwecos.de",
-            "dangerLevel" => 0,
-            "callbackurls" => ["http://localhost:9002"]
+            'url'          => 'https://siwecos.de',
+            'dangerLevel'  => 0,
+            'callbackurls' => ['http://localhost:9002'],
         ]);
 
         $response->assertStatus(200);
@@ -25,18 +23,19 @@ class ScanStartTest extends TestCase
     public function a_domxss_scan_can_be_started_if_the_correct_parameters_are_sent()
     {
         $response = $this->json('POST', '/api/v1/domxss', [
-            "url" => "https://siwecos.de",
-            "dangerLevel" => 0,
-            "callbackurls" => ["http://localhost:9002"]
+            'url'          => 'https://siwecos.de',
+            'dangerLevel'  => 0,
+            'callbackurls' => ['http://localhost:9002'],
         ]);
 
         $response->assertStatus(200);
     }
 
     /** @test */
-    public function the_callbackurl_and_dangerLevel_parameters_are_optional() {
+    public function the_callbackurl_and_dangerLevel_parameters_are_optional()
+    {
         $response = $this->json('POST', '/api/v1/domxss', [
-            "url" => "https://siwecos.de"
+            'url' => 'https://siwecos.de',
         ]);
 
         $response->assertStatus(200);
@@ -56,16 +55,16 @@ class ScanStartTest extends TestCase
     public function a_scan_can_not_be_started_if_invalid_parameters_are_sent()
     {
         $response = $this->json('POST', '/api/v1/header', [
-            'url' => 3,
-            'dangerLevel' => 0,
-            "callbackurls" => ["http://localhost:9002"]
+            'url'          => 3,
+            'dangerLevel'  => 0,
+            'callbackurls' => ['http://localhost:9002'],
         ]);
         $response->assertStatus(422);
 
         $response = $this->json('POST', '/api/v1/domxss', [
-            'url' => 'https://siwecos.de',
-            'dangerLevel' => 100,
-            "callbackurls" => ["http://localhost:9002"]
+            'url'          => 'https://siwecos.de',
+            'dangerLevel'  => 100,
+            'callbackurls' => ['http://localhost:9002'],
         ]);
         $response->assertStatus(422);
     }
@@ -78,12 +77,11 @@ class ScanStartTest extends TestCase
             ->once();
 
         $response = $this->json('POST', '/api/v1/header', [
-            'url' => 'https://siwecos.de',
-            'dangerLevel' => 0,
-            "callbackurls" => ["http://localhost:9002"]
+            'url'          => 'https://siwecos.de',
+            'dangerLevel'  => 0,
+            'callbackurls' => ['http://localhost:9002'],
         ]);
 
         $response->assertStatus(200);
     }
-
 }

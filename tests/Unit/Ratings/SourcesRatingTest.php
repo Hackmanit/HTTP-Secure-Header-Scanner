@@ -2,11 +2,11 @@
 
 namespace Tests\Unit;
 
-use Tests\TestCase;
 use App\DOMXSSCheck;
 use App\HTTPResponse;
-use GuzzleHttp\Psr7\Response;
 use App\Ratings\SourcesRating;
+use GuzzleHttp\Psr7\Response;
+use Tests\TestCase;
 
 class SourcesRatingTest extends TestCase
 {
@@ -28,7 +28,7 @@ class SourcesRatingTest extends TestCase
     /** @test */
     public function sourcesRatingRates100IfThereIsNoScriptTagOnThePage()
     {
-        $sampleBody = file_get_contents(base_path() . "/tests/Unit/example.org.html");
+        $sampleBody = file_get_contents(base_path().'/tests/Unit/example.org.html');
         $client = $this->getMockedGuzzleClient([
             new Response(200, [], $sampleBody),
         ]);
@@ -41,11 +41,10 @@ class SourcesRatingTest extends TestCase
         $this->assertTrue(collect($rating->testDetails)->flatten()->contains('NO_SCRIPT_TAGS'));
     }
 
-
     /** @test */
     public function sourcesRatingDoesNotFindSourcesOutsideOfSearchContext()
     {
-        $sampleBody = file_get_contents(base_path() . "/tests/Unit/hradek.test.html");
+        $sampleBody = file_get_contents(base_path().'/tests/Unit/hradek.test.html');
         $client = $this->getMockedGuzzleClient([
             new Response(200, [], $sampleBody),
         ]);
@@ -60,5 +59,4 @@ class SourcesRatingTest extends TestCase
         // Sources in script-Tags
         $this->assertEquals(2, $rating->testDetails->first()['values']['AMOUNT']);
     }
-
 }

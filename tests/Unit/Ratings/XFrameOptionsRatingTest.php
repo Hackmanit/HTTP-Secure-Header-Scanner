@@ -2,10 +2,10 @@
 
 namespace Tests\Unit;
 
+use App\HTTPResponse;
 use App\Ratings\XFrameOptionsRating;
 use GuzzleHttp\Psr7\Response;
 use Tests\TestCase;
-use App\HTTPResponse;
 
 class XFrameOptionsRatingTest extends TestCase
 {
@@ -21,7 +21,7 @@ class XFrameOptionsRatingTest extends TestCase
         $this->assertEquals(0, $rating->score);
         $expected = [
             'placeholder' => 'HEADER_NOT_SET',
-            'values' => null
+            'values'      => null,
         ];
         $this->assertEquals($expected, $rating->errorMessage);
     }
@@ -31,7 +31,7 @@ class XFrameOptionsRatingTest extends TestCase
     {
         $client = $this->getMockedGuzzleClient([
             new Response(200, [
-                "X-Frame-Options" => "allow-from *"
+                'X-Frame-Options' => 'allow-from *',
             ]),
         ]);
         $response = new HTTPResponse('https://testdomain', $client);
@@ -46,7 +46,7 @@ class XFrameOptionsRatingTest extends TestCase
     {
         $client = $this->getMockedGuzzleClient([
             new Response(200, [
-                "X-Frame-Options" => "deny"
+                'X-Frame-Options' => 'deny',
             ]),
         ]);
         $response = new HTTPResponse('https://testdomain', $client);
@@ -61,7 +61,7 @@ class XFrameOptionsRatingTest extends TestCase
     {
         $client = $this->getMockedGuzzleClient([
             // Producing an encoding error
-            new Response(200, ["X-Frame-Options" => zlib_encode("SGVsbG8gV29ybGQ=", ZLIB_ENCODING_RAW)]),
+            new Response(200, ['X-Frame-Options' => zlib_encode('SGVsbG8gV29ybGQ=', ZLIB_ENCODING_RAW)]),
         ]);
         $response = new HTTPResponse('https://testdomain', $client);
         $rating = new XFrameOptionsRating($response);

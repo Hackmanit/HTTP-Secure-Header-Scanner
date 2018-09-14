@@ -3,7 +3,6 @@
 namespace App\Ratings;
 
 use App\HTTPResponse;
-use GuzzleHttp\Client;
 use voku\helper\HtmlDomParser;
 
 abstract class Rating
@@ -17,7 +16,6 @@ abstract class Rating
     public $scoreType = null;
     public $testDetails = null;
 
-
     /**
      * Rating constructor.
      */
@@ -29,10 +27,10 @@ abstract class Rating
         $this->rate();
     }
 
-
     public function getHeader($header)
     {
         $result = $this->response->header($header);
+
         return json_encode($result) ? $result : 'ERROR';
     }
 
@@ -41,8 +39,8 @@ abstract class Rating
      *
      * @return bool|voku\helper\SimpleHtmlDom
      */
-    public function getBody() {
+    public function getBody()
+    {
         return HtmlDomParser::str_get_html($this->response->body());
     }
-
 }

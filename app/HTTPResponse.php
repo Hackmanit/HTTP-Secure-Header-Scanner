@@ -2,9 +2,7 @@
 
 namespace App;
 
-use Cache;
 use GuzzleHttp\Client;
-use GuzzleHttp\HandlerStack;
 
 class HTTPResponse
 {
@@ -21,11 +19,12 @@ class HTTPResponse
     }
 
     /**
-     * Calculates the HTTPResponse
+     * Calculates the HTTPResponse.
      *
      * @return void
      */
-    protected function calculateResponse() {
+    protected function calculateResponse()
+    {
         if ($this->response === null) {
             if ($this->client === null) {
                 $this->client = new Client();
@@ -37,19 +36,18 @@ class HTTPResponse
                     'headers' => [
                         'User-Agent' => 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:40.0) Gecko/20100101 Firefox/40.1',
                     ],
-                    'verify' => false,
+                    'verify'      => false,
                     'http_errors' => false,
                 ]);
             } catch (\Exception $exception) {
-                \Log::debug($this->url . ": " . $exception);
+                \Log::debug($this->url.': '.$exception);
                 $this->hasErrors = true;
             }
         }
     }
 
     /**
-     * Returns the GuzzleHttp Response
-     *
+     * Returns the GuzzleHttp Response.
      */
     public function response()
     {
@@ -69,8 +67,10 @@ class HTTPResponse
      */
     public function statusCode()
     {
-        if($this->hasErrors())
-            return null;
+        if ($this->hasErrors()) {
+            return;
+        }
+
         return $this->response()->getStatusCode();
     }
 
@@ -79,20 +79,23 @@ class HTTPResponse
      */
     public function headers()
     {
-        if($this->hasErrors())
-            return null;
+        if ($this->hasErrors()) {
+            return;
+        }
 
         return collect($this->response()->getHeaders());
     }
 
     /**
      * @param $name string header name in lowercase
+     *
      * @return array
      */
     public function header($name)
     {
-        if($this->hasErrors())
-            return null;
+        if ($this->hasErrors()) {
+            return;
+        }
 
         return $this->headers()->mapWithKeys(function ($value, $key) {
             return [strtolower($key) => $value];
@@ -104,22 +107,25 @@ class HTTPResponse
      */
     public function body()
     {
-        if($this->hasErrors())
-            return null;
+        if ($this->hasErrors()) {
+            return;
+        }
 
-        # Fixed empty body
-        # See: https://stackoverflow.com/questions/30549226/guzzlehttp-how-get-the-body-of-a-response-from-guzzle-6#30549372
+        // Fixed empty body
+        // See: https://stackoverflow.com/questions/30549226/guzzlehttp-how-get-the-body-of-a-response-from-guzzle-6#30549372
         return (string) $this->response()->getBody();
     }
 
     /**
      * Returns error status.
      *
-     * @return boolean
+     * @return bool
      */
-    public function hasErrors() {
-        if( ($this->hasErrors == true) || ($this->response == null))
+    public function hasErrors()
+    {
+        if (($this->hasErrors == true) || ($this->response == null)) {
             return true;
+        }
 
         return false;
     }

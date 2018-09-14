@@ -2,51 +2,45 @@
 
 namespace App\Ratings;
 
-use voku\helper\HtmlDomParser;
-use GuzzleHttp\Client;
-use App\HTTPResponse;
 use App\DOMXSSCheck;
+use App\HTTPResponse;
 use App\TranslateableMessage;
 
 class SourcesRating extends Rating
 {
-
     public function __construct(HTTPResponse $response)
     {
         parent::__construct($response);
 
-        $this->name = "SOURCES";
-        $this->scoreType = "info";
+        $this->name = 'SOURCES';
+        $this->scoreType = 'info';
     }
 
     protected function rate()
     {
         /**
-         * var $html voku\helper\SimpleHtmlDom;
+         * var $html voku\helper\SimpleHtmlDom;.
          */
         $html = $this->getBody();
 
         if ($html->getIsDOMDocumentCreatedWithoutHtml()) {
             $this->hasError = true;
             $this->errorMessage = TranslateableMessage::get('NO_CONTENT');
-
         } else {
-
             $scriptTags = $html->find('script');
 
             if (count($scriptTags) == 0) {
                 $this->score = 100;
                 $this->testDetails->push(TranslateableMessage::get('NO_SCRIPT_TAGS'));
-
             } else {
-
                 $this->score = 100;
 
                 // Search for Sinks and Sources
                 $sourceCounter = 0;
                 foreach ($scriptTags as $scriptTag) {
-                    if ($amountSources = DOMXSSCheck::hasSources($scriptTag->innertext, true))
-                        $sourceCounter+= $amountSources;
+                    if ($amountSources = DOMXSSCheck::hasSources($scriptTag->innertext, true)) {
+                        $sourceCounter += $amountSources;
+                    }
                 }
 
                 if ($sourceCounter > 0) {

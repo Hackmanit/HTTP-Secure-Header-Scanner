@@ -2,14 +2,13 @@
 
 namespace Tests\Unit;
 
-use App\Ratings\XContentTypeOptionsRating;
-use Tests\TestCase;
-use GuzzleHttp\Psr7\Response;
 use App\HTTPResponse;
+use App\Ratings\XContentTypeOptionsRating;
+use GuzzleHttp\Psr7\Response;
+use Tests\TestCase;
 
 class XContentTypeOptionsRatingTest extends TestCase
 {
-
     /** @test */
     public function xContentTypeOptionsRating_rates_a_missing_header()
     {
@@ -22,7 +21,7 @@ class XContentTypeOptionsRatingTest extends TestCase
         $this->assertEquals(0, $rating->score);
         $expected = [
             'placeholder' => 'HEADER_NOT_SET',
-            'values' => null
+            'values'      => null,
         ];
         $this->assertEquals($expected, $rating->errorMessage);
     }
@@ -31,7 +30,7 @@ class XContentTypeOptionsRatingTest extends TestCase
     public function xContentTypeOptionsRating_rates_a_correct_header()
     {
         $client = $this->getMockedGuzzleClient([
-            new Response(200, [ "X-Content-Type-Options" => "nosniff" ]),
+            new Response(200, ['X-Content-Type-Options' => 'nosniff']),
         ]);
         $response = new HTTPResponse('https://testdomain', $client);
         $rating = new XContentTypeOptionsRating($response);
@@ -44,7 +43,7 @@ class XContentTypeOptionsRatingTest extends TestCase
     public function xContentTypeOptionsRating_rates_a_wrong_header()
     {
         $client = $this->getMockedGuzzleClient([
-            new Response(200, [ "X-Content-Type-Options" => "wrong entry" ]),
+            new Response(200, ['X-Content-Type-Options' => 'wrong entry']),
         ]);
         $response = new HTTPResponse('https://testdomain', $client);
         $rating = new XContentTypeOptionsRating($response);
@@ -58,7 +57,7 @@ class XContentTypeOptionsRatingTest extends TestCase
     {
         $client = $this->getMockedGuzzleClient([
             // Producing an encoding error
-            new Response(200, ["X-Content-Type-Options" => zlib_encode("SGVsbG8gV29ybGQ=", ZLIB_ENCODING_RAW)]),
+            new Response(200, ['X-Content-Type-Options' => zlib_encode('SGVsbG8gV29ybGQ=', ZLIB_ENCODING_RAW)]),
         ]);
         $response = new HTTPResponse('https://testdomain', $client);
         $rating = new XContentTypeOptionsRating($response);
@@ -67,5 +66,4 @@ class XContentTypeOptionsRatingTest extends TestCase
         $this->assertTrue(collect($rating->errorMessage)->contains('HEADER_ENCODING_ERROR'));
         $this->assertTrue($rating->hasError);
     }
-
 }

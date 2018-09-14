@@ -2,10 +2,10 @@
 
 namespace Tests\Unit;
 
+use App\HTTPResponse;
 use App\Ratings\HPKPRating;
 use GuzzleHttp\Psr7\Response;
 use Tests\TestCase;
-use App\HTTPResponse;
 
 class HPKPRatingTest extends TestCase
 {
@@ -21,18 +21,17 @@ class HPKPRatingTest extends TestCase
         $this->assertEquals(0, $rating->score);
         $expected = [
             'placeholder' => 'HEADER_NOT_SET',
-            'values' => null
+            'values'      => null,
         ];
         $this->assertEquals($expected, $rating->errorMessage);
     }
-
 
     /** @test */
     public function hpkpRating_rates_includeSubDomains()
     {
         $client = $this->getMockedGuzzleClient([
             new Response(200, [
-                'Public-Key-Pins' => 'max-age=1000000; pin-sha256="E9CZ9INDbd+2eRQozYqqbQ2yXLVKB9+xcprMF+44U1g="; pin-sha256="LPJNul+wow4m6DsqxbninhsWHlwfp0JecwQzYpOLmCQ="; includeSubDomains'
+                'Public-Key-Pins' => 'max-age=1000000; pin-sha256="E9CZ9INDbd+2eRQozYqqbQ2yXLVKB9+xcprMF+44U1g="; pin-sha256="LPJNul+wow4m6DsqxbninhsWHlwfp0JecwQzYpOLmCQ="; includeSubDomains',
             ]),
         ]);
         $response = new HTTPResponse('https://testdomain', $client);
@@ -46,7 +45,7 @@ class HPKPRatingTest extends TestCase
     {
         $client = $this->getMockedGuzzleClient([
             new Response(200, [
-                'Public-Key-Pins' => 'max-age=1000000; pin-sha256="E9CZ9INDbd+2eRQozYqqbQ2yXLVKB9+xcprMF+44U1g="; pin-sha256="LPJNul+wow4m6DsqxbninhsWHlwfp0JecwQzYpOLmCQ="; report-uri="http://example.com/pkp-report";'
+                'Public-Key-Pins' => 'max-age=1000000; pin-sha256="E9CZ9INDbd+2eRQozYqqbQ2yXLVKB9+xcprMF+44U1g="; pin-sha256="LPJNul+wow4m6DsqxbninhsWHlwfp0JecwQzYpOLmCQ="; report-uri="http://example.com/pkp-report";',
             ]),
         ]);
         $response = new HTTPResponse('https://testdomain', $client);
@@ -60,7 +59,7 @@ class HPKPRatingTest extends TestCase
     {
         $client = $this->getMockedGuzzleClient([
             // Producing an encoding error
-            new Response(200, ["Public-Key-Pins" => zlib_encode("SGVsbG8gV29ybGQ=", ZLIB_ENCODING_RAW)]),
+            new Response(200, ['Public-Key-Pins' => zlib_encode('SGVsbG8gV29ybGQ=', ZLIB_ENCODING_RAW)]),
         ]);
         $response = new HTTPResponse('https://testdomain', $client);
         $rating = new HPKPRating($response);
@@ -69,5 +68,4 @@ class HPKPRatingTest extends TestCase
         $this->assertTrue(collect($rating->errorMessage)->contains('HEADER_ENCODING_ERROR'));
         $this->assertTrue($rating->hasError);
     }
-
 }

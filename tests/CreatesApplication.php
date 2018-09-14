@@ -2,10 +2,10 @@
 
 namespace Tests;
 
-use Illuminate\Contracts\Console\Kernel;
+use GuzzleHttp\Client;
 use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
-use GuzzleHttp\Client;
+use Illuminate\Contracts\Console\Kernel;
 
 trait CreatesApplication
 {
@@ -25,13 +25,16 @@ trait CreatesApplication
 
     /**
      * This method sets and activates the GuzzleHttp Mocking functionality.
+     *
      * @param array $responses
+     *
      * @return Client
      */
     protected function getMockedGuzzleClient(array $responses)
     {
         $mock = new MockHandler($responses);
         $handler = HandlerStack::create($mock);
-        return (new Client(["handler" => $handler]));
+
+        return new Client(['handler' => $handler]);
     }
 }
