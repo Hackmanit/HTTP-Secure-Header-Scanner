@@ -29,7 +29,7 @@ class HeaderCheck
         if($this->response->hasErrors()){
             return [
                 'name' => 'HEADER',
-                'version' => file('../VERSION', FILE_IGNORE_NEW_LINES)[0],
+                'version' => file(base_path('VERSION'), FILE_IGNORE_NEW_LINES)[0],
                 'hasError' => true,
                 'errorMessage' => [
 					'placeholder' => 'NO_HTTP_RESPONSE',
