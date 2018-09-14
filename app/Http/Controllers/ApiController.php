@@ -13,23 +13,24 @@ class ApiController extends Controller
 {
 
     public function headerReport(ScanStartRequest $request) {
-        $check = new HeaderCheck($request->json('url'));
+        $report = (new HeaderCheck($request->json('url')))->report();
 
-        $this->notifyCallbacks($request->json('callbackurls'), $check);
+        if ($request->json('callbackurls'))
+            $this->notifyCallbacks($request->json('callbackurls'), $report);
 
-        return "OK";
+        return json_encode($report);
     }
 
     public function domxssReport(ScanStartRequest $request){
-        $check = new DOMXSSCheck($request->json('url'));
+        $report = (new DOMXSSCheck($request->json('url')))->report();
 
-        $this->notifyCallbacks($request->json('callbackurls'), $check);
+        if($request->json('callbackurls'))
+            $this->notifyCallbacks($request->json('callbackurls'), $report);
 
-        return "OK";
+        return json_encode($report);
     }
 
-    protected function notifyCallbacks(array $callbackurls, $check) {
-        $report = $check->report();
+    protected function notifyCallbacks(array $callbackurls, $report) {
         foreach ($callbackurls as $url) {
             try {
                 $client = new Client();

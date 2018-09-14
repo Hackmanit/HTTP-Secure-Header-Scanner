@@ -26,7 +26,7 @@ class ScanStartRequest extends FormRequest
         return [
             'url' => 'required|url',
             'dangerLevel' => 'integer|min:0|max:10',
-            'callbackurls' => 'required|array',
+            'callbackurls' => 'array',
             'callbackurls.*' => 'url'
         ];
     }

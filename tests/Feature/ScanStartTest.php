@@ -34,6 +34,15 @@ class ScanStartTest extends TestCase
     }
 
     /** @test */
+    public function the_callbackurl_and_dangerLevel_parameters_are_optional() {
+        $response = $this->json('POST', '/api/v1/domxss', [
+            "url" => "https://siwecos.de"
+        ]);
+
+        $response->assertStatus(200);
+    }
+
+    /** @test */
     public function a_scan_can_not_be_started_if_no_parameters_are_sent()
     {
         $response = $this->json('POST', '/api/v1/header', []);
@@ -75,6 +84,26 @@ class ScanStartTest extends TestCase
         ]);
 
         $response->assertStatus(200);
+    }
+
+    /** @test */
+    public function if_there_is_an_http_error_the_correct_formatted_error_message_will_be_send()
+    {
+        $response = $this->json('POST', '/api/v1/header', [
+            'url' => 'https://url-but-not-available.info'
+        ]);
+
+        $response->assertStatus(200);
+        $response->assertJson([
+            'name' => 'HEADER',
+            'hasError' => true,
+            'errorMessage' => [
+                'placeholder' => 'NO_HTTP_RESPONSE',
+                'values' => []
+            ],
+            'score' => 0,
+            'tests' => []
+        ]);
     }
 
 }
