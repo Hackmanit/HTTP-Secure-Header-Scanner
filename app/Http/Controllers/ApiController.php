@@ -6,9 +6,7 @@ use App\DOMXSSCheck;
 use App\HeaderCheck;
 use App\Http\Requests\ScanStartRequest;
 use GuzzleHttp\Client;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Validator;
 
 class ApiController extends Controller
 {
