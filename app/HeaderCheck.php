@@ -2,14 +2,15 @@
 
 namespace App;
 
-use App\Ratings\ContentTypeRating;
+use GuzzleHttp\Client;
 use App\Ratings\CSPRating;
 use App\Ratings\HPKPRating;
 use App\Ratings\HSTSRating;
-use App\Ratings\XContentTypeOptionsRating;
+use App\Ratings\ContentTypeRating;
 use App\Ratings\XFrameOptionsRating;
+use App\Ratings\ReferrerPolicyRating;
 use App\Ratings\XXSSProtectionRating;
-use GuzzleHttp\Client;
+use App\Ratings\XContentTypeOptionsRating;
 
 /**
  * Returns a HeaderReport / Rating for the given URL.
@@ -40,6 +41,7 @@ class HeaderCheck
             new CSPRating($this->response),
             new ContentTypeRating($this->response),
             new HPKPRating($this->response),
+            new ReferrerPolicyRating($this->response),
             new HSTSRating($this->response),
             new XContentTypeOptionsRating($this->response),
             new XFrameOptionsRating($this->response),

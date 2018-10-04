@@ -392,6 +392,17 @@ Further advanced tests would be needed to confirm if there are vulnerabilities o
 | HPKP_LESS_15 | The keys are pinned for less than 15 days. |
 | HPKP_MORE_15 | The keys are pinned for more than 15 days. |
 | HPKP_REPORT_URI | A `report-uri` is set. |
+| **REFERRER-POLICY** ||
+| NO_REFERRER | The directive `no-referrer` is set. |
+| SAME_ORIGIN | The directive `same-origin` is set. |
+| EMPTY_DIRECTIVE | The directive is explicitly set as empty. |
+| STRICT_ORIGIN | The direcitve 'strict-origin' is set. |
+| STRICT_ORIGIN_WHEN_CROSS_ORIGIN | The direcitve 'strict-origin-when-cross-origin' is set. |
+| ORIGIN | The direcitve 'origin' is set. |
+| ORIGIN_WHEN_CROSS_ORIGIN | The direcitve 'origin-when-cross-origin' is set. |
+| NO_REFERRER_WHEN_DOWNGRADE | The direcitve 'no-referrer-when-downgrade' is set. |
+| UNSAFE_URL | The direcitve 'unsafe-url' is set. |
+| WRONG_DIRECTIVE_SET | A wrong or unknown directive is set. |
 | **STRICT-TRANSPORT-SECURITY** ||
 | HSTS_LESS_6 | The value for `max-age` is smaller than 6 months. |
 | HSTS_MORE_6 | The value for `max-age` is greater than 6 months. |
