@@ -2,12 +2,10 @@
 
 namespace Tests\Unit;
 
-use Tests\TestCase;
 use App\HTTPResponse;
-use GuzzleHttp\Psr7\Response;
 use App\Ratings\ReferrerPolicyRating;
-use Illuminate\Foundation\Testing\WithFaker;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use GuzzleHttp\Psr7\Response;
+use Tests\TestCase;
 
 class ReferrerPolicyRatingTest extends TestCase
 {
@@ -29,7 +27,6 @@ class ReferrerPolicyRatingTest extends TestCase
         $this->assertEquals($expected, $rating->errorMessage);
     }
 
-
     /** @test */
     public function referrerPolicy_detects_wrong_encoding()
     {
@@ -45,7 +42,6 @@ class ReferrerPolicyRatingTest extends TestCase
         $this->assertTrue($rating->hasError);
     }
 
-
     /** @test */
     public function referrerPolicy_rates_100_for_privacy_protecting_directives()
     {
@@ -54,14 +50,13 @@ class ReferrerPolicyRatingTest extends TestCase
             new Response(200, ['Referrer-Policy' => 'same-origin']),
         ]);
 
-        for ($i=1; $i <= 2; $i++) {
+        for ($i = 1; $i <= 2; $i++) {
             $response = new HTTPResponse('https://testdomain', $client);
             $rating = new ReferrerPolicyRating($response);
             $this->assertEquals(100, $rating->score);
             $this->assertFalse($rating->hasError);
         }
     }
-
 
     /** @test */
     public function referrerPolicy_rates_70_for_downgrade_protective_directives()
@@ -71,7 +66,7 @@ class ReferrerPolicyRatingTest extends TestCase
             new Response(200, ['Referrer-Policy' => 'strict-origin-when-cross-origin']),
         ]);
 
-        for ($i=1; $i <= 2; $i++) {
+        for ($i = 1; $i <= 2; $i++) {
             $response = new HTTPResponse('https://testdomain', $client);
             $rating = new ReferrerPolicyRating($response);
             $this->assertEquals(70, $rating->score);
@@ -87,7 +82,7 @@ class ReferrerPolicyRatingTest extends TestCase
             new Response(200, ['Referrer-Policy' => 'origin-when-cross-origin']),
         ]);
 
-        for ($i=1; $i <= 2; $i++) {
+        for ($i = 1; $i <= 2; $i++) {
             $response = new HTTPResponse('https://testdomain', $client);
             $rating = new ReferrerPolicyRating($response);
             $this->assertEquals(40, $rating->score);
@@ -99,7 +94,7 @@ class ReferrerPolicyRatingTest extends TestCase
     public function referrerPolicy_rates_10_for_an_empty_directive()
     {
         $client = $this->getMockedGuzzleClient([
-            new Response(200, ['Referrer-Policy' => ''])
+            new Response(200, ['Referrer-Policy' => '']),
         ]);
 
         $response = new HTTPResponse('https://testdomain', $client);
@@ -107,7 +102,6 @@ class ReferrerPolicyRatingTest extends TestCase
         $this->assertEquals(10, $rating->score);
         $this->assertFalse($rating->hasError);
     }
-
 
     /** @test */
     public function referrerPolicy_rates_0_for_url_leaking_directives()
@@ -117,7 +111,7 @@ class ReferrerPolicyRatingTest extends TestCase
             new Response(200, ['Referrer-Policy' => 'unsafe-url']),
         ]);
 
-        for ($i=1; $i <= 2; $i++) {
+        for ($i = 1; $i <= 2; $i++) {
             $response = new HTTPResponse('https://testdomain', $client);
             $rating = new ReferrerPolicyRating($response);
             $this->assertEquals(0, $rating->score);
@@ -133,7 +127,7 @@ class ReferrerPolicyRatingTest extends TestCase
             new Response(200, ['Referrer-Policy' => 'strange-config']),
         ]);
 
-        for ($i=1; $i <= 2; $i++) {
+        for ($i = 1; $i <= 2; $i++) {
             $response = new HTTPResponse('https://testdomain', $client);
             $rating = new ReferrerPolicyRating($response);
             $this->assertEquals(0, $rating->score);
