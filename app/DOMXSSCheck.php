@@ -33,7 +33,7 @@ class DOMXSSCheck
         return [
             'name'         => 'DOMXSS',
             'version' 	    => file(base_path('VERSION'), FILE_IGNORE_NEW_LINES)[0],
-            'hasError'     => (bool) ($sourcesRating->hasError | $sinksRating->hasError),
+            'hasError'     => false,
             'errorMessage' => null,
             'score'        => ($sourcesRating->score + $sinksRating->score) / 2,
             'tests'        => [
