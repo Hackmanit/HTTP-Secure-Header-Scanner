@@ -42,8 +42,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 - CHANGELOG.md and semantic versioning
 
-[Unreleased]: https://github.com/SIWECOS/HSHS-DOMXSS-Scanner/compare/master...development
-[1.1.0]: https://github.com/SIWECOS/HSHS-DOMXSS-Scanner/compare/1.0.1...1.1.0
+[Unreleased]: https://github.com/SIWECOS/HSHS-DOMXSS-Scanner/compare/1.2.0...development
+[1.2.0]: https://github.com/SIWECOS/HSHS-DOMXSS-Scanner/compare/1.1.0...1.2.0
+[1.1.0]: https://github.com/SIWECOS/HSHS-DOMXSS-Scanner/compare/1.0.2...1.1.0
 [1.0.2]: https://github.com/SIWECOS/HSHS-DOMXSS-Scanner/compare/1.0.1...1.0.2
 [1.0.1]: https://github.com/SIWECOS/HSHS-DOMXSS-Scanner/compare/1.0.0...1.0.1
 
