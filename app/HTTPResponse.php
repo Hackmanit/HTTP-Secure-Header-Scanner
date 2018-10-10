@@ -14,7 +14,7 @@ class HTTPResponse
     public function __construct($url, Client $client = null)
     {
         $this->url = $this->punycodeUrl($url);
-        Log::info('Scanning the following URL: ' . $this->url);
+        Log::info('Scanning the following URL: '.$this->url);
 
         $this->client = $client;
 
@@ -136,20 +136,22 @@ class HTTPResponse
     /**
      * Returns the Punycode encoded URL for a given URL.
      *
-     * @param  string $url URL to encode
+     * @param string $url URL to encode
+     *
      * @return string Punycode-Encoded URL.
      */
-    public function punycodeUrl($url) {
+    public function punycodeUrl($url)
+    {
         $parsed_url = parse_url($url);
 
-        $scheme   = isset($parsed_url['scheme'])    ? $parsed_url['scheme'] . '://' : '';
-        $host     = isset($parsed_url['host'])      ? idn_to_ascii($parsed_url['host']) : '';
-        $port     = isset($parsed_url['port'])      ? ':' . $parsed_url['port'] : '';
-        $user     = isset($parsed_url['user'])      ? $parsed_url['user'] : '';
-        $pass     = isset($parsed_url['pass'])      ? ':' . $parsed_url['pass']  : '';
-        $pass     = ($user || $pass)                ? "$pass@" : '';
-        $path     = isset($parsed_url['path'])      ? $parsed_url['path'] : '';
-        $query    = isset($parsed_url['query'])     ? '?' . $parsed_url['query'] : '';
+        $scheme = isset($parsed_url['scheme']) ? $parsed_url['scheme'].'://' : '';
+        $host = isset($parsed_url['host']) ? idn_to_ascii($parsed_url['host']) : '';
+        $port = isset($parsed_url['port']) ? ':'.$parsed_url['port'] : '';
+        $user = isset($parsed_url['user']) ? $parsed_url['user'] : '';
+        $pass = isset($parsed_url['pass']) ? ':'.$parsed_url['pass'] : '';
+        $pass = ($user || $pass) ? "$pass@" : '';
+        $path = isset($parsed_url['path']) ? $parsed_url['path'] : '';
+        $query = isset($parsed_url['query']) ? '?'.$parsed_url['query'] : '';
 
         return "$scheme$user$pass$host$port$path$query";
     }

@@ -2,16 +2,16 @@
 
 namespace Tests\Feature;
 
+use Illuminate\Support\Facades\Log;
 use Tests\TestCase;
 use TiMacDonald\Log\LogFake;
-use Illuminate\Support\Facades\Log;
 
 class ScanStartTest extends TestCase
 {
-
-    public function setUp() {
+    public function setUp()
+    {
         parent::setUp();
-        Log::swap(new LogFake);
+        Log::swap(new LogFake());
     }
 
     /** @test */
@@ -92,7 +92,6 @@ class ScanStartTest extends TestCase
             return $message === 'Scanning the following URL: https://testdomain.test';
         });
 
-
         $response = $this->json('POST', '/api/v1/domxss', [
             'url'          => 'https://testdomain.test',
             'dangerLevel'  => 100,
@@ -114,7 +113,7 @@ class ScanStartTest extends TestCase
             'callbackurls' => ['http://localhost:9002'],
         ]);
 
-        Log::assertLogged('warning', function($message, $context) {
+        Log::assertLogged('warning', function ($message, $context) {
             return $message === 'Could not send the report to the following callback url: http://localhost:9002';
         });
 
