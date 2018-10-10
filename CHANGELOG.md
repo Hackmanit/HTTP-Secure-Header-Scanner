@@ -6,6 +6,17 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [1.2.0] - 2018-10-10
+### Fixed
+- Fixed #51
+
+### Added
+- Support for domains with umlauts
+
+### Changed
+- Upraded to Laravel 5.7
+- SpeedUp PHPUnit tests
+
 ## [1.1.0] - 2018-10-01
 ### Added
 - `Referrer-Policy` header rating
