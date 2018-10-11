@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [1.2.1] - 2018-10-11
+### Fixed
+- Fixed deprecation error `INTL_IDNA_VARIANT_2003 is deprecated`. <br>
+[Further Information](https://bugs.php.net/bug.php?id=75609)
+
 ## [1.2.0] - 2018-10-10
 ### Fixed
 - Fixed #51
@@ -42,7 +47,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 - CHANGELOG.md and semantic versioning
 
-[Unreleased]: https://github.com/SIWECOS/HSHS-DOMXSS-Scanner/compare/1.2.0...development
+[Unreleased]: https://github.com/SIWECOS/HSHS-DOMXSS-Scanner/compare/1.2.1...development
+[1.2.1]: https://github.com/SIWECOS/HSHS-DOMXSS-Scanner/compare/1.2.0...1.2.1
 [1.2.0]: https://github.com/SIWECOS/HSHS-DOMXSS-Scanner/compare/1.1.0...1.2.0
 [1.1.0]: https://github.com/SIWECOS/HSHS-DOMXSS-Scanner/compare/1.0.2...1.1.0
 [1.0.2]: https://github.com/SIWECOS/HSHS-DOMXSS-Scanner/compare/1.0.1...1.0.2
