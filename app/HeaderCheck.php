@@ -2,15 +2,16 @@
 
 namespace App;
 
-use App\Ratings\ContentTypeRating;
+use GuzzleHttp\Client;
 use App\Ratings\CSPRating;
 use App\Ratings\HPKPRating;
 use App\Ratings\HSTSRating;
-use App\Ratings\ReferrerPolicyRating;
-use App\Ratings\XContentTypeOptionsRating;
+use App\Ratings\SetCookieRating;
+use App\Ratings\ContentTypeRating;
 use App\Ratings\XFrameOptionsRating;
+use App\Ratings\ReferrerPolicyRating;
 use App\Ratings\XXSSProtectionRating;
-use GuzzleHttp\Client;
+use App\Ratings\XContentTypeOptionsRating;
 
 /**
  * Returns a HeaderReport / Rating for the given URL.
@@ -42,17 +43,18 @@ class HeaderCheck
             new ContentTypeRating($this->response),
             new HPKPRating($this->response),
             new ReferrerPolicyRating($this->response),
+            new SetCookieRating($this->response),
             new HSTSRating($this->response),
             new XContentTypeOptionsRating($this->response),
             new XFrameOptionsRating($this->response),
             new XXSSProtectionRating($this->response),
         ]);
 
-        // Calculating score as an average of the single scores WITHOUT `scoreType = 'bonus'` Ratings.
+        // Calculating score as an average of the single scores WITHOUT 'bonus' or 'hidden' Ratings.
         $score = 0;
         $scoredRatings = 0;
         foreach ($ratings as $rating) {
-            if ($rating->scoreType === 'bonus') {
+            if ($rating->scoreType === 'bonus' || $rating->scoreType === 'hidden') {
                 continue;
             }
             $score += $rating->score;
