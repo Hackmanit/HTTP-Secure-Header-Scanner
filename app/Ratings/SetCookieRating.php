@@ -3,8 +3,8 @@
 namespace App\Ratings;
 
 use App\HTTPResponse;
-use Delight\Cookie\Cookie;
 use App\TranslateableMessage;
+use Delight\Cookie\Cookie;
 
 class SetCookieRating extends Rating
 {
@@ -28,12 +28,12 @@ class SetCookieRating extends Rating
         } else {
             $this->scoreType = 'warning';
 
-            foreach($header as $cookieHeader) {
-                $this->name = "keks";
+            foreach ($header as $cookieHeader) {
+                $this->name = 'keks';
                 // Get a new Cookie Class
-                $cookie = Cookie::parse("Set-Cookie: " . $cookieHeader);
+                $cookie = Cookie::parse('Set-Cookie: '.$cookieHeader);
                 // Check for Secure Flag
-                if($cookie->isSecureOnly()) {
+                if ($cookie->isSecureOnly()) {
                     $this->score += 90;
                     $this->testDetails->push(TranslateableMessage::get('SECURE_FLAG_SET', ['COOKIE' => $cookieHeader]));
                 } else {
@@ -41,7 +41,7 @@ class SetCookieRating extends Rating
                 }
 
                 // Check for HttpOnly Flag
-                if($cookie->isHttpOnly()) {
+                if ($cookie->isHttpOnly()) {
                     $this->score += 10;
                     $this->testDetails->push(TranslateableMessage::get('HTTPONLY_FLAG_SET', ['COOKIE' => $cookieHeader]));
                 } else {

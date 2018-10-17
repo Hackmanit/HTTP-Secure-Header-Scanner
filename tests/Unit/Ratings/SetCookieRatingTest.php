@@ -2,12 +2,11 @@
 
 namespace Tests\Unit;
 
-use Tests\TestCase;
 use App\HTTPResponse;
+use App\Ratings\SetCookieRating;
 use Delight\Cookie\Cookie;
 use GuzzleHttp\Psr7\Response;
-use App\Ratings\SetCookieRating;
-use Illuminate\Foundation\Testing\WithFaker;
+use Tests\TestCase;
 
 class SetCookieRatingTest extends TestCase
 {
@@ -109,7 +108,6 @@ class SetCookieRatingTest extends TestCase
         $this->assertFalse($rating->hasError);
         $this->assertEquals(50, $rating->score);
 
-
         $client = $this->getMockedGuzzleClient([
             new Response(200, ['Set-Cookie' => ['session=myCookie; Secure; HttpOnly', 'keks=newCookie; Secure; HttpOnly']]),
         ]);
@@ -119,12 +117,11 @@ class SetCookieRatingTest extends TestCase
         $this->assertFalse($rating->hasError);
         $this->assertEquals(100, $rating->score);
 
-
         $client = $this->getMockedGuzzleClient([
             new Response(200, ['Set-Cookie' => [
                 'session=myCookie; Secure',
                 'keks=newCookie; Secure; HttpOnly',
-                'kruemel=anotherCookie; HttpOnly'
+                'kruemel=anotherCookie; HttpOnly',
             ]]),
         ]);
         $response = new HTTPResponse('https://testdomain', $client);
@@ -146,7 +143,6 @@ class SetCookieRatingTest extends TestCase
         $this->assertFalse($rating->hasError);
         $this->assertEquals('hidden', $rating->scoreType);
 
-
         $client = $this->getMockedGuzzleClient([
             new Response(200, ['Set-Cookie' => 'session=myCookie; httponly']),
         ]);
@@ -156,5 +152,4 @@ class SetCookieRatingTest extends TestCase
         $this->assertFalse($rating->hasError);
         $this->assertEquals('warning', $rating->scoreType);
     }
-
 }

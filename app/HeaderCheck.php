@@ -2,16 +2,16 @@
 
 namespace App;
 
-use GuzzleHttp\Client;
+use App\Ratings\ContentTypeRating;
 use App\Ratings\CSPRating;
 use App\Ratings\HPKPRating;
 use App\Ratings\HSTSRating;
-use App\Ratings\SetCookieRating;
-use App\Ratings\ContentTypeRating;
-use App\Ratings\XFrameOptionsRating;
 use App\Ratings\ReferrerPolicyRating;
-use App\Ratings\XXSSProtectionRating;
+use App\Ratings\SetCookieRating;
 use App\Ratings\XContentTypeOptionsRating;
+use App\Ratings\XFrameOptionsRating;
+use App\Ratings\XXSSProtectionRating;
+use GuzzleHttp\Client;
 
 /**
  * Returns a HeaderReport / Rating for the given URL.
