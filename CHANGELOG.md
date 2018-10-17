@@ -6,10 +6,20 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [1.3.0] - 2018-10-17
+### Added
+- Implemented SetCookieRating #32
+
+### Fixed
+- Fixed deprecation error in PHP 7.2
+- Fixed parent constructor call.
+
+
 ## [1.2.1] - 2018-10-11
 ### Fixed
 - Fixed deprecation error `INTL_IDNA_VARIANT_2003 is deprecated`. <br>
 [Further Information](https://bugs.php.net/bug.php?id=75609)
+
 
 ## [1.2.0] - 2018-10-10
 ### Fixed
@@ -22,9 +32,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Upraded to Laravel 5.7
 - SpeedUp PHPUnit tests
 
+
 ## [1.1.0] - 2018-10-01
 ### Added
 - `Referrer-Policy` header rating
+
 
 ## [1.0.2] - 2018-09-14
 ### Fixed
@@ -33,6 +45,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Changed
 - Upgraded `voku/simple_html_dom` to actual version.
+
 
 ## [1.0.1] - 2018-09-12
 ### Fixed
@@ -47,7 +60,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 - CHANGELOG.md and semantic versioning
 
-[Unreleased]: https://github.com/SIWECOS/HSHS-DOMXSS-Scanner/compare/1.2.1...development
+[Unreleased]: https://github.com/SIWECOS/HSHS-DOMXSS-Scanner/compare/1.3.0...development
+[1.3.0]: https://github.com/SIWECOS/HSHS-DOMXSS-Scanner/compare/1.2.0...1.3.0
 [1.2.1]: https://github.com/SIWECOS/HSHS-DOMXSS-Scanner/compare/1.2.0...1.2.1
 [1.2.0]: https://github.com/SIWECOS/HSHS-DOMXSS-Scanner/compare/1.1.0...1.2.0
 [1.1.0]: https://github.com/SIWECOS/HSHS-DOMXSS-Scanner/compare/1.0.2...1.1.0
