@@ -10,10 +10,10 @@ class SourcesRating extends Rating
 {
     public function __construct(HTTPResponse $response)
     {
-        parent::__construct($response);
-
         $this->name = 'SOURCES';
         $this->scoreType = 'info';
+
+        parent::__construct($response);
     }
 
     protected function rate()

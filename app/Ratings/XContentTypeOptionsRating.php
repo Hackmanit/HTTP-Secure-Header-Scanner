@@ -9,10 +9,10 @@ class XContentTypeOptionsRating extends Rating
 {
     public function __construct(HTTPResponse $response)
     {
-        parent::__construct($response);
-
         $this->name = 'X_CONTENT_TYPE_OPTIONS';
         $this->scoreType = 'warning';
+
+        parent::__construct($response);
     }
 
     protected function rate()

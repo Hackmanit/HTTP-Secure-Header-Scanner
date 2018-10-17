@@ -9,10 +9,10 @@ class ReferrerPolicyRating extends Rating
 {
     public function __construct(HTTPResponse $response)
     {
-        parent::__construct($response);
-
         $this->name = 'REFERRER_POLICY';
         $this->scoreType = 'bonus';
+
+        parent::__construct($response);
     }
 
     protected function rate()

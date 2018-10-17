@@ -10,10 +10,10 @@ class SinksRating extends Rating
 {
     public function __construct(HTTPResponse $response)
     {
-        parent::__construct($response);
-
         $this->name = 'SINKS';
         $this->scoreType = 'info';
+
+        parent::__construct($response);
     }
 
     protected function rate()
