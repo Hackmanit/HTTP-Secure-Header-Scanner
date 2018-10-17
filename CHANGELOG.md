@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Fixed
 - Fixed deprecation error in PHP 7.2
 - Fixed parent constructor call.
+- Fixed missing php dependency in Dockerfile
 
 
 ## [1.2.1] - 2018-10-11
