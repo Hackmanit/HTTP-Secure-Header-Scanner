@@ -403,6 +403,11 @@ Further advanced tests would be needed to confirm if there are vulnerabilities o
 | NO_REFERRER_WHEN_DOWNGRADE | The direcitve 'no-referrer-when-downgrade' is set. |
 | UNSAFE_URL | The direcitve 'unsafe-url' is set. |
 | WRONG_DIRECTIVE_SET | A wrong or unknown directive is set. |
+| **SET-COOKIE** |
+| SECURE_FLAG_SET | The `secure` flag is set. |
+| NO_SECURE_FLAG_SET | The `secure` flag is not set. |
+| HTTPONLY_FLAG_SET | The `httpOnly` flag is set. |
+| NO_HTTPONLY_FLAG_SET | The `httpOnly` flag is not set. |
 | **STRICT-TRANSPORT-SECURITY** ||
 | HSTS_LESS_6 | The value for `max-age` is smaller than 6 months. |
 | HSTS_MORE_6 | The value for `max-age` is greater than 6 months. |

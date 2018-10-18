@@ -29,7 +29,6 @@ class SetCookieRating extends Rating
             $this->scoreType = 'warning';
 
             foreach ($header as $cookieHeader) {
-                $this->name = 'keks';
                 // Get a new Cookie Class
                 $cookie = Cookie::parse('Set-Cookie: '.$cookieHeader);
                 // Check for Secure Flag
