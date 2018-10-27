@@ -13,16 +13,23 @@ use Illuminate\Queue\SerializesModels;
 
 class DomxssScanJob implements ShouldQueue
 {
+    protected $url;
+    protected $callbacks;
+
+
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+
 
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct(ScanStartRequest $request)
+    public function __construct(string $url, array $callbacks)
     {
-        $this->request = $request;
+
+        $this->url = $url;
+        $this->callbacks = $callbacks;
     }
 
     /**
@@ -32,7 +39,7 @@ class DomxssScanJob implements ShouldQueue
      */
     public function handle()
     {
-        $report = (new DOMXSSCheck($this->request->json('url')))->report();
-        ApiController::notifyCallbacks($this->request->json('callbackurls'), $report);
+        $report = (new DomxssCheck($this->url))->report();
+        ApiController::notifyCallbacks($this->callbacks, $report);
     }
 }

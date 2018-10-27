@@ -26,7 +26,7 @@ class ApiController extends Controller
     public function domxssReport(ScanStartRequest $request)
     {
         if ($request->json('callbackurls')) {
-            DomxssScanJob::dispatch($request);
+            DomxssScanJob::dispatch($request->json('url'), $request->json('callbackurls'));
 
             return 'OK';
         }
