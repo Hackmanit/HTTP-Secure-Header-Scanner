@@ -2,9 +2,12 @@
 
 namespace Tests\Feature;
 
-use Illuminate\Support\Facades\Log;
 use Tests\TestCase;
+use App\Jobs\DomxssScanJob;
+use App\Jobs\HeaderScanJob;
 use TiMacDonald\Log\LogFake;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Queue;
 
 class ScanStartTest extends TestCase
 {
@@ -15,12 +18,40 @@ class ScanStartTest extends TestCase
     }
 
     /** @test */
-    public function a_header_scan_can_be_started_if_the_correct_parameters_are_sent()
+    public function a_header_scan_can_be_started_if_the_url_is_given()
     {
+        $response = $this->json('POST', '/api/v1/header', [
+            'url'          => 'https://testdomain.test'
+        ]);
+
+        Log::assertLogged('info', function ($message, $context) {
+            return $message === 'Scanning the following URL: https://testdomain.test';
+        });
+
+        $response->assertStatus(200);
+    }
+
+    /** @test */
+    public function a_headerScanJob_can_be_dispatched_if_the_callbackurl_parameter_is_given()
+    {
+        Queue::fake();
+
         $response = $this->json('POST', '/api/v1/header', [
             'url'          => 'https://testdomain.test',
             'dangerLevel'  => 0,
-            'callbackurls' => ['http://localhost:9002'],
+            'callbackurls' => ['http://localhost:9002']
+        ]);
+
+        Queue::assertPushed(HeaderScanJob::class, 1);
+    }
+
+
+
+    /** @test */
+    public function a_domxss_scan_can_be_started_if_the_url_is_given()
+    {
+        $response = $this->json('POST', '/api/v1/domxss', [
+            'url'          => 'https://testdomain.test'
         ]);
 
         Log::assertLogged('info', function ($message, $context) {
@@ -31,34 +62,19 @@ class ScanStartTest extends TestCase
     }
 
     /** @test */
-    public function a_domxss_scan_can_be_started_if_the_correct_parameters_are_sent()
+    public function a_domxssScanJob_can_be_dispatched_if_the_callbackurl_parameter_is_given()
     {
+        Queue::fake();
+
         $response = $this->json('POST', '/api/v1/domxss', [
             'url'          => 'https://testdomain.test',
             'dangerLevel'  => 0,
-            'callbackurls' => ['http://localhost:9002'],
+            'callbackurls' => ['http://localhost:9002']
         ]);
 
-        Log::assertLogged('info', function ($message, $context) {
-            return $message === 'Scanning the following URL: https://testdomain.test';
-        });
-
-        $response->assertStatus(200);
+        Queue::assertPushed(DomxssScanJob::class, 1);
     }
 
-    /** @test */
-    public function the_callbackurl_and_dangerLevel_parameters_are_optional()
-    {
-        $response = $this->json('POST', '/api/v1/domxss', [
-            'url' => 'https://testdomain.test',
-        ]);
-
-        Log::assertLogged('info', function ($message, $context) {
-            return $message === 'Scanning the following URL: https://testdomain.test';
-        });
-
-        $response->assertStatus(200);
-    }
 
     /** @test */
     public function a_scan_can_not_be_started_if_no_parameters_are_sent()
@@ -105,28 +121,10 @@ class ScanStartTest extends TestCase
     }
 
     /** @test */
-    public function if_a_callbackurl_is_not_reachable_it_will_be_logged()
-    {
-        $response = $this->json('POST', '/api/v1/header', [
-            'url'          => 'https://testdomain.test',
-            'dangerLevel'  => 0,
-            'callbackurls' => ['http://localhost:9002'],
-        ]);
-
-        Log::assertLogged('warning', function ($message, $context) {
-            return $message === 'Could not send the report to the following callback url: http://localhost:9002';
-        });
-
-        $response->assertStatus(200);
-    }
-
-    /** @test */
     public function a_domain_with_umlauts_can_be_scanned()
     {
         $response = $this->json('POST', '/api/v1/header', [
             'url'          => 'https://hää.de',
-            'dangerLevel'  => 0,
-            'callbackurls' => ['http://localhost:9002'],
         ]);
 
         Log::assertLogged('info', function ($message, $context) {

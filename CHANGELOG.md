@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [1.4.0] - 2018-10-18
+### Added
+- Correct callback logic via Job implementation.
+
+
 ## [1.3.1] - 2018-10-18
 ### Fixed
 - Fixed Set-Cookie name
@@ -69,7 +74,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 - CHANGELOG.md and semantic versioning
 
-[Unreleased]: https://github.com/SIWECOS/HSHS-DOMXSS-Scanner/compare/1.3.1...development
+[Unreleased]: https://github.com/SIWECOS/HSHS-DOMXSS-Scanner/compare/1.4.0...development
+[1.4.0]: https://github.com/SIWECOS/HSHS-DOMXSS-Scanner/compare/1.3.1...1.4.0
 [1.3.1]: https://github.com/SIWECOS/HSHS-DOMXSS-Scanner/compare/1.3.0...1.3.1
 [1.3.0]: https://github.com/SIWECOS/HSHS-DOMXSS-Scanner/compare/1.2.0...1.3.0
 [1.2.1]: https://github.com/SIWECOS/HSHS-DOMXSS-Scanner/compare/1.2.0...1.2.1
