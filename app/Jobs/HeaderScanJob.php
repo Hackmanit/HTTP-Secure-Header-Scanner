@@ -4,7 +4,6 @@ namespace App\Jobs;
 
 use App\HeaderCheck;
 use App\Http\Controllers\ApiController;
-use App\Http\Requests\ScanStartRequest;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -16,9 +15,7 @@ class HeaderScanJob implements ShouldQueue
     protected $url;
     protected $callbacks;
 
-
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
-
 
     /**
      * Create a new job instance.
@@ -27,7 +24,6 @@ class HeaderScanJob implements ShouldQueue
      */
     public function __construct(string $url, array $callbacks)
     {
-
         $this->url = $url;
         $this->callbacks = $callbacks;
     }

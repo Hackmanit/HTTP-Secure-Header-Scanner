@@ -2,12 +2,12 @@
 
 namespace Tests\Feature;
 
-use Tests\TestCase;
 use App\Jobs\DomxssScanJob;
 use App\Jobs\HeaderScanJob;
-use TiMacDonald\Log\LogFake;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Queue;
+use Tests\TestCase;
+use TiMacDonald\Log\LogFake;
 
 class ScanStartTest extends TestCase
 {
@@ -21,7 +21,7 @@ class ScanStartTest extends TestCase
     public function a_header_scan_can_be_started_if_the_url_is_given()
     {
         $response = $this->json('POST', '/api/v1/header', [
-            'url'          => 'https://testdomain.test'
+            'url'          => 'https://testdomain.test',
         ]);
 
         Log::assertLogged('info', function ($message, $context) {
@@ -39,19 +39,17 @@ class ScanStartTest extends TestCase
         $response = $this->json('POST', '/api/v1/header', [
             'url'          => 'https://testdomain.test',
             'dangerLevel'  => 0,
-            'callbackurls' => ['http://localhost:9002']
+            'callbackurls' => ['http://localhost:9002'],
         ]);
 
         Queue::assertPushed(HeaderScanJob::class, 1);
     }
 
-
-
     /** @test */
     public function a_domxss_scan_can_be_started_if_the_url_is_given()
     {
         $response = $this->json('POST', '/api/v1/domxss', [
-            'url'          => 'https://testdomain.test'
+            'url'          => 'https://testdomain.test',
         ]);
 
         Log::assertLogged('info', function ($message, $context) {
@@ -69,12 +67,11 @@ class ScanStartTest extends TestCase
         $response = $this->json('POST', '/api/v1/domxss', [
             'url'          => 'https://testdomain.test',
             'dangerLevel'  => 0,
-            'callbackurls' => ['http://localhost:9002']
+            'callbackurls' => ['http://localhost:9002'],
         ]);
 
         Queue::assertPushed(DomxssScanJob::class, 1);
     }
-
 
     /** @test */
     public function a_scan_can_not_be_started_if_no_parameters_are_sent()
