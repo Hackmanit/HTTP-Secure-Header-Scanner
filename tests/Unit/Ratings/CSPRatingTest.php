@@ -2,20 +2,16 @@
 
 namespace Tests\Unit;
 
+use App\HTTPResponse;
 use App\Ratings\CSPRating;
-use GuzzleHttp\Client;
-use GuzzleHttp\Handler\MockHandler;
-use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Response;
 use Tests\TestCase;
-use App\HTTPResponse;
 
 /**
  * CSPRating is not good. There are many ways to bypass this "secure" rating.
  * TODO: Improve parsing and rating of CSP.
  *
  * Class CSPRatingTest
- * @package Tests\Unit
  */
 class CSPRatingTest extends TestCase
 {
@@ -29,7 +25,11 @@ class CSPRatingTest extends TestCase
         $rating = new CSPRating($response);
 
         $this->assertEquals(0, $rating->score);
-        $this->assertEquals($rating->errorMessage, 'HEADER_NOT_SET');
+        $expected = [
+            'placeholder' => 'HEADER_NOT_SET',
+            'values'      => null,
+        ];
+        $this->assertEquals($expected, $rating->errorMessage);
     }
 
     /** @test */
@@ -37,7 +37,7 @@ class CSPRatingTest extends TestCase
     {
         $client = $this->getMockedGuzzleClient([
             new Response(200, [
-                "Content-Security-Policy" => "default-src 'none'; script-src 'unsafe-inline'; object-src 'none';",
+                'Content-Security-Policy' => "default-src 'none'; script-src 'unsafe-inline'; object-src 'none';",
             ]),
         ]);
         $response = new HTTPResponse('https://testdomain', $client);
@@ -52,7 +52,7 @@ class CSPRatingTest extends TestCase
     {
         $client = $this->getMockedGuzzleClient([
             new Response(200, [
-                "Content-Security-Policy" => "default-src 'none'; script-src 'unsafe-eval'; object-src 'none';",
+                'Content-Security-Policy' => "default-src 'none'; script-src 'unsafe-eval'; object-src 'none';",
             ]),
         ]);
         $response = new HTTPResponse('https://testdomain', $client);
@@ -67,7 +67,7 @@ class CSPRatingTest extends TestCase
     {
         $client = $this->getMockedGuzzleClient([
             new Response(200, [
-                "Content-Security-Policy" => "image-src 'self';",
+                'Content-Security-Policy' => "img-src 'self';",
             ]),
         ]);
         $response = new HTTPResponse('https://testdomain', $client);
@@ -82,7 +82,7 @@ class CSPRatingTest extends TestCase
     {
         $client = $this->getMockedGuzzleClient([
             new Response(200, [
-                "Content-Security-Policy" => "default-src 'none';",
+                'Content-Security-Policy' => "default-src 'none';",
             ]),
         ]);
         $response = new HTTPResponse('https://testdomain', $client);
@@ -91,19 +91,27 @@ class CSPRatingTest extends TestCase
         $this->assertEquals(100, $rating->score);
     }
 
-
     /** @test */
     public function cspRating_adds_comment_for_legacy_header()
     {
+        // X-Content-Security-Policy
         $client = $this->getMockedGuzzleClient([
-            new Response(200, [
-                "X-Content-Security-Policy" => "default-src 'none';",
-            ]),
+            new Response(200, ['X-Content-Security-Policy' => "default-src 'none';"]),
+            new Response(200, ['X-WebKit-CSP' => "default-src 'none';"]),
+            new Response(200, ['X-Content-Security-Policy' => "default-src 'none';", 'X-WebKit-CSP' => "default-src 'none';"]),
         ]);
-        $response = new HTTPResponse('https://testdomain', $client);
-        $rating = new CSPRating($response);
+        // Finds only X-Content-Security-Policy
+        $rating = new CSPRating(new HTTPResponse('https://testdomain', $client));
+        $this->assertTrue($rating->testDetails->flatten()->contains('CSP_LEGACY_HEADER_SET'));
 
-        $this->assertTrue(collect($rating)->contains('CSP_LEGACY_HEADER_SET'));
+        // Finds only X-WebKit-CSP
+        $rating = new CSPRating(new HTTPResponse('https://testdomain', $client));
+        $this->assertTrue($rating->testDetails->flatten()->contains('CSP_LEGACY_HEADER_SET'));
+
+        // Finds both legacy headers.
+        $rating = new CSPRating(new HTTPResponse('https://testdomain', $client));
+        $this->assertTrue($rating->testDetails->contains(['placeholder' => 'CSP_LEGACY_HEADER_SET', 'values' => ['HEADER_NAME' => 'X-Content-Security-Policy']]));
+        $this->assertTrue($rating->testDetails->contains(['placeholder' => 'CSP_LEGACY_HEADER_SET', 'values' => ['HEADER_NAME' => 'X-WebKit-CSP']]));
     }
 
     /** @test */
@@ -111,7 +119,7 @@ class CSPRatingTest extends TestCase
     {
         $client = $this->getMockedGuzzleClient([
             new Response(200, [
-                "Content-Security-Policy" => "default-src   'none';",
+                'Content-Security-Policy' => "default-src   'none';",
             ]),
         ]);
         $response = new HTTPResponse('https://testdomain', $client);
@@ -125,13 +133,14 @@ class CSPRatingTest extends TestCase
     {
         $client = $this->getMockedGuzzleClient([
             // Producing an encoding error
-            new Response(200, ["Content-Security-Policy" => zlib_encode("SGVsbG8gV29ybGQ=", ZLIB_ENCODING_RAW)]),
+            new Response(200, ['Content-Security-Policy' => zlib_encode('SGVsbG8gV29ybGQ=', ZLIB_ENCODING_RAW)]),
         ]);
         $response = new HTTPResponse('https://testdomain', $client);
         $rating = new CSPRating($response);
 
         $this->assertEquals(0, $rating->score);
-        $this->assertTrue(collect($rating->testDetails)->flatten()->contains('HEADER_ENCODING_ERROR'));
+        $this->assertTrue(collect($rating->errorMessage)->contains('HEADER_ENCODING_ERROR'));
+        $this->assertTrue($rating->hasError);
     }
 
     /** @test */
@@ -139,7 +148,7 @@ class CSPRatingTest extends TestCase
     {
         $client = $this->getMockedGuzzleClient([
             new Response(200, [
-                "Content-Security-Policy" => "default-src 'self';",
+                'Content-Security-Policy' => "default-src 'self';",
             ]),
         ]);
         $response = new HTTPResponse('https://testdomain', $client);
@@ -148,15 +157,19 @@ class CSPRatingTest extends TestCase
         $this->assertEquals(100, $rating->score);
     }
 
-    /**
-     * This method sets and activates the GuzzleHttp Mocking functionality.
-     * @param array $responses
-     * @return Client
-     */
-    protected function getMockedGuzzleClient(array $responses)
+    /** @test */
+    public function cspRating_rates_0_if_the_policy_is_not_valid()
     {
-        $mock = new MockHandler($responses);
-        $handler = HandlerStack::create($mock);
-        return (new Client(["handler" => $handler])) ;
+        $client = $this->getMockedGuzzleClient([
+            new Response(200, [
+                'Content-Security-Policy' => "#default-src 'self'; font-src 'self'",
+            ]),
+        ]);
+        $response = new HTTPResponse('https://testdomain', $client);
+        $rating = new CSPRating($response);
+
+        $this->assertEquals(0, $rating->score);
+        $this->assertTrue(collect($rating->errorMessage)->contains('CSP_IS_NOT_VALID'));
+        $this->assertTrue($rating->hasError);
     }
 }

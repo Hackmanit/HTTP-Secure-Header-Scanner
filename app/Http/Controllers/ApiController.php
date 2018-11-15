@@ -2,89 +2,51 @@
 
 namespace App\Http\Controllers;
 
+use App\DOMXSSCheck;
 use App\HeaderCheck;
-use App\DomxssCheck;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
+use App\Http\Requests\ScanStartRequest;
+use App\Jobs\DomxssScanJob;
+use App\Jobs\HeaderScanJob;
 use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Log;
 
 class ApiController extends Controller
 {
+    public function headerReport(ScanStartRequest $request)
+    {
+        if ($request->json('callbackurls')) {
+            HeaderScanJob::dispatch($request->json('url'), $request->json('callbackurls'));
 
-    public function headerReport(Request $request) {
-
-        $this->checkSiwecosRequest($request);
-
-        $check = new HeaderCheck($request->json('url'));
-
-        $this->notifyCallbacks($request->json('callbackurls'), $check);
-
-        return "OK";
-    }
-
-    public function domxssReport(Request $request){
-
-        $this->checkSiwecosRequest($request);
-
-        $check = new DomxssCheck($request->json('url'));
-
-        $this->notifyCallbacks($request->json('callbackurls'), $check);
-
-        return "OK";
-    }
-
-    protected function checkSiwecosRequest(Request $request) {
-        $validator = Validator::make($request->all(), [
-            'url' => 'required|url',
-            'dangerLevel' => 'integer|min:0|max:10',
-            'callbackurls' => 'required|array',
-            'callbackurls.*' => 'url'
-        ]);
-
-        if ($validator->fails()) {
-            return $validator->errors();
+            return 'OK';
         }
 
-        return true;
+        return json_encode((new HeaderCheck($request->json('url')))->report());
     }
 
-    protected function notifyCallbacks(array $callbackurls, $check) {
-        $report = $check->report();
+    public function domxssReport(ScanStartRequest $request)
+    {
+        if ($request->json('callbackurls')) {
+            DomxssScanJob::dispatch($request->json('url'), $request->json('callbackurls'));
+
+            return 'OK';
+        }
+
+        return json_encode((new DOMXSSCheck($request->json('url')))->report());
+    }
+
+    public static function notifyCallbacks(array $callbackurls, $report)
+    {
         foreach ($callbackurls as $url) {
             try {
                 $client = new Client();
                 $client->post($url, [
                     'http_errors' => false,
-                    'timeout' => 60,
-                    'json' => $report
+                    'timeout'     => 60,
+                    'json'        => $report,
                 ]);
-            }
-            catch (\Exception $e) {
-                Log::debug($e);
-                Log::warning("Trying to send an error");
-                try {
-                    $client = new Client();
-                    $client->post($url, [
-                        'http_errors' => false,
-                        'timeout' => 60,
-                        'json' => [
-                            "name" => "HEADER",
-                            "hasError" => "true",
-                            "score" => 0,
-                            "errorMessage" => [
-                                "placeholder" => "GENERAL_ERROR",
-                                "values" => [
-                                    "ERRORTEXT" => $e->getMessage()
-                                ]
-                            ]
-                        ]
-                    ]);
-                } catch (\Exception $e) {
-                    Log::critical($e);
-                }
+            } catch (\Exception $e) {
+                Log::warning('Could not send the report to the following callback url: '.$url);
             }
         }
     }
-
 }

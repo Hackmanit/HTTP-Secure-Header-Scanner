@@ -301,31 +301,33 @@ The parameters `url` and `callbackurls` are required:
   "name": "DOMXSS",
   "hasError": false,
   "errorMessage": null,
-  "score": 100,
+  "score": 50,
   "tests": [
     {
-      "name": "HAS_SINKS",
+      "name": "SOURCES",
       "hasError": false,
       "errorMessage": null,
       "score": 100,
       "scoreType": "info",
       "testDetails": [
         {
-          "placeholder": "SINKS_FOUND",
-          "values": null
+          "placeholder": "NO_SOURCES_FOUND",
+          "values": []
         }
       ]
     },
     {
-      "name": "HAS_SOURCES",
+      "name": "SINKS",
       "hasError": false,
       "errorMessage": null,
-      "score": 100,
+      "score": 0,
       "scoreType": "info",
       "testDetails": [
         {
-          "placeholder": "SOURCES_FOUND",
-          "values": null
+          "placeholder": "SINKSS_FOUND",
+          "values": {
+            "AMOUNT": 11
+          }
         }
       ]
     }
@@ -335,7 +337,7 @@ The parameters `url` and `callbackurls` are required:
 
 ## Scanned tasks and descriptions
 
-### Sources (`sources`)
+### Sources (`SOURCES`)
 
 ##### Description
 A source is an input that could be controlled by an external (untrusted) source.
@@ -347,7 +349,7 @@ The scan's result can only be used as an indication if there might be security v
 Further advanced tests would be needed to confirm if there are vulnerabilities on the site or not.
 
 
-### Sinks (`sinks`)
+### Sinks (`SINKS`)
 
 ##### Description
 A sink is a potentially dangerous method that could lead to a vulnerability. In this case a DOM Based XSS.
@@ -390,6 +392,22 @@ Further advanced tests would be needed to confirm if there are vulnerabilities o
 | HPKP_LESS_15 | The keys are pinned for less than 15 days. |
 | HPKP_MORE_15 | The keys are pinned for more than 15 days. |
 | HPKP_REPORT_URI | A `report-uri` is set. |
+| **REFERRER-POLICY** ||
+| NO_REFERRER | The directive `no-referrer` is set. |
+| SAME_ORIGIN | The directive `same-origin` is set. |
+| EMPTY_DIRECTIVE | The directive is explicitly set as empty. |
+| STRICT_ORIGIN | The direcitve 'strict-origin' is set. |
+| STRICT_ORIGIN_WHEN_CROSS_ORIGIN | The direcitve 'strict-origin-when-cross-origin' is set. |
+| ORIGIN | The direcitve 'origin' is set. |
+| ORIGIN_WHEN_CROSS_ORIGIN | The direcitve 'origin-when-cross-origin' is set. |
+| NO_REFERRER_WHEN_DOWNGRADE | The direcitve 'no-referrer-when-downgrade' is set. |
+| UNSAFE_URL | The direcitve 'unsafe-url' is set. |
+| WRONG_DIRECTIVE_SET | A wrong or unknown directive is set. |
+| **SET-COOKIE** |
+| SECURE_FLAG_SET | The `secure` flag is set. |
+| NO_SECURE_FLAG_SET | The `secure` flag is not set. |
+| HTTPONLY_FLAG_SET | The `httpOnly` flag is set. |
+| NO_HTTPONLY_FLAG_SET | The `httpOnly` flag is not set. |
 | **STRICT-TRANSPORT-SECURITY** ||
 | HSTS_LESS_6 | The value for `max-age` is smaller than 6 months. |
 | HSTS_MORE_6 | The value for `max-age` is greater than 6 months. |
@@ -411,6 +429,8 @@ Further advanced tests would be needed to confirm if there are vulnerabilities o
 |-------------|-----------------------------|
 | **GENERAL** ||
 | NO_HTTP_RESPONSE | No HTTP-Response for the given URL. |
+| NO_CONTENT | The site was empty and there was nothing to scan for. |
+| NO_SCRIPT_TAGS | The scanner found no `script` tags to rate. |
 | **HAS_SINKS** ||
 | NO_SINKS_FOUND | The scanner found no sinks. |
 | SINKS_FOUND | The scanner found some sinks. |

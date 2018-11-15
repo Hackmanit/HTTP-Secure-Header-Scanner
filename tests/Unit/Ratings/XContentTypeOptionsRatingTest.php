@@ -2,17 +2,13 @@
 
 namespace Tests\Unit;
 
-use App\Ratings\XContentTypeOptionsRating;
-use Tests\TestCase;
-use GuzzleHttp\Client;
-use GuzzleHttp\Handler\MockHandler;
-use GuzzleHttp\HandlerStack;
-use GuzzleHttp\Psr7\Response;
 use App\HTTPResponse;
+use App\Ratings\XContentTypeOptionsRating;
+use GuzzleHttp\Psr7\Response;
+use Tests\TestCase;
 
 class XContentTypeOptionsRatingTest extends TestCase
 {
-
     /** @test */
     public function xContentTypeOptionsRating_rates_a_missing_header()
     {
@@ -23,14 +19,18 @@ class XContentTypeOptionsRatingTest extends TestCase
         $rating = new XContentTypeOptionsRating($response);
 
         $this->assertEquals(0, $rating->score);
-        $this->assertEquals($rating->errorMessage, 'HEADER_NOT_SET');
+        $expected = [
+            'placeholder' => 'HEADER_NOT_SET',
+            'values'      => null,
+        ];
+        $this->assertEquals($expected, $rating->errorMessage);
     }
 
     /** @test */
     public function xContentTypeOptionsRating_rates_a_correct_header()
     {
         $client = $this->getMockedGuzzleClient([
-            new Response(200, [ "X-Content-Type-Options" => "nosniff" ]),
+            new Response(200, ['X-Content-Type-Options' => 'nosniff']),
         ]);
         $response = new HTTPResponse('https://testdomain', $client);
         $rating = new XContentTypeOptionsRating($response);
@@ -43,7 +43,7 @@ class XContentTypeOptionsRatingTest extends TestCase
     public function xContentTypeOptionsRating_rates_a_wrong_header()
     {
         $client = $this->getMockedGuzzleClient([
-            new Response(200, [ "X-Content-Type-Options" => "wrong entry" ]),
+            new Response(200, ['X-Content-Type-Options' => 'wrong entry']),
         ]);
         $response = new HTTPResponse('https://testdomain', $client);
         $rating = new XContentTypeOptionsRating($response);
@@ -57,24 +57,13 @@ class XContentTypeOptionsRatingTest extends TestCase
     {
         $client = $this->getMockedGuzzleClient([
             // Producing an encoding error
-            new Response(200, ["X-Content-Type-Options" => zlib_encode("SGVsbG8gV29ybGQ=", ZLIB_ENCODING_RAW)]),
+            new Response(200, ['X-Content-Type-Options' => zlib_encode('SGVsbG8gV29ybGQ=', ZLIB_ENCODING_RAW)]),
         ]);
         $response = new HTTPResponse('https://testdomain', $client);
         $rating = new XContentTypeOptionsRating($response);
 
         $this->assertEquals(0, $rating->score);
-        $this->assertTrue(collect($rating->testDetails)->flatten()->contains('HEADER_ENCODING_ERROR'));
-    }
-
-    /**
-     * This method sets and activates the GuzzleHttp Mocking functionality.
-     * @param array $responses
-     * @return Client
-     */
-    protected function getMockedGuzzleClient(array $responses)
-    {
-        $mock = new MockHandler($responses);
-        $handler = HandlerStack::create($mock);
-        return (new Client(["handler" => $handler])) ;
+        $this->assertTrue(collect($rating->errorMessage)->contains('HEADER_ENCODING_ERROR'));
+        $this->assertTrue($rating->hasError);
     }
 }

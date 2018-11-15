@@ -2,18 +2,15 @@
 
 namespace Tests\Unit;
 
+use App\HTTPResponse;
 use App\Ratings\XFrameOptionsRating;
-use GuzzleHttp\Client;
-use GuzzleHttp\Handler\MockHandler;
-use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Response;
 use Tests\TestCase;
-use App\HTTPResponse;
 
 class XFrameOptionsRatingTest extends TestCase
 {
     /** @test */
-    public function xFrameOptionsRating_rates_c_for_a_missing_header()
+    public function xFrameOptionsRating_rates_0_for_a_missing_header()
     {
         $client = $this->getMockedGuzzleClient([
             new Response(200),
@@ -22,7 +19,11 @@ class XFrameOptionsRatingTest extends TestCase
         $rating = new XFrameOptionsRating($response);
 
         $this->assertEquals(0, $rating->score);
-        $this->assertEquals($rating->errorMessage, 'HEADER_NOT_SET');
+        $expected = [
+            'placeholder' => 'HEADER_NOT_SET',
+            'values'      => null,
+        ];
+        $this->assertEquals($expected, $rating->errorMessage);
     }
 
     /** @test */
@@ -30,7 +31,7 @@ class XFrameOptionsRatingTest extends TestCase
     {
         $client = $this->getMockedGuzzleClient([
             new Response(200, [
-                "X-Frame-Options" => "allow-from *"
+                'X-Frame-Options' => 'allow-from *',
             ]),
         ]);
         $response = new HTTPResponse('https://testdomain', $client);
@@ -45,7 +46,7 @@ class XFrameOptionsRatingTest extends TestCase
     {
         $client = $this->getMockedGuzzleClient([
             new Response(200, [
-                "X-Frame-Options" => "deny"
+                'X-Frame-Options' => 'deny',
             ]),
         ]);
         $response = new HTTPResponse('https://testdomain', $client);
@@ -60,24 +61,13 @@ class XFrameOptionsRatingTest extends TestCase
     {
         $client = $this->getMockedGuzzleClient([
             // Producing an encoding error
-            new Response(200, ["X-Frame-Options" => zlib_encode("SGVsbG8gV29ybGQ=", ZLIB_ENCODING_RAW)]),
+            new Response(200, ['X-Frame-Options' => zlib_encode('SGVsbG8gV29ybGQ=', ZLIB_ENCODING_RAW)]),
         ]);
         $response = new HTTPResponse('https://testdomain', $client);
         $rating = new XFrameOptionsRating($response);
 
         $this->assertEquals(0, $rating->score);
-        $this->assertTrue(collect($rating->testDetails)->flatten()->contains('HEADER_ENCODING_ERROR'));
-    }
-
-    /**
-     * This method sets and activates the GuzzleHttp Mocking functionality.
-     * @param array $responses
-     * @return Client
-     */
-    protected function getMockedGuzzleClient(array $responses)
-    {
-        $mock = new MockHandler($responses);
-        $handler = HandlerStack::create($mock);
-        return (new Client(["handler" => $handler])) ;
+        $this->assertTrue(collect($rating->errorMessage)->contains('HEADER_ENCODING_ERROR'));
+        $this->assertTrue($rating->hasError);
     }
 }

@@ -2,18 +2,15 @@
 
 namespace Tests\Unit;
 
+use App\HTTPResponse;
 use App\Ratings\HPKPRating;
-use GuzzleHttp\Client;
-use GuzzleHttp\Handler\MockHandler;
-use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Response;
 use Tests\TestCase;
-use App\HTTPResponse;
 
 class HPKPRatingTest extends TestCase
 {
     /** @test */
-    public function hpkpRating_rates_c_for_a_missing_header()
+    public function hpkpRating_rates_0_for_a_missing_header()
     {
         $client = $this->getMockedGuzzleClient([
             new Response(200),
@@ -22,16 +19,19 @@ class HPKPRatingTest extends TestCase
         $rating = new HPKPRating($response);
 
         $this->assertEquals(0, $rating->score);
-        $this->assertEquals($rating->errorMessage, 'HEADER_NOT_SET');
+        $expected = [
+            'placeholder' => 'HEADER_NOT_SET',
+            'values'      => null,
+        ];
+        $this->assertEquals($expected, $rating->errorMessage);
     }
-
 
     /** @test */
     public function hpkpRating_rates_includeSubDomains()
     {
         $client = $this->getMockedGuzzleClient([
             new Response(200, [
-                'Public-Key-Pins' => 'max-age=1000000; pin-sha256="E9CZ9INDbd+2eRQozYqqbQ2yXLVKB9+xcprMF+44U1g="; pin-sha256="LPJNul+wow4m6DsqxbninhsWHlwfp0JecwQzYpOLmCQ="; includeSubDomains'
+                'Public-Key-Pins' => 'max-age=1000000; pin-sha256="E9CZ9INDbd+2eRQozYqqbQ2yXLVKB9+xcprMF+44U1g="; pin-sha256="LPJNul+wow4m6DsqxbninhsWHlwfp0JecwQzYpOLmCQ="; includeSubDomains',
             ]),
         ]);
         $response = new HTTPResponse('https://testdomain', $client);
@@ -45,7 +45,7 @@ class HPKPRatingTest extends TestCase
     {
         $client = $this->getMockedGuzzleClient([
             new Response(200, [
-                'Public-Key-Pins' => 'max-age=1000000; pin-sha256="E9CZ9INDbd+2eRQozYqqbQ2yXLVKB9+xcprMF+44U1g="; pin-sha256="LPJNul+wow4m6DsqxbninhsWHlwfp0JecwQzYpOLmCQ="; report-uri="http://example.com/pkp-report";'
+                'Public-Key-Pins' => 'max-age=1000000; pin-sha256="E9CZ9INDbd+2eRQozYqqbQ2yXLVKB9+xcprMF+44U1g="; pin-sha256="LPJNul+wow4m6DsqxbninhsWHlwfp0JecwQzYpOLmCQ="; report-uri="http://example.com/pkp-report";',
             ]),
         ]);
         $response = new HTTPResponse('https://testdomain', $client);
@@ -59,24 +59,13 @@ class HPKPRatingTest extends TestCase
     {
         $client = $this->getMockedGuzzleClient([
             // Producing an encoding error
-            new Response(200, ["Public-Key-Pins" => zlib_encode("SGVsbG8gV29ybGQ=", ZLIB_ENCODING_RAW)]),
+            new Response(200, ['Public-Key-Pins' => zlib_encode('SGVsbG8gV29ybGQ=', ZLIB_ENCODING_RAW)]),
         ]);
         $response = new HTTPResponse('https://testdomain', $client);
         $rating = new HPKPRating($response);
 
         $this->assertEquals(0, $rating->score);
-        $this->assertTrue(collect($rating->testDetails)->flatten()->contains('HEADER_ENCODING_ERROR'));
-    }
-
-    /**
-     * This method sets and activates the GuzzleHttp Mocking functionality.
-     * @param array $responses
-     * @return Client
-     */
-    protected function getMockedGuzzleClient(array $responses)
-    {
-        $mock = new MockHandler($responses);
-        $handler = HandlerStack::create($mock);
-        return (new Client(["handler" => $handler])) ;
+        $this->assertTrue(collect($rating->errorMessage)->contains('HEADER_ENCODING_ERROR'));
+        $this->assertTrue($rating->hasError);
     }
 }
