@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Http\Requests\ScanStartRequest;
 use App\Ratings\ContentTypeRating;
 use App\Ratings\CSPRating;
 use App\Ratings\HPKPRating;
@@ -12,7 +13,6 @@ use App\Ratings\XContentTypeOptionsRating;
 use App\Ratings\XFrameOptionsRating;
 use App\Ratings\XXSSProtectionRating;
 use GuzzleHttp\Client;
-use App\Http\Requests\ScanStartRequest;
 
 /**
  * Returns a HeaderReport / Rating for the given URL.

@@ -4,12 +4,12 @@ namespace App\Jobs;
 
 use App\HeaderCheck;
 use App\Http\Controllers\ApiController;
+use App\Http\Requests\ScanStartRequest;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use App\Http\Requests\ScanStartRequest;
 
 class HeaderScanJob implements ShouldQueue
 {

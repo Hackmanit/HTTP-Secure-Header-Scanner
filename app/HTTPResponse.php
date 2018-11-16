@@ -2,9 +2,9 @@
 
 namespace App;
 
+use App\Http\Requests\ScanStartRequest;
 use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Log;
-use App\Http\Requests\ScanStartRequest;
 
 class HTTPResponse
 {

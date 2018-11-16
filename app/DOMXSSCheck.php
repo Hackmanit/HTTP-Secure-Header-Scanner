@@ -2,9 +2,9 @@
 
 namespace App;
 
+use App\Http\Requests\ScanStartRequest;
 use App\Ratings\SinksRating;
 use App\Ratings\SourcesRating;
-use App\Http\Requests\ScanStartRequest;
 
 class DOMXSSCheck
 {

@@ -2,11 +2,11 @@
 
 namespace Tests;
 
+use App\Http\Requests\ScanStartRequest;
 use GuzzleHttp\Client;
 use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
 use Illuminate\Contracts\Console\Kernel;
-use App\Http\Requests\ScanStartRequest;
 
 trait CreatesApplication
 {
