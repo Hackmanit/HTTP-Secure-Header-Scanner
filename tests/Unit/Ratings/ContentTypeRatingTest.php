@@ -16,7 +16,7 @@ class ContentTypeRatingTest extends TestCase
             new Response(200),
         ]);
 
-        $response = new HTTPResponse('https://testdomain', $client);
+        $response = new HTTPResponse($this->request, $client);
         $rating = new ContentTypeRating($response);
 
         $this->assertEquals(0, $rating->score);
@@ -33,7 +33,7 @@ class ContentTypeRatingTest extends TestCase
         $client = $this->getMockedGuzzleClient([
             new Response(200, ['Content-Type' => 'text/html']),
         ]);
-        $response = new HTTPResponse('https://testdomain', $client);
+        $response = new HTTPResponse($this->request, $client);
         $rating = new ContentTypeRating($response);
 
         $this->assertEquals(0, $rating->score);
@@ -54,7 +54,7 @@ class ContentTypeRatingTest extends TestCase
         ]);
 
         for ($i = 1; $i <= 7; $i++) {
-            $response = new HTTPResponse('https://testdomain', $client);
+            $response = new HTTPResponse($this->request, $client);
             $rating = new ContentTypeRating($response);
 
             $this->assertEquals(0, $rating->score);
@@ -70,7 +70,7 @@ class ContentTypeRatingTest extends TestCase
             new Response(200, ['Content-Type' => 'text/html; charset=UTF-8']),
         ]);
 
-        $response = new HTTPResponse('https://testdomain', $client);
+        $response = new HTTPResponse($this->request, $client);
         $rating = new ContentTypeRating($response);
 
         for ($i = 1; $i <= 2; $i++) {
@@ -87,7 +87,7 @@ class ContentTypeRatingTest extends TestCase
             new Response(200, [], $sampleBody),
         ]);
 
-        $response = new HTTPResponse('https://testdomain', $client);
+        $response = new HTTPResponse($this->request, $client);
         $rating = new ContentTypeRating($response);
 
         $this->assertEquals(60, $rating->score);
@@ -103,7 +103,7 @@ class ContentTypeRatingTest extends TestCase
             new Response(200, ['Content-Type' => 'text/html; charset=utf-8'], $sampleBody),
         ]);
 
-        $response = new HTTPResponse('https://testdomain', $client);
+        $response = new HTTPResponse($this->request, $client);
         $rating = new ContentTypeRating($response);
 
         $this->assertEquals(100, $rating->score);
@@ -121,7 +121,7 @@ class ContentTypeRatingTest extends TestCase
             new Response(200, [], $sampleBody),
         ]);
 
-        $response = new HTTPResponse('https://testdomain', $client);
+        $response = new HTTPResponse($this->request, $client);
         $rating = new ContentTypeRating($response);
 
         $this->assertEquals(30, $rating->score);
@@ -139,7 +139,7 @@ class ContentTypeRatingTest extends TestCase
             new Response(200, [], $sampleBody),
         ]);
 
-        $response = new HTTPResponse('https://testdomain', $client);
+        $response = new HTTPResponse($this->request, $client);
         $rating = new ContentTypeRating($response);
 
         $this->assertEquals(60, $rating->score);
@@ -157,7 +157,7 @@ class ContentTypeRatingTest extends TestCase
             new Response(200, [], $sampleBody),
         ]);
 
-        $response = new HTTPResponse('https://testdomain', $client);
+        $response = new HTTPResponse($this->request, $client);
         $rating = new ContentTypeRating($response);
 
         $this->assertEquals(30, $rating->score);
@@ -175,7 +175,7 @@ class ContentTypeRatingTest extends TestCase
             new Response(200, [], $sampleBody),
         ]);
 
-        $response = new HTTPResponse('https://testdomain', $client);
+        $response = new HTTPResponse($this->request, $client);
         $rating = new ContentTypeRating($response);
 
         $this->assertEquals(60, $rating->score);
@@ -189,7 +189,7 @@ class ContentTypeRatingTest extends TestCase
             // Producing an encoding error
             new Response(200, ['Content-Type' => zlib_encode('SGVsbG8gV29ybGQ=', ZLIB_ENCODING_RAW)]),
         ]);
-        $response = new HTTPResponse('https://testdomain', $client);
+        $response = new HTTPResponse($this->request, $client);
         $rating = new ContentTypeRating($response);
 
         $this->assertEquals(0, $rating->score);

@@ -15,23 +15,23 @@ class ApiController extends Controller
     public function headerReport(ScanStartRequest $request)
     {
         if ($request->json('callbackurls')) {
-            HeaderScanJob::dispatch($request->json('url'), $request->json('callbackurls'));
+            HeaderScanJob::dispatch($request->all());
 
             return 'OK';
         }
 
-        return json_encode((new HeaderCheck($request->json('url')))->report());
+        return json_encode((new HeaderCheck($request))->report());
     }
 
     public function domxssReport(ScanStartRequest $request)
     {
         if ($request->json('callbackurls')) {
-            DomxssScanJob::dispatch($request->json('url'), $request->json('callbackurls'));
+            DomxssScanJob::dispatch($request->all());
 
             return 'OK';
         }
 
-        return json_encode((new DOMXSSCheck($request->json('url')))->report());
+        return json_encode((new DOMXSSCheck($request))->report());
     }
 
     public static function notifyCallbacks(array $callbackurls, $report)

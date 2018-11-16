@@ -17,7 +17,7 @@ class SourcesRatingTest extends TestCase
             new Response(200),
         ]);
 
-        $response = new HTTPResponse('https://testdomain', $client);
+        $response = new HTTPResponse($this->request, $client);
         $rating = new SourcesRating($response);
 
         $this->assertEquals(0, $rating->score);
@@ -33,7 +33,7 @@ class SourcesRatingTest extends TestCase
             new Response(200, [], $sampleBody),
         ]);
 
-        $response = new HTTPResponse('https://testdomain', $client);
+        $response = new HTTPResponse($this->request, $client);
         $rating = new SourcesRating($response);
 
         $this->assertEquals(100, $rating->score);
@@ -49,7 +49,7 @@ class SourcesRatingTest extends TestCase
             new Response(200, [], $sampleBody),
         ]);
 
-        $response = new HTTPResponse('https://testdomain', $client);
+        $response = new HTTPResponse($this->request, $client);
         $rating = new SourcesRating($response);
 
         // Sources total

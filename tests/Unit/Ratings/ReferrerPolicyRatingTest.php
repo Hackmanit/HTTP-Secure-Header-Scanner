@@ -16,7 +16,7 @@ class ReferrerPolicyRatingTest extends TestCase
             new Response(200),
         ]);
 
-        $response = new HTTPResponse('https://testdomain', $client);
+        $response = new HTTPResponse($this->request, $client);
         $rating = new ReferrerPolicyRating($response);
 
         $this->assertEquals(0, $rating->score);
@@ -34,7 +34,7 @@ class ReferrerPolicyRatingTest extends TestCase
             // Producing an encoding error
             new Response(200, ['Referrer-Policy' => zlib_encode('SGVsbG8gV29ybGQ=', ZLIB_ENCODING_RAW)]),
         ]);
-        $response = new HTTPResponse('https://testdomain', $client);
+        $response = new HTTPResponse($this->request, $client);
         $rating = new ReferrerPolicyRating($response);
 
         $this->assertEquals(0, $rating->score);
@@ -51,7 +51,7 @@ class ReferrerPolicyRatingTest extends TestCase
         ]);
 
         for ($i = 1; $i <= 2; $i++) {
-            $response = new HTTPResponse('https://testdomain', $client);
+            $response = new HTTPResponse($this->request, $client);
             $rating = new ReferrerPolicyRating($response);
             $this->assertEquals(100, $rating->score);
             $this->assertFalse($rating->hasError);
@@ -67,7 +67,7 @@ class ReferrerPolicyRatingTest extends TestCase
         ]);
 
         for ($i = 1; $i <= 2; $i++) {
-            $response = new HTTPResponse('https://testdomain', $client);
+            $response = new HTTPResponse($this->request, $client);
             $rating = new ReferrerPolicyRating($response);
             $this->assertEquals(70, $rating->score);
             $this->assertFalse($rating->hasError);
@@ -83,7 +83,7 @@ class ReferrerPolicyRatingTest extends TestCase
         ]);
 
         for ($i = 1; $i <= 2; $i++) {
-            $response = new HTTPResponse('https://testdomain', $client);
+            $response = new HTTPResponse($this->request, $client);
             $rating = new ReferrerPolicyRating($response);
             $this->assertEquals(40, $rating->score);
             $this->assertFalse($rating->hasError);
@@ -97,7 +97,7 @@ class ReferrerPolicyRatingTest extends TestCase
             new Response(200, ['Referrer-Policy' => '']),
         ]);
 
-        $response = new HTTPResponse('https://testdomain', $client);
+        $response = new HTTPResponse($this->request, $client);
         $rating = new ReferrerPolicyRating($response);
         $this->assertEquals(10, $rating->score);
         $this->assertFalse($rating->hasError);
@@ -112,7 +112,7 @@ class ReferrerPolicyRatingTest extends TestCase
         ]);
 
         for ($i = 1; $i <= 2; $i++) {
-            $response = new HTTPResponse('https://testdomain', $client);
+            $response = new HTTPResponse($this->request, $client);
             $rating = new ReferrerPolicyRating($response);
             $this->assertEquals(0, $rating->score);
             $this->assertFalse($rating->hasError);
@@ -128,7 +128,7 @@ class ReferrerPolicyRatingTest extends TestCase
         ]);
 
         for ($i = 1; $i <= 2; $i++) {
-            $response = new HTTPResponse('https://testdomain', $client);
+            $response = new HTTPResponse($this->request, $client);
             $rating = new ReferrerPolicyRating($response);
             $this->assertEquals(0, $rating->score);
             $this->assertTrue($rating->hasError);

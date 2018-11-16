@@ -28,6 +28,7 @@ class ScanStartRequest extends FormRequest
             'dangerLevel'    => 'integer|min:0|max:10',
             'callbackurls'   => 'array',
             'callbackurls.*' => 'url',
+            'userAgent'      => 'string',
         ];
     }
 }
