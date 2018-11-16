@@ -4,14 +4,15 @@ namespace App;
 
 use App\Ratings\SinksRating;
 use App\Ratings\SourcesRating;
+use App\Http\Requests\ScanStartRequest;
 
 class DOMXSSCheck
 {
     protected $response = null;
 
-    public function __construct($url)
+    public function __construct(ScanStartRequest $request)
     {
-        $this->response = new HTTPResponse($url);
+        $this->response = new HTTPResponse($request);
     }
 
     public function report()

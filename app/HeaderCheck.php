@@ -12,6 +12,7 @@ use App\Ratings\XContentTypeOptionsRating;
 use App\Ratings\XFrameOptionsRating;
 use App\Ratings\XXSSProtectionRating;
 use GuzzleHttp\Client;
+use App\Http\Requests\ScanStartRequest;
 
 /**
  * Returns a HeaderReport / Rating for the given URL.
@@ -20,9 +21,9 @@ class HeaderCheck
 {
     protected $response = null;
 
-    public function __construct($url, Client $client = null)
+    public function __construct(ScanStartRequest $request, Client $client = null)
     {
-        $this->response = new HTTPResponse($url, $client);
+        $this->response = new HTTPResponse($request, $client);
     }
 
     public function report()

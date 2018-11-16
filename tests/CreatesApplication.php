@@ -6,6 +6,7 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
 use Illuminate\Contracts\Console\Kernel;
+use App\Http\Requests\ScanStartRequest;
 
 trait CreatesApplication
 {
@@ -21,6 +22,12 @@ trait CreatesApplication
         $app->make(Kernel::class)->bootstrap();
 
         return $app;
+    }
+
+    public function setUp()
+    {
+        $this->request = new ScanStartRequest(['url' => 'https://testdomain']);
+        parent::setUp();
     }
 
     /**

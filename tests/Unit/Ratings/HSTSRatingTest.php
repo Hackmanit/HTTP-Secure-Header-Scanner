@@ -15,7 +15,7 @@ class HSTSRatingTest extends TestCase
         $client = $this->getMockedGuzzleClient([
             new Response(200),
         ]);
-        $response = new HTTPResponse('https://testdomain', $client);
+        $response = new HTTPResponse($this->request, $client);
         $rating = new HSTSRating($response);
 
         $this->assertEquals(0, $rating->score);
@@ -35,7 +35,7 @@ class HSTSRatingTest extends TestCase
                 'Strict-Transport-Security' => 'max-age=30',
             ]),
         ]);
-        $response = new HTTPResponse('https://testdomain', $client);
+        $response = new HTTPResponse($this->request, $client);
         $rating = new HSTSRating($response);
 
         $this->assertEquals(60, $rating->score);
@@ -50,7 +50,7 @@ class HSTSRatingTest extends TestCase
                 'Strict-Transport-Security' => 'max-age='. 6 * 31 * 24 * 60 * 60,
             ]),
         ]);
-        $response = new HTTPResponse('https://testdomain', $client);
+        $response = new HTTPResponse($this->request, $client);
         $rating = new HSTSRating($response);
 
         $this->assertEquals(100, $rating->score);
@@ -65,7 +65,7 @@ class HSTSRatingTest extends TestCase
                 'Strict-Transport-Security' => 'max-age=30; includeSubDomains',
             ]),
         ]);
-        $response = new HTTPResponse('https://testdomain', $client);
+        $response = new HTTPResponse($this->request, $client);
         $rating = new HSTSRating($response);
 
         $this->assertTrue(collect($rating->testDetails)->flatten()->contains('INCLUDE_SUBDOMAINS'));
@@ -79,7 +79,7 @@ class HSTSRatingTest extends TestCase
                 'Strict-Transport-Security' => 'max-age=30; preload',
             ]),
         ]);
-        $response = new HTTPResponse('https://testdomain', $client);
+        $response = new HTTPResponse($this->request, $client);
         $rating = new HSTSRating($response);
 
         $this->assertTrue(collect($rating->testDetails)->flatten()->contains('HSTS_PRELOAD'));
@@ -92,7 +92,7 @@ class HSTSRatingTest extends TestCase
             // Producing an encoding error
             new Response(200, ['Strict-Transport-Security' => zlib_encode('SGVsbG8gV29ybGQ=', ZLIB_ENCODING_RAW)]),
         ]);
-        $response = new HTTPResponse('https://testdomain', $client);
+        $response = new HTTPResponse($this->request, $client);
         $rating = new HSTSRating($response);
 
         $this->assertEquals(0, $rating->score);
