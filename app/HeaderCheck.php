@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Http\Requests\ScanStartRequest;
 use App\Ratings\ContentTypeRating;
 use App\Ratings\CSPRating;
 use App\Ratings\HPKPRating;
@@ -20,9 +21,9 @@ class HeaderCheck
 {
     protected $response = null;
 
-    public function __construct($url, Client $client = null)
+    public function __construct(ScanStartRequest $request, Client $client = null)
     {
-        $this->response = new HTTPResponse($url, $client);
+        $this->response = new HTTPResponse($request, $client);
     }
 
     public function report()

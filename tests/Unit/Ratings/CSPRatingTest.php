@@ -21,7 +21,7 @@ class CSPRatingTest extends TestCase
         $client = $this->getMockedGuzzleClient([
             new Response(200),
         ]);
-        $response = new HTTPResponse('https://testdomain', $client);
+        $response = new HTTPResponse($this->request, $client);
         $rating = new CSPRating($response);
 
         $this->assertEquals(0, $rating->score);
@@ -40,7 +40,7 @@ class CSPRatingTest extends TestCase
                 'Content-Security-Policy' => "default-src 'none'; script-src 'unsafe-inline'; object-src 'none';",
             ]),
         ]);
-        $response = new HTTPResponse('https://testdomain', $client);
+        $response = new HTTPResponse($this->request, $client);
         $rating = new CSPRating($response);
 
         $this->assertEquals(50, $rating->score);
@@ -55,7 +55,7 @@ class CSPRatingTest extends TestCase
                 'Content-Security-Policy' => "default-src 'none'; script-src 'unsafe-eval'; object-src 'none';",
             ]),
         ]);
-        $response = new HTTPResponse('https://testdomain', $client);
+        $response = new HTTPResponse($this->request, $client);
         $rating = new CSPRating($response);
 
         $this->assertEquals(50, $rating->score);
@@ -70,7 +70,7 @@ class CSPRatingTest extends TestCase
                 'Content-Security-Policy' => "img-src 'self';",
             ]),
         ]);
-        $response = new HTTPResponse('https://testdomain', $client);
+        $response = new HTTPResponse($this->request, $client);
         $rating = new CSPRating($response);
 
         $this->assertEquals(0, $rating->score);
@@ -85,7 +85,7 @@ class CSPRatingTest extends TestCase
                 'Content-Security-Policy' => "default-src 'none';",
             ]),
         ]);
-        $response = new HTTPResponse('https://testdomain', $client);
+        $response = new HTTPResponse($this->request, $client);
         $rating = new CSPRating($response);
 
         $this->assertEquals(100, $rating->score);
@@ -101,15 +101,15 @@ class CSPRatingTest extends TestCase
             new Response(200, ['X-Content-Security-Policy' => "default-src 'none';", 'X-WebKit-CSP' => "default-src 'none';"]),
         ]);
         // Finds only X-Content-Security-Policy
-        $rating = new CSPRating(new HTTPResponse('https://testdomain', $client));
+        $rating = new CSPRating(new HTTPResponse($this->request, $client));
         $this->assertTrue($rating->testDetails->flatten()->contains('CSP_LEGACY_HEADER_SET'));
 
         // Finds only X-WebKit-CSP
-        $rating = new CSPRating(new HTTPResponse('https://testdomain', $client));
+        $rating = new CSPRating(new HTTPResponse($this->request, $client));
         $this->assertTrue($rating->testDetails->flatten()->contains('CSP_LEGACY_HEADER_SET'));
 
         // Finds both legacy headers.
-        $rating = new CSPRating(new HTTPResponse('https://testdomain', $client));
+        $rating = new CSPRating(new HTTPResponse($this->request, $client));
         $this->assertTrue($rating->testDetails->contains(['placeholder' => 'CSP_LEGACY_HEADER_SET', 'values' => ['HEADER_NAME' => 'X-Content-Security-Policy']]));
         $this->assertTrue($rating->testDetails->contains(['placeholder' => 'CSP_LEGACY_HEADER_SET', 'values' => ['HEADER_NAME' => 'X-WebKit-CSP']]));
     }
@@ -122,7 +122,7 @@ class CSPRatingTest extends TestCase
                 'Content-Security-Policy' => "default-src   'none';",
             ]),
         ]);
-        $response = new HTTPResponse('https://testdomain', $client);
+        $response = new HTTPResponse($this->request, $client);
         $rating = new CSPRating($response);
 
         $this->assertEquals(100, $rating->score);
@@ -135,7 +135,7 @@ class CSPRatingTest extends TestCase
             // Producing an encoding error
             new Response(200, ['Content-Security-Policy' => zlib_encode('SGVsbG8gV29ybGQ=', ZLIB_ENCODING_RAW)]),
         ]);
-        $response = new HTTPResponse('https://testdomain', $client);
+        $response = new HTTPResponse($this->request, $client);
         $rating = new CSPRating($response);
 
         $this->assertEquals(0, $rating->score);
@@ -151,7 +151,7 @@ class CSPRatingTest extends TestCase
                 'Content-Security-Policy' => "default-src 'self';",
             ]),
         ]);
-        $response = new HTTPResponse('https://testdomain', $client);
+        $response = new HTTPResponse($this->request, $client);
         $rating = new CSPRating($response);
 
         $this->assertEquals(100, $rating->score);
@@ -165,7 +165,7 @@ class CSPRatingTest extends TestCase
                 'Content-Security-Policy' => "#default-src 'self'; font-src 'self'",
             ]),
         ]);
-        $response = new HTTPResponse('https://testdomain', $client);
+        $response = new HTTPResponse($this->request, $client);
         $rating = new CSPRating($response);
 
         $this->assertEquals(0, $rating->score);

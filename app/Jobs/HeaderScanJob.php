@@ -4,6 +4,7 @@ namespace App\Jobs;
 
 use App\HeaderCheck;
 use App\Http\Controllers\ApiController;
+use App\Http\Requests\ScanStartRequest;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -12,8 +13,7 @@ use Illuminate\Queue\SerializesModels;
 
 class HeaderScanJob implements ShouldQueue
 {
-    protected $url;
-    protected $callbacks;
+    protected $request;
 
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -22,10 +22,9 @@ class HeaderScanJob implements ShouldQueue
      *
      * @return void
      */
-    public function __construct(string $url, array $callbacks)
+    public function __construct($request)
     {
-        $this->url = $url;
-        $this->callbacks = $callbacks;
+        $this->request = new ScanStartRequest($request);
     }
 
     /**
@@ -35,7 +34,7 @@ class HeaderScanJob implements ShouldQueue
      */
     public function handle()
     {
-        $report = (new HeaderCheck($this->url))->report();
-        ApiController::notifyCallbacks($this->callbacks, $report);
+        $report = (new HeaderCheck($this->request))->report();
+        ApiController::notifyCallbacks($this->request->get('callbackurls'), $report);
     }
 }

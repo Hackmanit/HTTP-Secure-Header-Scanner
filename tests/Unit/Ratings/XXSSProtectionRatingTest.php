@@ -15,7 +15,8 @@ class XXSSProtectionRatingTest extends TestCase
         $client = $this->getMockedGuzzleClient([
             new Response(200),
         ]);
-        $response = new HTTPResponse('https://testdomain', $client);
+
+        $response = new HTTPResponse($this->request, $client);
         $rating = new XXSSProtectionRating($response);
 
         $this->assertEquals(0, $rating->score);
@@ -34,13 +35,13 @@ class XXSSProtectionRatingTest extends TestCase
             new Response(200, ['X-Xss-Protection' => '1']),
         ]);
 
-        $response = new HTTPResponse('https://testdomain', $client);
+        $response = new HTTPResponse($this->request, $client);
         $rating = new XXSSProtectionRating($response);
 
         $this->assertEquals(50, $rating->score);
         $this->assertTrue(collect($rating->testDetails)->flatten()->contains('XXSS_CORRECT'));
 
-        $response = new HTTPResponse('https://testdomain', $client);
+        $response = new HTTPResponse($this->request, $client);
         $rating = new XXSSProtectionRating($response);
 
         $this->assertEquals(50, $rating->score);
@@ -54,7 +55,7 @@ class XXSSProtectionRatingTest extends TestCase
             new Response(200, ['X-Xss-Protection' => '1; mode=block']),
         ]);
 
-        $response = new HTTPResponse('https://testdomain', $client);
+        $response = new HTTPResponse($this->request, $client);
         $rating = new XXSSProtectionRating($response);
 
         $this->assertEquals(100, $rating->score);
@@ -68,7 +69,7 @@ class XXSSProtectionRatingTest extends TestCase
             // Producing an encoding error
             new Response(200, ['X-XSS-Protection' => zlib_encode('SGVsbG8gV29ybGQ=', ZLIB_ENCODING_RAW)]),
         ]);
-        $response = new HTTPResponse('https://testdomain', $client);
+        $response = new HTTPResponse($this->request, $client);
         $rating = new XXSSProtectionRating($response);
 
         $this->assertEquals(0, $rating->score);

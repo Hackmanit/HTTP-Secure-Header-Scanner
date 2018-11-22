@@ -17,7 +17,7 @@ class SetCookieRatingTest extends TestCase
             new Response(200),
         ]);
 
-        $response = new HTTPResponse('https://testdomain', $client);
+        $response = new HTTPResponse($this->request, $client);
         $rating = new SetCookieRating($response);
 
         $this->assertEquals('hidden', $rating->scoreType);
@@ -30,7 +30,7 @@ class SetCookieRatingTest extends TestCase
             // Producing an encoding error
             new Response(200, ['Set-Cookie' => zlib_encode('SGVsbG8gV29ybGQ=', ZLIB_ENCODING_RAW)]),
         ]);
-        $response = new HTTPResponse('https://testdomain', $client);
+        $response = new HTTPResponse($this->request, $client);
         $rating = new SetCookieRating($response);
 
         $this->assertEquals(0, $rating->score);
@@ -44,7 +44,7 @@ class SetCookieRatingTest extends TestCase
         $client = $this->getMockedGuzzleClient([
             new Response(200, ['Set-Cookie' => 'session=myCookie; Keks;']),
         ]);
-        $response = new HTTPResponse('https://testdomain', $client);
+        $response = new HTTPResponse($this->request, $client);
         $rating = new SetCookieRating($response);
 
         $this->assertFalse($rating->hasError);
@@ -59,7 +59,7 @@ class SetCookieRatingTest extends TestCase
         $client = $this->getMockedGuzzleClient([
             new Response(200, ['Set-Cookie' => 'session=myCookie; Secure']),
         ]);
-        $response = new HTTPResponse('https://testdomain', $client);
+        $response = new HTTPResponse($this->request, $client);
         $rating = new SetCookieRating($response);
 
         $this->assertFalse($rating->hasError);
@@ -73,7 +73,7 @@ class SetCookieRatingTest extends TestCase
         $client = $this->getMockedGuzzleClient([
             new Response(200, ['Set-Cookie' => 'session=myCookie; HttpOnly']),
         ]);
-        $response = new HTTPResponse('https://testdomain', $client);
+        $response = new HTTPResponse($this->request, $client);
         $rating = new SetCookieRating($response);
 
         $this->assertFalse($rating->hasError);
@@ -87,7 +87,7 @@ class SetCookieRatingTest extends TestCase
         $client = $this->getMockedGuzzleClient([
             new Response(200, ['Set-Cookie' => 'session=myCookie; HttpOnly; secure']),
         ]);
-        $response = new HTTPResponse('https://testdomain', $client);
+        $response = new HTTPResponse($this->request, $client);
         $rating = new SetCookieRating($response);
 
         $this->assertFalse($rating->hasError);
@@ -102,7 +102,7 @@ class SetCookieRatingTest extends TestCase
         $client = $this->getMockedGuzzleClient([
             new Response(200, ['Set-Cookie' => ['session=myCookie; httponly', 'keks=newCookie; SECURE']]),
         ]);
-        $response = new HTTPResponse('https://testdomain', $client);
+        $response = new HTTPResponse($this->request, $client);
         $rating = new SetCookieRating($response);
 
         $this->assertFalse($rating->hasError);
@@ -111,7 +111,7 @@ class SetCookieRatingTest extends TestCase
         $client = $this->getMockedGuzzleClient([
             new Response(200, ['Set-Cookie' => ['session=myCookie; Secure; HttpOnly', 'keks=newCookie; Secure; HttpOnly']]),
         ]);
-        $response = new HTTPResponse('https://testdomain', $client);
+        $response = new HTTPResponse($this->request, $client);
         $rating = new SetCookieRating($response);
 
         $this->assertFalse($rating->hasError);
@@ -124,7 +124,7 @@ class SetCookieRatingTest extends TestCase
                 'kruemel=anotherCookie; HttpOnly',
             ]]),
         ]);
-        $response = new HTTPResponse('https://testdomain', $client);
+        $response = new HTTPResponse($this->request, $client);
         $rating = new SetCookieRating($response);
 
         $this->assertFalse($rating->hasError);
@@ -137,7 +137,7 @@ class SetCookieRatingTest extends TestCase
         $client = $this->getMockedGuzzleClient([
             new Response(200, []),
         ]);
-        $response = new HTTPResponse('https://testdomain', $client);
+        $response = new HTTPResponse($this->request, $client);
         $rating = new SetCookieRating($response);
 
         $this->assertFalse($rating->hasError);
@@ -146,7 +146,7 @@ class SetCookieRatingTest extends TestCase
         $client = $this->getMockedGuzzleClient([
             new Response(200, ['Set-Cookie' => 'session=myCookie; httponly']),
         ]);
-        $response = new HTTPResponse('https://testdomain', $client);
+        $response = new HTTPResponse($this->request, $client);
         $rating = new SetCookieRating($response);
 
         $this->assertFalse($rating->hasError);

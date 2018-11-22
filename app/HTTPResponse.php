@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Http\Requests\ScanStartRequest;
 use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Log;
 
@@ -11,10 +12,12 @@ class HTTPResponse
     protected $response = null;
     protected $hasErrors = false;
 
-    public function __construct($url, Client $client = null)
+    public function __construct(ScanStartRequest $request, Client $client = null)
     {
-        $this->url = $this->punycodeUrl($url);
+        $this->url = $this->punycodeUrl($request->get('url'));
         Log::info('Scanning the following URL: '.$this->url);
+
+        $this->userAgent = $request->get('userAgent') ?: 'Mozilla/5.0 (X11; Linux x86_64; rv:63.0) Gecko/20100101 Firefox/63.0';
 
         $this->client = $client;
 
@@ -37,7 +40,7 @@ class HTTPResponse
                 $this->response = $this->client->get($this->url, [
                     // User-Agent because some sites (e.g. facebook) do not return all headers if the user-agent is missing or Guzzle
                     'headers' => [
-                        'User-Agent' => 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:40.0) Gecko/20100101 Firefox/40.1',
+                        'User-Agent' => $this->userAgent,
                     ],
                     'verify'      => false,
                     'http_errors' => false,
@@ -58,7 +61,7 @@ class HTTPResponse
     }
 
     /**
-     * @return mixed original URL
+     * @return string original URL
      */
     public function url()
     {
