@@ -52,12 +52,12 @@ before_deploy:
 
 deploy:
   - provider: script
-    script: ./deploy-staging.sh
+    script: chmod +x deploy-staging.sh && ./deploy-staging.sh
     skip_cleanup: true
     on:
       branch: develop
   - provider: script
-    script: ./deploy-master.sh
+    script: chmod +x deploy-master.sh && ./deploy-master.sh
     skip_cleanup: true
     on:
       branch: master
