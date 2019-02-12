@@ -1,6 +1,5 @@
-!#/bin/bash
+#!/bin/bash
 set -e
-docker push "$DOCKER_REPO"/siwecos-core-api:latest
 
 echo $GCLOUD_KEY | base64 --decode -i > ${HOME}/gcloud-service-key.json
 gcloud auth activate-service-account --key-file ${HOME}/gcloud-service-key.json
