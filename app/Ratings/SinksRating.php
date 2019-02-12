@@ -45,7 +45,7 @@ class SinksRating extends Rating
 
                 if ($sinkCounter > 0) {
                     $this->score = 0;
-                    $this->testDetails->push(TranslateableMessage::get('SINKSS_FOUND', ['AMOUNT' => $sinkCounter]));
+                    $this->testDetails->push(TranslateableMessage::get('SINKS_FOUND', ['AMOUNT' => $sinkCounter]));
                 } else {
                     $this->testDetails->push(TranslateableMessage::get('NO_SINKS_FOUND'));
                 }
