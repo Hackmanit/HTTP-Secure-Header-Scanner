@@ -425,9 +425,9 @@ Further advanced tests would be needed to confirm if there are vulnerabilities o
 | NO_HTTP_RESPONSE | No HTTP-Response for the given URL.                   |
 | NO_CONTENT       | The site was empty and there was nothing to scan for. |
 | NO_SCRIPT_TAGS   | The scanner found no `script` tags to rate.           |
-| **HAS_SINKS**    |                                                       |
+| **SINKS**        |                                                       |
 | NO_SINKS_FOUND   | The scanner found no sinks.                           |
 | SINKS_FOUND      | The scanner found some sinks.                         |
-| **HAS_SOURCES**  |                                                       |
+| **SOURCES**      |                                                       |
 | NO_SOURCES_FOUND | The scanner found no sources.                         |
 | SOURCES_FOUND    | The scanner found some sources.                       |
