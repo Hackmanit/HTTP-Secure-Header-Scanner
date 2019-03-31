@@ -3,17 +3,9 @@ language: php
 php:
   - "7.1"
 
-services:
-  - mysql
-
 cache:
   directories:
     - "$HOME/google-cloud-sdk/"
-
-addons:
-  apt:
-    sources:
-      - mysql-5.7-trusty
 
 dist: trusty
 
@@ -39,7 +31,6 @@ jobs:
       script:
       - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
       - docker build -t hshs-domxss-scanner .
-      - docker images
       - docker tag hshs-domxss-scanner "$DOCKER_REPO"/hshs-domxss-scanner:"$TRAVIS_BRANCH"
       - docker push "$DOCKER_REPO"/hshs-domxss-scanner:"$TRAVIS_BRANCH"
 

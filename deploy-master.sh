@@ -1,8 +1,8 @@
 #!/bin/bash
 set -e
 
-docker tag "$DOCKER_IMAGE" "$DOCKER_REPO"/"$DOCKER_IMAGE":latest
-docker push "$DOCKER_REPO"/"$DOCKER_IMAGE":latest
+docker tag hshs-domxss-scanner "$DOCKER_REPO"/hshs-domxss-scanner:latest
+docker push "$DOCKER_REPO"/hshs-domxss-scanner:latest
 
 echo $GCLOUD_KEY | base64 --decode -i > ${HOME}/gcloud-service-key.json
 gcloud auth activate-service-account --key-file ${HOME}/gcloud-service-key.json
