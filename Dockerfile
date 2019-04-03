@@ -14,15 +14,9 @@ COPY . /scanner
 COPY .env.example /scanner/.env
 
 WORKDIR /scanner
-RUN composer install \
+RUN composer install --no-dev \
     && chmod -R 777 /scanner/storage
 
-# Verify that everything works fine.
-RUN vendor/bin/phpunit
-
 EXPOSE 2015
-
-# ENTRYPOINT ["/bin/parent", "caddy"]
-# CMD ["--conf", "/etc/Caddyfile", "--log", "stdout", "--agree=$ACME_AGREE"]
 
 ENTRYPOINT ["supervisord", "--nodaemon", "--configuration", "/etc/supervisord.conf"]
