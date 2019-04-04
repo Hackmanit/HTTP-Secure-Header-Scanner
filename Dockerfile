@@ -14,8 +14,7 @@ COPY . /scanner
 COPY .env.example /scanner/.env
 
 WORKDIR /scanner
-RUN composer install --no-dev \
-    && chmod -R 777 /scanner/storage
+RUN composer install --no-dev
 
 EXPOSE 2015
 
