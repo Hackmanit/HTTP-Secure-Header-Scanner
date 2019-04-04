@@ -14,7 +14,8 @@ COPY . /scanner
 COPY .env.example /scanner/.env
 
 WORKDIR /scanner
-RUN composer install --no-dev
+RUN composer install --no-dev \
+    && chown -R www-user:www-user .
 
 EXPOSE 2015
 
