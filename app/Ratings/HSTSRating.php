@@ -27,7 +27,7 @@ class HSTSRating extends Rating
             $this->errorMessage = TranslateableMessage::get('HEADER_ENCODING_ERROR', ['HEADER_NAME' => 'Strict-Transport-Security']);
         } elseif (is_array($header) && count($header) > 1) {
             $this->hasError = true;
-            $this->errorMessage = TranslateableMessage::get('HEADER_SET_MULTIPLE_TIMES', ['HEADER' => $header]);
+            $this->errorMessage = TranslateableMessage::get('HEADER_SET_MULTIPLE_TIMES');
         } else {
             $header = $header[0];
 
@@ -43,10 +43,10 @@ class HSTSRating extends Rating
 
             if ($maxAge < 15768000) {
                 $this->score = 60;
-                $this->testDetails->push(TranslateableMessage::get('HSTS_LESS_6', ['HEADER' => $header]));
+                $this->testDetails->push(TranslateableMessage::get('HSTS_LESS_6'));
             } elseif ($maxAge >= 15768000) {
                 $this->score = 100;
-                $this->testDetails->push(TranslateableMessage::get('HSTS_MORE_6', ['HEADER' => $header]));
+                $this->testDetails->push(TranslateableMessage::get('HSTS_MORE_6'));
             } else {
                 $this->score = 0;
                 $this->hasError = true;
@@ -54,11 +54,11 @@ class HSTSRating extends Rating
             }
 
             if (strpos($header, 'includeSubDomains') !== false) {
-                $this->testDetails->push(TranslateableMessage::get('INCLUDE_SUBDOMAINS', ['HEADER' => $header]));
+                $this->testDetails->push(TranslateableMessage::get('INCLUDE_SUBDOMAINS'));
             }
 
             if (strpos($header, 'preload') !== false) {
-                $this->testDetails->push(TranslateableMessage::get('HSTS_PRELOAD', ['HEADER' => $header]));
+                $this->testDetails->push(TranslateableMessage::get('HSTS_PRELOAD'));
             }
         }
     }

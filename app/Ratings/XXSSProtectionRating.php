@@ -27,16 +27,16 @@ class XXSSProtectionRating extends Rating
             $this->errorMessage = TranslateableMessage::get('HEADER_ENCODING_ERROR', ['HEADER_NAME' => 'X-XSS-Protection']);
         } elseif (is_array($header) && count($header) > 1) {
             $this->hasError = true;
-            $this->errorMessage = TranslateableMessage::get('HEADER_SET_MULTIPLE_TIMES', ['HEADER' => $header]);
+            $this->errorMessage = TranslateableMessage::get('HEADER_SET_MULTIPLE_TIMES');
         } else {
             $header = $header[0];
 
             $this->score = 50;
-            $this->testDetails->push(TranslateableMessage::get('XXSS_CORRECT', ['HEADER' => $header]));
+            $this->testDetails->push(TranslateableMessage::get('XXSS_CORRECT'));
 
             if (strpos($header, 'mode=block') !== false) {
                 $this->score = 100;
-                $this->testDetails->push(TranslateableMessage::get('XXSS_BLOCK', ['HEADER' => $header]));
+                $this->testDetails->push(TranslateableMessage::get('XXSS_BLOCK'));
             }
         }
     }

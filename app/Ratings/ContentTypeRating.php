@@ -30,7 +30,7 @@ class ContentTypeRating extends Rating
             $this->errorMessage = TranslateableMessage::get('HEADER_ENCODING_ERROR', ['HEADER_NAME' => 'Content-Type']);
         } elseif (is_array($header) && count($header) > 1) {
             $this->hasError = true;
-            $this->errorMessage = TranslateableMessage::get('HEADER_SET_MULTIPLE_TIMES', ['HEADER' => $header]);
+            $this->errorMessage = TranslateableMessage::get('HEADER_SET_MULTIPLE_TIMES');
         } else {
             $detail = 'CT_HEADER_WITHOUT_CHARSET';
 
@@ -53,7 +53,7 @@ class ContentTypeRating extends Rating
                 $detail = 'CT_CORRECT';
             }
 
-            $this->testDetails->push(TranslateableMessage::get($detail, ['HEADER' => $header]));
+            $this->testDetails->push(TranslateableMessage::get($detail));
         }
     }
 

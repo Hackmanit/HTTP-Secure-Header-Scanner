@@ -30,7 +30,7 @@ class SetCookieRating extends Rating
 
             foreach ($header as $cookieHeader) {
                 // Get a new Cookie Class
-                $cookie = Cookie::parse('Set-Cookie: '.$cookieHeader);
+                $cookie = Cookie::parse('Set-Cookie: ' . $cookieHeader);
                 // Check for Secure Flag
                 if ($cookie->isSecureOnly()) {
                     $this->score += 90;
@@ -49,8 +49,8 @@ class SetCookieRating extends Rating
             }
 
             // Calculate average score for all cookie headers
-            $this->score = (int) ceil(($this->score / count($header)));
-            $this->score = $this->score > 100 ? 100 : $this->score;
+            $this->score = (int)ceil(($this->score / count($header)));
+            $this->score = $this->score > 100 ?100 : $this->score;
         }
     }
 }

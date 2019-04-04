@@ -28,7 +28,7 @@ class CSPRating extends Rating
             $this->errorMessage = TranslateableMessage::get('HEADER_ENCODING_ERROR', ['HEADER_NAME' => 'Content-Security-Policy']);
         } elseif (is_array($header) && count($header) > 1) {
             $this->hasError = true;
-            $this->errorMessage = TranslateableMessage::get('HEADER_SET_MULTIPLE_TIMES', ['HEADER' => $header]);
+            $this->errorMessage = TranslateableMessage::get('HEADER_SET_MULTIPLE_TIMES');
         } else {
             $header = $header[0];
             $csp = new CSPParser($header);
@@ -36,26 +36,26 @@ class CSPRating extends Rating
             if (!$csp->isValid()) {
                 $this->score = 0;
                 $this->hasError = true;
-                $this->errorMessage = TranslateableMessage::get('CSP_IS_NOT_VALID', ['HEADER' => $header]);
+                $this->errorMessage = TranslateableMessage::get('CSP_IS_NOT_VALID');
             } elseif ($csp->containsUnsafeValues()) {
                 $this->score = 50;
-                $this->testDetails->push(TranslateableMessage::get('CSP_UNSAFE_INCLUDED', ['HEADER' => $header]));
+                $this->testDetails->push(TranslateableMessage::get('CSP_UNSAFE_INCLUDED'));
                 $this->scoreType = 'info';
             } elseif (!$csp->directives->has('default-src')) {
                 $this->score = 0;
-                $this->testDetails->push(TranslateableMessage::get('CSP_DEFAULT_SRC_MISSING', ['HEADER' => $header]));
+                $this->testDetails->push(TranslateableMessage::get('CSP_DEFAULT_SRC_MISSING'));
                 $this->scoreType = 'info';
             } elseif (!$csp->containsUnsafeValues() && !$csp->directives->get('default-src')->contains(function ($value, $key) {
                 return ($value === "'self'") || ($value === "'none'");
             })) {
                 $this->score = 75;
                 $this->scoreType = 'info';
-                $this->testDetails->push(TranslateableMessage::get('CSP_NO_UNSAFE_INCLUDED', ['HEADER' => $header]));
+                $this->testDetails->push(TranslateableMessage::get('CSP_NO_UNSAFE_INCLUDED'));
             } elseif (!$csp->containsUnsafeValues() && $csp->directives->get('default-src')->contains(function ($value, $key) {
                 return ($value === "'self'") || ($value === "'none'");
             })) {
                 $this->score = 100;
-                $this->testDetails->push(TranslateableMessage::get('CSP_CORRECT', ['HEADER' => $header]));
+                $this->testDetails->push(TranslateableMessage::get('CSP_CORRECT'));
             }
         }
 
