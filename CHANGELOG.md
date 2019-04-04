@@ -6,10 +6,18 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
-## [1.4.0] - 2018-10-18
+## [1.5.1] - 2019-04-04
 ### Added
 - Correct callback logic via Job implementation.
+- Feature to use a custom `userAgent`
 
+### Fixed
+- Several issues with DOMXSS part
+- Documentation
+- Deployment via Travis
+- Returning correct json responses
+- `TranslatableMessage` scheme
+- Minimized docker image
 
 ## [1.3.1] - 2018-10-18
 ### Fixed
@@ -74,8 +82,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 - CHANGELOG.md and semantic versioning
 
-[Unreleased]: https://github.com/SIWECOS/HSHS-DOMXSS-Scanner/compare/1.4.0...development
-[1.4.0]: https://github.com/SIWECOS/HSHS-DOMXSS-Scanner/compare/1.3.1...1.4.0
+[Unreleased]: https://github.com/SIWECOS/HSHS-DOMXSS-Scanner/compare/1.5.1...develop
+[1.5.1]: https://github.com/SIWECOS/HSHS-DOMXSS-Scanner/compare/1.3.1...1.5.1
 [1.3.1]: https://github.com/SIWECOS/HSHS-DOMXSS-Scanner/compare/1.3.0...1.3.1
 [1.3.0]: https://github.com/SIWECOS/HSHS-DOMXSS-Scanner/compare/1.2.0...1.3.0
 [1.2.1]: https://github.com/SIWECOS/HSHS-DOMXSS-Scanner/compare/1.2.0...1.2.1
