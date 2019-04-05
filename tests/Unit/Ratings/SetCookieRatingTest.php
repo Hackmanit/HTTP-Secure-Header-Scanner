@@ -152,4 +152,17 @@ class SetCookieRatingTest extends TestCase
         $this->assertFalse($rating->hasError);
         $this->assertEquals('warning', $rating->scoreType);
     }
+
+    /** @test */
+    public function a_invalid_SetCookie_header_will_be_catched_and_rated_with_minus5_score()
+    {
+        $client = $this->getMockedGuzzleClient([
+            new Response(200, ['Set-Cookie' => 'HttpOnly; Secure']),
+        ]);
+        $response = new HTTPResponse($this->request, $client);
+        $rating = new SetCookieRating($response);
+
+        $this->assertEquals(200, $response->statusCode());
+        $this->assertEquals(-5, $rating->score);
+    }
 }
