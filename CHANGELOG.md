@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [1.5.2] - 2019-04-05
+### Fixed
+- Timeout issues
+- Crash when the `Set-Cookie` header was invalid
+
 ## [1.5.1] - 2019-04-04
 ### Added
 - Correct callback logic via Job implementation.
@@ -82,7 +87,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 - CHANGELOG.md and semantic versioning
 
-[Unreleased]: https://github.com/SIWECOS/HSHS-DOMXSS-Scanner/compare/1.5.1...develop
+[Unreleased]: https://github.com/SIWECOS/HSHS-DOMXSS-Scanner/compare/1.5.2...develop
+[1.5.2]: https://github.com/SIWECOS/HSHS-DOMXSS-Scanner/compare/1.5.1...1.5.2
 [1.5.1]: https://github.com/SIWECOS/HSHS-DOMXSS-Scanner/compare/1.3.1...1.5.1
 [1.3.1]: https://github.com/SIWECOS/HSHS-DOMXSS-Scanner/compare/1.3.0...1.3.1
 [1.3.0]: https://github.com/SIWECOS/HSHS-DOMXSS-Scanner/compare/1.2.0...1.3.0
