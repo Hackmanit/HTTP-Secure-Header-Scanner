@@ -15,7 +15,7 @@ class HTTPResponse
     public function __construct(ScanStartRequest $request, Client $client = null)
     {
         $this->url = $this->punycodeUrl($request->get('url'));
-        Log::info('Scanning the following URL: '.$this->url);
+        Log::info('Scanning the following URL: ' . $this->url);
 
         $this->userAgent = $request->get('userAgent') ?: 'Mozilla/5.0 (X11; Linux x86_64; rv:63.0) Gecko/20100101 Firefox/63.0';
 
@@ -44,9 +44,10 @@ class HTTPResponse
                     ],
                     'verify'      => false,
                     'http_errors' => false,
+                    'timeout' => 15
                 ]);
             } catch (\Exception $exception) {
-                Log::warning($this->url.': '.$exception);
+                Log::warning($this->url . ': ' . $exception);
                 $this->hasErrors = true;
             }
         }
@@ -119,7 +120,7 @@ class HTTPResponse
 
         // Fixed empty body
         // See: https://stackoverflow.com/questions/30549226/guzzlehttp-how-get-the-body-of-a-response-from-guzzle-6#30549372
-        return (string) $this->response()->getBody();
+        return (string)$this->response()->getBody();
     }
 
     /**
@@ -147,15 +148,15 @@ class HTTPResponse
     {
         $parsed_url = parse_url($url);
 
-        $scheme = isset($parsed_url['scheme']) ? $parsed_url['scheme'].'://' : '';
+        $scheme = isset($parsed_url['scheme']) ? $parsed_url['scheme'] . '://' : '';
         $host = isset($parsed_url['host']) ? idn_to_ascii($parsed_url['host'], IDNA_NONTRANSITIONAL_TO_ASCII, INTL_IDNA_VARIANT_UTS46) : '';
-        $port = isset($parsed_url['port']) ? ':'.$parsed_url['port'] : '';
+        $port = isset($parsed_url['port']) ? ':' . $parsed_url['port'] : '';
         $user = isset($parsed_url['user']) ? $parsed_url['user'] : '';
-        $pass = isset($parsed_url['pass']) ? ':'.$parsed_url['pass'] : '';
+        $pass = isset($parsed_url['pass']) ? ':' . $parsed_url['pass'] : '';
         $pass = ($user || $pass) ? "$pass@" : '';
         $path = isset($parsed_url['path']) ? $parsed_url['path'] : '';
-        $query = isset($parsed_url['query']) ? '?'.$parsed_url['query'] : '';
+        $query = isset($parsed_url['query']) ? '?' . $parsed_url['query'] : '';
 
-        return "$scheme$user$pass$host$port$path$query";
+        return $scheme . $user . $pass . $host . $port . $path . $query;
     }
 }
