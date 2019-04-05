@@ -50,7 +50,7 @@ class SetCookieRating extends Rating
                 // Set-Cookie header exists but not valid so $cookie = null
                 else {
                     $this->score -= 5;
-                    $this->testDetails->push(TranslateableMessage::get('INAVLID_HEADER', ['HEADER' => 'Set-Cookie: ' . $cookieHeader]));
+                    $this->testDetails->push(TranslateableMessage::get('INVALID_HEADER', ['HEADER' => 'Set-Cookie: ' . $cookieHeader]));
                 }
             }
 

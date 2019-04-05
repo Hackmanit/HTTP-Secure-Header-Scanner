@@ -367,7 +367,7 @@ Further advanced tests would be needed to confirm if there are vulnerabilities o
 | HEADER_NOT_SET                  | The header is not set.                                                                            |
 | HEADER_SET_MULTIPLE_TIMES       | The header is set multiple times.                                                                 |
 | HEADER_ENCODING_ERROR           | The header is not correctly encoded.                                                              |
-| INAVLID_HEADER                  | The following header is not valid: `:HEADER`                                                      |
+| INVALID_HEADER                  | The following header is not valid: `:HEADER`                                                      |
 | INCLUDE_SUBDOMAINS              | `includeSubDomains` is set.                                                                       |
 | MAX_AGE_ERROR                   | An error occured while checking `max-age`.                                                        |
 | NO_HTTP_RESPONSE                | No HTTP-Response for the given URL.                                                               |
