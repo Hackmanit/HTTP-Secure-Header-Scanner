@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [1.5.4] - 2019-04-10
+### Changed
+- Translation string for ReferrerPolicy `DIRECTIVE_SET`
+
 ## [1.5.3] - 2019-04-05
 ### Fixed
 - Fixed typo
@@ -91,7 +95,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 - CHANGELOG.md and semantic versioning
 
-[Unreleased]: https://github.com/SIWECOS/HSHS-DOMXSS-Scanner/compare/1.5.3...develop
+[Unreleased]: https://github.com/SIWECOS/HSHS-DOMXSS-Scanner/compare/1.5.4...develop
+[1.5.4]: https://github.com/SIWECOS/HSHS-DOMXSS-Scanner/compare/1.5.3...1.5.4
 [1.5.3]: https://github.com/SIWECOS/HSHS-DOMXSS-Scanner/compare/1.5.2...1.5.3
 [1.5.2]: https://github.com/SIWECOS/HSHS-DOMXSS-Scanner/compare/1.5.1...1.5.2
 [1.5.1]: https://github.com/SIWECOS/HSHS-DOMXSS-Scanner/compare/1.3.1...1.5.1
