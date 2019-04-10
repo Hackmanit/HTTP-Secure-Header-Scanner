@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [1.5.5] - 2019-04-10
+### Changed
+- Travis workflow
+
 ## [1.5.4] - 2019-04-10
 ### Changed
 - Translation string for ReferrerPolicy `DIRECTIVE_SET`
