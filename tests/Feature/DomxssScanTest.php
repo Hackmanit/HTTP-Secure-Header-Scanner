@@ -18,8 +18,8 @@ class DomxssScanTest extends TestCase
             'name'         => 'DOMXSS',
             'hasError'     => true,
             'errorMessage' => [
-                'placeholder' => 'NO_HTTP_RESPONSE',
-                'values'      => [],
+                'translationStringId' => 'NO_HTTP_RESPONSE',
+                'placeholders' => [],
             ],
             'score' => 0,
             'tests' => [],

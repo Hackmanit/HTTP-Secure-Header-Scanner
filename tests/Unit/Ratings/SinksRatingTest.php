@@ -28,7 +28,7 @@ class SinksRatingTest extends TestCase
     /** @test */
     public function sinksRatingRates100IfThereIsNoScriptTagOnThePage()
     {
-        $sampleBody = file_get_contents(base_path().'/tests/Unit/example.org.html');
+        $sampleBody = file_get_contents(base_path() . '/tests/Unit/example.org.html');
         $client = $this->getMockedGuzzleClient([
             new Response(200, [], $sampleBody),
         ]);
@@ -44,7 +44,7 @@ class SinksRatingTest extends TestCase
     /** @test */
     public function sinksRatingDoesNotFindSinksOutsideOfSearchContext()
     {
-        $sampleBody = file_get_contents(base_path().'/tests/Unit/hradek.test.html');
+        $sampleBody = file_get_contents(base_path() . '/tests/Unit/hradek.test.html');
         $client = $this->getMockedGuzzleClient([
             new Response(200, [], $sampleBody),
         ]);
@@ -57,6 +57,6 @@ class SinksRatingTest extends TestCase
         $this->assertEquals(9, $sinks);
 
         // Sinks in script-Tags
-        $this->assertEquals(1, $rating->testDetails->first()['values']['AMOUNT']);
+        $this->assertEquals(1, $rating->testDetails->first()['placeholders']['AMOUNT']);
     }
 }

@@ -5,16 +5,16 @@ namespace App;
 class TranslateableMessage
 {
     /**
-     * Set placeholder and values for the TranslateableMessage.
+     * Set id and placeholders for a TranslateableMessage.
      *
-     * @param string     $placeholder
-     * @param null|array $values
+     * @param string     $translationStringId
+     * @param null|array $placeholders
      */
-    public static function get(String $placeholder, $values = null)
+    public static function get(String $translationStringId, $placeholders = null)
     {
         return [
-            'placeholder' => $placeholder,
-            'values'      => $values,
+            'translationStringId' => $translationStringId,
+            'placeholders'      => $placeholders,
         ];
     }
 }

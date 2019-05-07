@@ -21,8 +21,8 @@ class ContentTypeRatingTest extends TestCase
 
         $this->assertEquals(0, $rating->score);
         $expected = [
-            'placeholder' => 'HEADER_NOT_SET',
-            'values'      => null,
+            'translationStringId' => 'HEADER_NOT_SET',
+            'placeholders' => null,
         ];
         $this->assertEquals($expected, $rating->errorMessage);
     }
@@ -81,7 +81,7 @@ class ContentTypeRatingTest extends TestCase
     /** @test */
     public function if_the_header_is_not_set_the_meta_tag_is_rated()
     {
-        $sampleBody = file_get_contents(base_path().'/tests/Unit/example.org.html');
+        $sampleBody = file_get_contents(base_path() . '/tests/Unit/example.org.html');
 
         $client = $this->getMockedGuzzleClient([
             new Response(200, [], $sampleBody),
@@ -97,7 +97,7 @@ class ContentTypeRatingTest extends TestCase
     /** @test */
     public function if_the_header_is_set_the_meta_tag_is_not_rated()
     {
-        $sampleBody = file_get_contents(base_path().'/tests/Unit/example.org.html');
+        $sampleBody = file_get_contents(base_path() . '/tests/Unit/example.org.html');
 
         $client = $this->getMockedGuzzleClient([
             new Response(200, ['Content-Type' => 'text/html; charset=utf-8'], $sampleBody),

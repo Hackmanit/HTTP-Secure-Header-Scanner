@@ -28,7 +28,7 @@ class SourcesRatingTest extends TestCase
     /** @test */
     public function sourcesRatingRates100IfThereIsNoScriptTagOnThePage()
     {
-        $sampleBody = file_get_contents(base_path().'/tests/Unit/example.org.html');
+        $sampleBody = file_get_contents(base_path() . '/tests/Unit/example.org.html');
         $client = $this->getMockedGuzzleClient([
             new Response(200, [], $sampleBody),
         ]);
@@ -44,7 +44,7 @@ class SourcesRatingTest extends TestCase
     /** @test */
     public function sourcesRatingDoesNotFindSourcesOutsideOfSearchContext()
     {
-        $sampleBody = file_get_contents(base_path().'/tests/Unit/hradek.test.html');
+        $sampleBody = file_get_contents(base_path() . '/tests/Unit/hradek.test.html');
         $client = $this->getMockedGuzzleClient([
             new Response(200, [], $sampleBody),
         ]);
@@ -57,6 +57,6 @@ class SourcesRatingTest extends TestCase
         $this->assertEquals(6, $sources);
 
         // Sources in script-Tags
-        $this->assertEquals(2, $rating->testDetails->first()['values']['AMOUNT']);
+        $this->assertEquals(2, $rating->testDetails->first()['placeholders']['AMOUNT']);
     }
 }

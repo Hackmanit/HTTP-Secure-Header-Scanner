@@ -21,8 +21,8 @@ class HSTSRatingTest extends TestCase
         $this->assertEquals(0, $rating->score);
 
         $expected = [
-            'placeholder' => 'HEADER_NOT_SET',
-            'values'      => null,
+            'translationStringId' => 'HEADER_NOT_SET',
+            'placeholders' => null,
         ];
         $this->assertEquals($expected, $rating->errorMessage);
     }
@@ -47,7 +47,7 @@ class HSTSRatingTest extends TestCase
     {
         $client = $this->getMockedGuzzleClient([
             new Response(200, [
-                'Strict-Transport-Security' => 'max-age='. 6 * 31 * 24 * 60 * 60,
+                'Strict-Transport-Security' => 'max-age=' . 6 * 31 * 24 * 60 * 60,
             ]),
         ]);
         $response = new HTTPResponse($this->request, $client);

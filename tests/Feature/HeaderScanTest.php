@@ -18,8 +18,8 @@ class HeaderScanTest extends TestCase
             'name'         => 'HEADER',
             'hasError'     => true,
             'errorMessage' => [
-                'placeholder' => 'NO_HTTP_RESPONSE',
-                'values'      => [],
+                'translationStringId' => 'NO_HTTP_RESPONSE',
+                'placeholders' => [],
             ],
             'score' => 0,
             'tests' => [],
