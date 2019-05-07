@@ -6,6 +6,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [1.6.0] - 2019-05-07
+### Changed
+- Output format to new [defined standard](https://github.com/SIWECOS/siwecos-core-api/tree/develop#translatablemessage-object)
+- Docker base image to `siwecos/dockered-laravel:7.2`
+
+
 ## [1.5.5] - 2019-04-10
 ### Changed
 - Travis workflow
@@ -99,7 +105,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 - CHANGELOG.md and semantic versioning
 
-[Unreleased]: https://github.com/SIWECOS/HSHS-DOMXSS-Scanner/compare/1.5.4...develop
+[Unreleased]: https://github.com/SIWECOS/HSHS-DOMXSS-Scanner/compare/1.6.0..develop
+[1.6.0]: https://github.com/SIWECOS/HSHS-DOMXSS-Scanner/compare/1.5.5...1.6.0
+[1.5.5]: https://github.com/SIWECOS/HSHS-DOMXSS-Scanner/compare/1.5.4...1.5.5
 [1.5.4]: https://github.com/SIWECOS/HSHS-DOMXSS-Scanner/compare/1.5.3...1.5.4
 [1.5.3]: https://github.com/SIWECOS/HSHS-DOMXSS-Scanner/compare/1.5.2...1.5.3
 [1.5.2]: https://github.com/SIWECOS/HSHS-DOMXSS-Scanner/compare/1.5.1...1.5.2
