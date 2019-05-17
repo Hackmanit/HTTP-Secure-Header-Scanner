@@ -47,7 +47,6 @@ class HTTPResponse
                     'timeout' => 15
                 ]);
             } catch (\Exception $exception) {
-                Log::warning($this->url . ': ' . $exception);
                 $this->hasErrors = true;
             }
         }
