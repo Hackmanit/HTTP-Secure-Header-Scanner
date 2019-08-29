@@ -33,31 +33,31 @@ class ReferrerPolicyRating extends Rating
 
             if ($header == 'no-referrer') {
                 $this->score = 100;
-                $this->testDetails->push(TranslateableMessage::get('DIRECTIVE_SET', ['DIRECTIVE' => 'NO_REFERRER']));
+                $this->testDetails->push(TranslateableMessage::get('DIRECTIVE_SET', ['DIRECTIVE' => 'no-referrer']));
             } elseif ($header == 'same-origin') {
                 $this->score = 100;
-                $this->testDetails->push(TranslateableMessage::get('DIRECTIVE_SET', ['DIRECTIVE' => 'SAME_ORIGIN']));
+                $this->testDetails->push(TranslateableMessage::get('DIRECTIVE_SET', ['DIRECTIVE' => 'same-origin']));
             } elseif ($header == 'strict-origin') {
                 $this->score = 70;
-                $this->testDetails->push(TranslateableMessage::get('DIRECTIVE_SET', ['DIRECTIVE' => 'STRICT_ORIGIN']));
+                $this->testDetails->push(TranslateableMessage::get('DIRECTIVE_SET', ['DIRECTIVE' => 'strict-origin']));
             } elseif ($header == 'strict-origin-when-cross-origin') {
                 $this->score = 70;
-                $this->testDetails->push(TranslateableMessage::get('DIRECTIVE_SET', ['DIRECTIVE' => 'STRICT_ORIGIN_WHEN_CROSS_ORIGIN']));
+                $this->testDetails->push(TranslateableMessage::get('DIRECTIVE_SET', ['DIRECTIVE' => 'strict-origin-when-cross-origin']));
             } elseif ($header == 'origin') {
                 $this->score = 40;
-                $this->testDetails->push(TranslateableMessage::get('DIRECTIVE_SET', ['DIRECTIVE' => 'ORIGIN']));
+                $this->testDetails->push(TranslateableMessage::get('DIRECTIVE_SET', ['DIRECTIVE' => 'origin']));
             } elseif ($header == 'origin-when-cross-origin') {
                 $this->score = 40;
-                $this->testDetails->push(TranslateableMessage::get('DIRECTIVE_SET', ['DIRECTIVE' => 'ORIGIN_WHEN_CROSS_ORIGIN']));
+                $this->testDetails->push(TranslateableMessage::get('DIRECTIVE_SET', ['DIRECTIVE' => 'origin-when-cross-origin']));
             } elseif (empty($header)) {
                 $this->score = 10;
                 $this->testDetails->push(TranslateableMessage::get('EMPTY_DIRECTIVE'));
             } elseif ($header == 'no-referrer-when-downgrade') {
                 $this->score = 0;
-                $this->testDetails->push(TranslateableMessage::get('DIRECTIVE_SET', ['DIRECTIVE' => 'NO_REFERRER_WHEN_DOWNGRADE']));
+                $this->testDetails->push(TranslateableMessage::get('DIRECTIVE_SET', ['DIRECTIVE' => 'no-referrer-when-downgrade']));
             } elseif ($header == 'unsafe-url') {
                 $this->score = 0;
-                $this->testDetails->push(TranslateableMessage::get('DIRECTIVE_SET', ['DIRECTIVE' => 'UNSAFE_URL']));
+                $this->testDetails->push(TranslateableMessage::get('DIRECTIVE_SET', ['DIRECTIVE' => 'unsafe-url']));
             } else {
                 $this->score = 0;
                 $this->hasError = true;
