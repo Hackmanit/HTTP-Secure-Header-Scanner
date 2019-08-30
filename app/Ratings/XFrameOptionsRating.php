@@ -24,7 +24,7 @@ class XFrameOptionsRating extends Rating
             $this->errorMessage = TranslateableMessage::get('HEADER_NOT_SET');
         } elseif (is_array($header) && count($header) > 1) {
             $this->hasError = true;
-            $this->errorMessage = TranslateableMessage::get('HEADER_SET_MULTIPLE_TIMES', ['HEADER' => $header]);
+            $this->errorMessage = TranslateableMessage::get('HEADER_SET_MULTIPLE_TIMES');
         } elseif ($header === 'ERROR') {
             $this->hasError = true;
             $this->errorMessage = TranslateableMessage::get('HEADER_ENCODING_ERROR');
