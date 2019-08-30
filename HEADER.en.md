@@ -100,7 +100,7 @@ Furthermore, the server must be configured to send the correct charset informati
 Moreover, it is also possible to pass the correct charset information to the [http://httpd.apache.org/docs/2.0/howto/htaccess.html '''.htaccess'''] file, which will overwrite the declaration in the HTTP [[Header/EN|header]]. [https://www.w3.org/International/questions/qa-htaccess-charset charset in .htaccess]
 
 '''Enter in the .htaccess file:'''
- AddType 'text/html; charset=UTF-8' html 
+ AddType 'text/html; charset=UTF-8' html
 
 Here is an example of an .htaccess file which will set the '''Header Scanner''' to green.
 ([[Htaccess/EN|.htaccess example]])
@@ -215,7 +215,7 @@ We recommend that the Referrer Policy Header be set to be as restrictive as poss
 
 {| class="wikitable" style="margin:auto;”
 |- style="border: 4px solid #C31622; color:#000000; background-color:#f6f6f6;"
-| 
+|
 Other useful instructions can be `'''same-origin'''`, `'''strict-origin'''` or `'''origin-when-cross-origin`'''.
 |}
 
@@ -545,7 +545,7 @@ A false or invalid character set was used. The configuration is not safe.
 
 ### DIRECTIVE_SET
 
-The directive 'DIRECTIVE' is set.
+The directive ':DIRECTIVE' is set.
 
 ### EMPTY_DIRECTIVE
 

@@ -27,7 +27,7 @@ Die Content-Security-Policy ist eine leistungsfähige Möglichkeit, die Sicherhe
 
 ### Solution_Tips
 
-Wenn die Content Security Policy nicht sicher konfiguriert ist, lädt Ihre [[Webanwendung]] eventuell Inhalte aus unsicheren Quellen nach. 
+Wenn die Content Security Policy nicht sicher konfiguriert ist, lädt Ihre [[Webanwendung]] eventuell Inhalte aus unsicheren Quellen nach.
 
 Verwenden Sie den CSP mit default-src 'none' oder 'self' und ohne 'unsafe-eval' oder 'unsafe-inline' Richtlinien. Mehr zu '''Content Security Policy''' (zu deutsch etwa "Richtlinie für die Sicherheit der Inhalte") finden Sie bei '''[https://wiki.selfhtml.org/wiki/Sicherheit/Content_Security_Policy SELFHTML >>]'''
 
@@ -195,7 +195,7 @@ Eine fehlende oder falsch gesetzte Referrer Policy ermöglicht unerwünschten be
 
 ### Solution_Tips
 
-Mit dem Eintrag '''Referrer Policy''' im [[Header/DE|Header]] wird geregelt, welche der Referrer-Informationen, die im ''Referer Header'' gesendet wurden, in Anfragen aufgenommen werden sollen und welche nicht. Es gibt sehr viele verschiedene Optionen, die gesetzt werden können. Neben Firefox unterstützen Chrome und Opera bereits einige Optionen dieses Header-Eintrages. Aktuell handelt es sich bei diesen Header-Einträgen um einen [https://www.w3.org/TR/referrer-policy/ Empfehlungskandidaten des W3C vom 26.01.2017]. In dem zuvor verlinkten Dokument werden die einzelnen Möglichkeiten genau beschrieben. 
+Mit dem Eintrag '''Referrer Policy''' im [[Header/DE|Header]] wird geregelt, welche der Referrer-Informationen, die im ''Referer Header'' gesendet wurden, in Anfragen aufgenommen werden sollen und welche nicht. Es gibt sehr viele verschiedene Optionen, die gesetzt werden können. Neben Firefox unterstützen Chrome und Opera bereits einige Optionen dieses Header-Eintrages. Aktuell handelt es sich bei diesen Header-Einträgen um einen [https://www.w3.org/TR/referrer-policy/ Empfehlungskandidaten des W3C vom 26.01.2017]. In dem zuvor verlinkten Dokument werden die einzelnen Möglichkeiten genau beschrieben.
 
 '''Anmerkung zur Schreibweise:''' Die korrekte englische Schreibweise lautet '''Referrer'''. Der ursprüngliche RFC ([https://tools.ietf.org/html/rfc2068#section-14.37 RFC 2068]) enthielt jedoch versehentlich die falsche Schreibweise ''Referer'' und erhebt diesen Wortlaut damit zum Standard innerhalb von HTTP. In anderen Standards wie im DOM wird die korrekte Schreibweise verwendet. Der Webbrowser setzt, wenn ein Referrer gesetzt ist, einen eigenen Header ein, der heißt dann z. B. `Referer: google.com`. Dort ist dann Referrer falsch geschrieben, aber laut Standard richtig.
 
@@ -214,7 +214,7 @@ Wir empfehlen die Einstellung des Referrer Policy Headers so restriktiv wie mög
 
 {| class="wikitable" style="margin:auto;"
 |- style="border: 4px solid #C31622; color:#000000; background-color:#f6f6f6;"
-| 
+|
 Weitere nützliche Anweisungen können `'''same-origin'''`, `'''strict-origin'''` oder `'''origin-when-cross-origin'''` sein.
 |}
 
@@ -264,7 +264,7 @@ Wenn Cookies nicht abgesichert werden, können sie über einen [[Man-in-the-midd
 
 ### Solution_Tips
 
-`httpOnly`-Flag setzen, damit das Cookie nicht über [[Javascript|JavaScript]] ausgelesen werden kann. Damit schützen Sie die Session-Informationen vor Auslesen und Diebstahl, denn wer das Cookie hat gilt als [[Authentifizierung|authentifiziert]]. 
+`httpOnly`-Flag setzen, damit das Cookie nicht über [[Javascript|JavaScript]] ausgelesen werden kann. Damit schützen Sie die Session-Informationen vor Auslesen und Diebstahl, denn wer das Cookie hat gilt als [[Authentifizierung|authentifiziert]].
 `secure`-Flag setzen, damit das Cookie nicht über unverschlüsselte Verbindungen [[HTTP]] gesendet wird, sondern ausschließlich über [[HTTPS]].
 
 ### Link
@@ -356,7 +356,7 @@ Einfach und ohne weitere Anpassungen zu implementieren. Verhindert Angriffe auf 
 
 ### Solution_Tips
 
-nosniff; 
+nosniff;
 
 '''Beispielcode einer .htaccess auf einem Apache Webserver'''
 
@@ -544,7 +544,7 @@ Ein falscher oder ungültiger Zeichensatz wurde eingetragen. Die Konfiguration i
 
 ### DIRECTIVE_SET
 
-Die Anweisung 'DIRECTIVE' ist gesetzt.
+Die Anweisung ':DIRECTIVE' ist gesetzt.
 
 ### EMPTY_DIRECTIVE
 
