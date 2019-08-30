@@ -27,16 +27,16 @@ class XFrameOptionsRating extends Rating
             $this->errorMessage = TranslateableMessage::get('HEADER_SET_MULTIPLE_TIMES', ['HEADER' => $header]);
         } elseif ($header === 'ERROR') {
             $this->hasError = true;
-            $this->errorMessage = TranslateableMessage::get('HEADER_ENCODING_ERROR', ['HEADER_NAME' => 'X-Frame-Options']);
+            $this->errorMessage = TranslateableMessage::get('HEADER_ENCODING_ERROR');
         } else {
             $header = $header[0];
 
             if (strpos($header, '*') !== false) {
                 $this->score = 0;
-                $this->testDetails->push(TranslateableMessage::get('XFO_WILDCARDS', ['HEADER' => $header]));
+                $this->testDetails->push(TranslateableMessage::get('XFO_WILDCARDS'));
             } else {
                 $this->score = 100;
-                $this->testDetails->push(TranslateableMessage::get('XFO_CORRECT', ['HEADER' => $header]));
+                $this->testDetails->push(TranslateableMessage::get('XFO_CORRECT'));
             }
         }
     }

@@ -10,7 +10,7 @@ class HPKPRating extends Rating
     public function __construct(HTTPResponse $response)
     {
         $this->name = 'PUBLIC_KEY_PINS';
-        $this->scoreType = 'bonus';
+        $this->scoreType = 'hidden';
 
         parent::__construct($response);
     }
@@ -27,7 +27,7 @@ class HPKPRating extends Rating
             $this->errorMessage = TranslateableMessage::get('HEADER_ENCODING_ERROR', ['HEADER_NAME' => 'Public-Key-Pins']);
         } elseif (is_array($header) && count($header) > 1) {
             $this->hasError = true;
-            $this->errorMessage = TranslateableMessage::get('HEADER_SET_MULTIPLE_TIMES', ['HEADER' => $header]);
+            $this->errorMessage = TranslateableMessage::get('HEADER_SET_MULTIPLE_TIMES');
         } else {
             $header = $header[0];
 
@@ -43,9 +43,9 @@ class HPKPRating extends Rating
             $this->score = 100;
 
             if ($maxAge < 1296000) {
-                $this->testDetails->push(TranslateableMessage::get('HPKP_LESS_15', ['HEADER' => $header]));
+                $this->testDetails->push(TranslateableMessage::get('HPKP_LESS_15'));
             } elseif ($maxAge >= 1296000) {
-                $this->testDetails->push(TranslateableMessage::get('HPKP_MORE_15', ['HEADER' => $header]));
+                $this->testDetails->push(TranslateableMessage::get('HPKP_MORE_15'));
             } else {
                 $this->score = 0;
                 $this->hasError = true;
@@ -53,11 +53,11 @@ class HPKPRating extends Rating
             }
 
             if (strpos($header, 'includeSubDomains') !== false) {
-                $this->testDetails->push(TranslateableMessage::get('INCLUDE_SUBDOMAINS', ['HEADER' => $header]));
+                $this->testDetails->push(TranslateableMessage::get('INCLUDE_SUBDOMAINS'));
             }
 
             if (strpos($header, 'report-uri') !== false) {
-                $this->testDetails->push(TranslateableMessage::get('HPKP_REPORT_URI', ['HEADER' => $header]));
+                $this->testDetails->push(TranslateableMessage::get('HPKP_REPORT_URI'));
             }
         }
     }

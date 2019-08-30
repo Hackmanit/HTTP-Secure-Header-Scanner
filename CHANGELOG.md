@@ -6,10 +6,41 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
-## [1.4.0] - 2018-10-18
+## [1.6.0] - 2019-05-07
+### Changed
+- Output format to new [defined standard](https://github.com/SIWECOS/siwecos-core-api/tree/develop#translatablemessage-object)
+- Docker base image to `siwecos/dockered-laravel:7.2`
+
+
+## [1.5.5] - 2019-04-10
+### Changed
+- Travis workflow
+
+## [1.5.4] - 2019-04-10
+### Changed
+- Translation string for ReferrerPolicy `DIRECTIVE_SET`
+
+## [1.5.3] - 2019-04-05
+### Fixed
+- Fixed typo
+
+## [1.5.2] - 2019-04-05
+### Fixed
+- Timeout issues
+- Crash when the `Set-Cookie` header was invalid
+
+## [1.5.1] - 2019-04-04
 ### Added
 - Correct callback logic via Job implementation.
+- Feature to use a custom `userAgent`
 
+### Fixed
+- Several issues with DOMXSS part
+- Documentation
+- Deployment via Travis
+- Returning correct json responses
+- `TranslatableMessage` scheme
+- Minimized docker image
 
 ## [1.3.1] - 2018-10-18
 ### Fixed
@@ -74,8 +105,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 - CHANGELOG.md and semantic versioning
 
-[Unreleased]: https://github.com/SIWECOS/HSHS-DOMXSS-Scanner/compare/1.4.0...development
-[1.4.0]: https://github.com/SIWECOS/HSHS-DOMXSS-Scanner/compare/1.3.1...1.4.0
+[Unreleased]: https://github.com/SIWECOS/HSHS-DOMXSS-Scanner/compare/1.6.0..develop
+[1.6.0]: https://github.com/SIWECOS/HSHS-DOMXSS-Scanner/compare/1.5.5...1.6.0
+[1.5.5]: https://github.com/SIWECOS/HSHS-DOMXSS-Scanner/compare/1.5.4...1.5.5
+[1.5.4]: https://github.com/SIWECOS/HSHS-DOMXSS-Scanner/compare/1.5.3...1.5.4
+[1.5.3]: https://github.com/SIWECOS/HSHS-DOMXSS-Scanner/compare/1.5.2...1.5.3
+[1.5.2]: https://github.com/SIWECOS/HSHS-DOMXSS-Scanner/compare/1.5.1...1.5.2
+[1.5.1]: https://github.com/SIWECOS/HSHS-DOMXSS-Scanner/compare/1.3.1...1.5.1
 [1.3.1]: https://github.com/SIWECOS/HSHS-DOMXSS-Scanner/compare/1.3.0...1.3.1
 [1.3.0]: https://github.com/SIWECOS/HSHS-DOMXSS-Scanner/compare/1.2.0...1.3.0
 [1.2.1]: https://github.com/SIWECOS/HSHS-DOMXSS-Scanner/compare/1.2.0...1.2.1

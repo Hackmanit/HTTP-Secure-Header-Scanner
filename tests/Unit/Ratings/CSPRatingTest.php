@@ -26,8 +26,8 @@ class CSPRatingTest extends TestCase
 
         $this->assertEquals(0, $rating->score);
         $expected = [
-            'placeholder' => 'HEADER_NOT_SET',
-            'values'      => null,
+            'translationStringId' => 'HEADER_NOT_SET',
+            'placeholders' => null,
         ];
         $this->assertEquals($expected, $rating->errorMessage);
     }
@@ -110,8 +110,8 @@ class CSPRatingTest extends TestCase
 
         // Finds both legacy headers.
         $rating = new CSPRating(new HTTPResponse($this->request, $client));
-        $this->assertTrue($rating->testDetails->contains(['placeholder' => 'CSP_LEGACY_HEADER_SET', 'values' => ['HEADER_NAME' => 'X-Content-Security-Policy']]));
-        $this->assertTrue($rating->testDetails->contains(['placeholder' => 'CSP_LEGACY_HEADER_SET', 'values' => ['HEADER_NAME' => 'X-WebKit-CSP']]));
+        $this->assertTrue($rating->testDetails->contains(['translationStringId' => 'CSP_LEGACY_HEADER_SET', 'placeholders' => ['HEADER_NAME' => 'X-Content-Security-Policy']]));
+        $this->assertTrue($rating->testDetails->contains(['translationStringId' => 'CSP_LEGACY_HEADER_SET', 'placeholders' => ['HEADER_NAME' => 'X-WebKit-CSP']]));
     }
 
     /** @test */

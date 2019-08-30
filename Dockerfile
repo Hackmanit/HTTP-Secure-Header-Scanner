@@ -1,28 +1,13 @@
-FROM abiosoft/caddy:php-no-stats
+FROM siwecos/dockered-laravel:7.2
 
-LABEL MAINTAINER="Sascha Brendel <mail@lednerb.eu>"
+LABEL maintainer="Sascha Brendel <mail@lednerb.eu>"
 
-RUN apk --update add \
-    bash php7-mcrypt php7-mysqli php7-pdo_mysql php7-ctype php7-xml php7-simplexml php7-intl php7-fileinfo php7-xmlwriter \
-    supervisor redis \
-    && rm /var/cache/apk/*
+# Copy application
+COPY . .
+COPY .env.example .env
 
-COPY Docker/Caddyfile /etc/Caddyfile
-COPY Docker/supervisord.conf /etc/supervisord.conf
+# Install all PHP dependencies and change ownership of our applications
+RUN composer install --optimize-autoloader --no-dev --no-interaction \
+    && chown -R www-data:www-data .
 
-COPY . /scanner
-COPY .env.example /scanner/.env
-
-WORKDIR /scanner
-RUN composer install \
-    && chmod -R 777 /scanner/storage
-
-# Verify that everything works fine.
-RUN vendor/bin/phpunit
-
-EXPOSE 2015
-
-# ENTRYPOINT ["/bin/parent", "caddy"]
-# CMD ["--conf", "/etc/Caddyfile", "--log", "stdout", "--agree=$ACME_AGREE"]
-
-ENTRYPOINT ["supervisord", "--nodaemon", "--configuration", "/etc/supervisord.conf"]
+EXPOSE 80

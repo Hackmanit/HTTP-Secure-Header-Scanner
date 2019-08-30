@@ -21,8 +21,8 @@ class ReferrerPolicyRatingTest extends TestCase
 
         $this->assertEquals(0, $rating->score);
         $expected = [
-            'placeholder' => 'HEADER_NOT_SET',
-            'values'      => null,
+            'translationStringId' => 'HEADER_NOT_SET',
+            'placeholders' => null,
         ];
         $this->assertEquals($expected, $rating->errorMessage);
     }

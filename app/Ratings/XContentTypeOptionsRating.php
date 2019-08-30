@@ -27,15 +27,15 @@ class XContentTypeOptionsRating extends Rating
             $this->errorMessage = TranslateableMessage::get('HEADER_ENCODING_ERROR', ['HEADER_NAME' => 'X-Content-Type-Options']);
         } elseif (is_array($header) && count($header) > 1) {
             $this->hasError = true;
-            $this->errorMessage = TranslateableMessage::get('HEADER_SET_MULTIPLE_TIMES', ['HEADER' => $header]);
+            $this->errorMessage = TranslateableMessage::get('HEADER_SET_MULTIPLE_TIMES');
         } else {
             $header = $header[0];
 
             if ($header === 'nosniff') {
                 $this->score = 100;
-                $this->testDetails->push(TranslateableMessage::get('XCTO_CORRECT', ['HEADER' => $header]));
+                $this->testDetails->push(TranslateableMessage::get('XCTO_CORRECT'));
             } else {
-                $this->testDetails->push(TranslateableMessage::get('XCTO_NOT_CORRECT', ['HEADER' => $header]));
+                $this->testDetails->push(TranslateableMessage::get('XCTO_NOT_CORRECT'));
             }
         }
     }

@@ -10,7 +10,7 @@ class ReferrerPolicyRating extends Rating
     public function __construct(HTTPResponse $response)
     {
         $this->name = 'REFERRER_POLICY';
-        $this->scoreType = 'bonus';
+        $this->scoreType = 'warning';
 
         parent::__construct($response);
     }
@@ -27,41 +27,43 @@ class ReferrerPolicyRating extends Rating
             $this->errorMessage = TranslateableMessage::get('HEADER_ENCODING_ERROR', ['HEADER_NAME' => 'Referrer-Policy']);
         } elseif (is_array($header) && count($header) > 1) {
             $this->hasError = true;
-            $this->errorMessage = TranslateableMessage::get('HEADER_SET_MULTIPLE_TIMES', ['HEADER' => $header]);
+            $this->errorMessage = TranslateableMessage::get('HEADER_SET_MULTIPLE_TIMES');
         } else {
             $header = $header[0];
 
             if ($header == 'no-referrer') {
                 $this->score = 100;
-                $this->testDetails->push(TranslateableMessage::get('NO_REFERRER', ['HEADER' => $header]));
+                $this->testDetails->push(TranslateableMessage::get('DIRECTIVE_SET', ['DIRECTIVE' => 'no-referrer']));
+                $this->scoreType = 'success';
             } elseif ($header == 'same-origin') {
                 $this->score = 100;
-                $this->testDetails->push(TranslateableMessage::get('SAME_ORIGIN', ['HEADER' => $header]));
+                $this->testDetails->push(TranslateableMessage::get('DIRECTIVE_SET', ['DIRECTIVE' => 'same-origin']));
+                $this->scoreType = 'success';
             } elseif ($header == 'strict-origin') {
                 $this->score = 70;
-                $this->testDetails->push(TranslateableMessage::get('STRICT_ORIGIN', ['HEADER' => $header]));
+                $this->testDetails->push(TranslateableMessage::get('DIRECTIVE_SET', ['DIRECTIVE' => 'strict-origin']));
             } elseif ($header == 'strict-origin-when-cross-origin') {
                 $this->score = 70;
-                $this->testDetails->push(TranslateableMessage::get('STRICT_ORIGIN_WHEN_CROSS_ORIGIN', ['HEADER' => $header]));
+                $this->testDetails->push(TranslateableMessage::get('DIRECTIVE_SET', ['DIRECTIVE' => 'strict-origin-when-cross-origin']));
             } elseif ($header == 'origin') {
                 $this->score = 40;
-                $this->testDetails->push(TranslateableMessage::get('ORIGIN', ['HEADER' => $header]));
+                $this->testDetails->push(TranslateableMessage::get('DIRECTIVE_SET', ['DIRECTIVE' => 'origin']));
             } elseif ($header == 'origin-when-cross-origin') {
                 $this->score = 40;
-                $this->testDetails->push(TranslateableMessage::get('ORIGIN_WHEN_CROSS_ORIGIN', ['HEADER' => $header]));
+                $this->testDetails->push(TranslateableMessage::get('DIRECTIVE_SET', ['DIRECTIVE' => 'origin-when-cross-origin']));
             } elseif (empty($header)) {
                 $this->score = 10;
-                $this->testDetails->push(TranslateableMessage::get('EMPTY_DIRECTIVE', ['HEADER' => $header]));
+                $this->testDetails->push(TranslateableMessage::get('EMPTY_DIRECTIVE'));
             } elseif ($header == 'no-referrer-when-downgrade') {
                 $this->score = 0;
-                $this->testDetails->push(TranslateableMessage::get('NO_REFERRER_WHEN_DOWNGRADE', ['HEADER' => $header]));
+                $this->testDetails->push(TranslateableMessage::get('DIRECTIVE_SET', ['DIRECTIVE' => 'no-referrer-when-downgrade']));
             } elseif ($header == 'unsafe-url') {
                 $this->score = 0;
-                $this->testDetails->push(TranslateableMessage::get('UNSAFE_URL', ['HEADER' => $header]));
+                $this->testDetails->push(TranslateableMessage::get('DIRECTIVE_SET', ['DIRECTIVE' => 'unsafe-url']));
             } else {
                 $this->score = 0;
                 $this->hasError = true;
-                $this->errorMessage = TranslateableMessage::get('WRONG_DIRECTIVE_SET', ['HEADER' => $header]);
+                $this->errorMessage = TranslateableMessage::get('WRONG_DIRECTIVE_SET');
             }
         }
     }

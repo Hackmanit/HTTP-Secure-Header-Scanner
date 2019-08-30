@@ -361,61 +361,55 @@ Further advanced tests would be needed to confirm if there are vulnerabilities o
 
 ## HSHS-Scanner
 
-| Placeholder                     | Message                                                                                                             |
-| ------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
-| **GENERAL**                     |                                                                                                                     |
-| HEADER_NOT_SET                  | The header is not set.                                                                                              |
-| HEADER_SET_MULTIPLE_TIMES       | The header is set multiple times.                                                                                   |
-| HEADER_ENCODING_ERROR           | The header is not correctly encoded.                                                                                |
-| INCLUDE_SUBDOMAINS              | `includeSubDomains` is set.                                                                                         |
-| MAX_AGE_ERROR                   | An error occured while checking `max-age`.                                                                          |
-| NO_HTTP_RESPONSE                | No HTTP-Response for the given URL.                                                                                 |
-| **CONTENT-SECURITY-POLICY**     |                                                                                                                     |
-| CSP_CORRECT                     | The header is `unsafe-` free and includes `default-src 'none'`.                                                     |
-| CSP_DEFAULT_SRC_MISSING         | The `default-src` directive is missing.                                                                             |
-| CSP_LEGACY_HEADER_SET           | The legacy header `X-Content-Security-Policy` is set. The new and standardized header is `Content-Security-Policy`. |
-| CSP_NO_UNSAFE_INCLUDED          | The header is free of any `unsafe-` directives.                                                                     |
-| CSP_UNSAFE_INCLUDED             | The header contains `unsafe-inline` or `unsafe-eval` directives.                                                    |
-| **CONTENT-TYPE**                |                                                                                                                     |
-| CT_CORRECT                      | The header is set with the charset and follows the best practice.                                                   |
-| CT_HEADER_WITH_CHARSET          | The header is set with the charset.                                                                                 |
-| CT_HEADER_WITHOUT_CHARSET       | The header is set without the charset.                                                                              |
-| CT_META_TAG_SET                 | A meta tag is set with a charset.                                                                                   |
-| CT_META_TAG_SET_CORRECT         | A meta tag is set with a charset and follows the best practice.                                                     |
-| CT_WRONG_CHARSET                | The given charset is wrong and thereby ineffective.                                                                 |
-| **PUBLIC-KEY-PINS**             |                                                                                                                     |
-| HPKP_LESS_15                    | The keys are pinned for less than 15 days.                                                                          |
-| HPKP_MORE_15                    | The keys are pinned for more than 15 days.                                                                          |
-| HPKP_REPORT_URI                 | A `report-uri` is set.                                                                                              |
-| **REFERRER-POLICY**             |                                                                                                                     |
-| NO_REFERRER                     | The directive `no-referrer` is set.                                                                                 |
-| SAME_ORIGIN                     | The directive `same-origin` is set.                                                                                 |
-| EMPTY_DIRECTIVE                 | The directive is explicitly set as empty.                                                                           |
-| STRICT_ORIGIN                   | The direcitve 'strict-origin' is set.                                                                               |
-| STRICT_ORIGIN_WHEN_CROSS_ORIGIN | The direcitve 'strict-origin-when-cross-origin' is set.                                                             |
-| ORIGIN                          | The direcitve 'origin' is set.                                                                                      |
-| ORIGIN_WHEN_CROSS_ORIGIN        | The direcitve 'origin-when-cross-origin' is set.                                                                    |
-| NO_REFERRER_WHEN_DOWNGRADE      | The direcitve 'no-referrer-when-downgrade' is set.                                                                  |
-| UNSAFE_URL                      | The direcitve 'unsafe-url' is set.                                                                                  |
-| WRONG_DIRECTIVE_SET             | A wrong or unknown directive is set.                                                                                |
-| **SET-COOKIE**                  |
-| SECURE_FLAG_SET                 | The `secure` flag is set.                                                                                           |
-| NO_SECURE_FLAG_SET              | The `secure` flag is not set.                                                                                       |
-| HTTPONLY_FLAG_SET               | The `httpOnly` flag is set.                                                                                         |
-| NO_HTTPONLY_FLAG_SET            | The `httpOnly` flag is not set.                                                                                     |
-| **STRICT-TRANSPORT-SECURITY**   |                                                                                                                     |
-| HSTS_LESS_6                     | The value for `max-age` is smaller than 6 months.                                                                   |
-| HSTS_MORE_6                     | The value for `max-age` is greater than 6 months.                                                                   |
-| HSTS_PRELOAD                    | `preload` is set.                                                                                                   |
-| **X-CONTENT-TYPE-OPTIONS**      |                                                                                                                     |
-| XCTO_CORRECT                    | The header is set correctly.                                                                                        |
-| XCTO_NOT_CORRECT                | The header is not set correctly.                                                                                    |
-| **X-FRAME-OPTIONS**             |                                                                                                                     |
-| XFO_CORRECT                     | The header is set and does not contain any wildcard.                                                                |
-| XFO_WILDCARDS                   | The header contains wildcards and is thereby useless.                                                               |
-| **X-XSS-PROTECTION**            |                                                                                                                     |
-| XXSS_CORRECT                    | The header is set correctly.                                                                                        |
-| XXSS_BLOCK                      | `mode=block` is activated.                                                                                          |
+| Placeholder                   | Message                                                                                           |
+| ----------------------------- | ------------------------------------------------------------------------------------------------- |
+| **GENERAL**                   |                                                                                                   |
+| HEADER_NOT_SET                | The header is not set.                                                                            |
+| HEADER_SET_MULTIPLE_TIMES     | The header is set multiple times.                                                                 |
+| HEADER_ENCODING_ERROR         | The header is not correctly encoded.                                                              |
+| INVALID_HEADER                | The following header is not valid: `:HEADER`                                                      |
+| INCLUDE_SUBDOMAINS            | `includeSubDomains` is set.                                                                       |
+| MAX_AGE_ERROR                 | An error occured while checking `max-age`.                                                        |
+| NO_HTTP_RESPONSE              | No HTTP-Response for the given URL.                                                               |
+| **CONTENT-SECURITY-POLICY**   |                                                                                                   |
+| CSP_CORRECT                   | The header is `unsafe-` free and includes `default-src 'none'`.                                   |
+| CSP_DEFAULT_SRC_MISSING       | The `default-src` directive is missing.                                                           |
+| CSP_LEGACY_HEADER_SET         | The legacy header `:HEADER` is set. The new and standardized header is `Content-Security-Policy`. |
+| CSP_NO_UNSAFE_INCLUDED        | The header is free of any `unsafe-` directives.                                                   |
+| CSP_UNSAFE_INCLUDED           | The header contains `unsafe-inline` or `unsafe-eval` directives.                                  |
+| **CONTENT-TYPE**              |                                                                                                   |
+| CT_CORRECT                    | The header is set with the charset and follows the best practice.                                 |
+| CT_HEADER_WITH_CHARSET        | The header is set with the charset.                                                               |
+| CT_HEADER_WITHOUT_CHARSET     | The header is set without the charset.                                                            |
+| CT_META_TAG_SET               | A meta tag is set with a charset.                                                                 |
+| CT_META_TAG_SET_CORRECT       | A meta tag is set with a charset and follows the best practice.                                   |
+| CT_WRONG_CHARSET              | The given charset is wrong and thereby ineffective.                                               |
+| **PUBLIC-KEY-PINS**           |                                                                                                   |
+| HPKP_LESS_15                  | The keys are pinned for less than 15 days.                                                        |
+| HPKP_MORE_15                  | The keys are pinned for more than 15 days.                                                        |
+| HPKP_REPORT_URI               | A `report-uri` is set.                                                                            |
+| **REFERRER-POLICY**           |                                                                                                   |
+| DIRECTIVE_SET                 | The directive :DIRECTIVE is set.                                                                  |
+| EMPTY_DIRECTIVE               | The directive is explicitly set as empty.                                                         |
+| WRONG_DIRECTIVE_SET           | A wrong or unknown directive is set.                                                              |
+| **SET-COOKIE**                |                                                                                                   |
+| SECURE_FLAG_SET               | The `secure` flag is set.                                                                         |
+| NO_SECURE_FLAG_SET            | The `secure` flag is not set.                                                                     |
+| HTTPONLY_FLAG_SET             | The `httpOnly` flag is set.                                                                       |
+| NO_HTTPONLY_FLAG_SET          | The `httpOnly` flag is not set.                                                                   |
+| **STRICT-TRANSPORT-SECURITY** |                                                                                                   |
+| HSTS_LESS_6                   | The value for `max-age` is smaller than 6 months.                                                 |
+| HSTS_MORE_6                   | The value for `max-age` is greater than 6 months.                                                 |
+| HSTS_PRELOAD                  | `preload` is set.                                                                                 |
+| **X-CONTENT-TYPE-OPTIONS**    |                                                                                                   |
+| XCTO_CORRECT                  | The header is set correctly.                                                                      |
+| XCTO_NOT_CORRECT              | The header is not set correctly.                                                                  |
+| **X-FRAME-OPTIONS**           |                                                                                                   |
+| XFO_CORRECT                   | The header is set and does not contain any wildcard.                                              |
+| XFO_WILDCARDS                 | The header contains wildcards and is thereby useless.                                             |
+| **X-XSS-PROTECTION**          |                                                                                                   |
+| XXSS_CORRECT                  | The header is set correctly.                                                                      |
+| XXSS_BLOCK                    | `mode=block` is activated.                                                                        |
 
 ## DOMXSS-Scanner
 

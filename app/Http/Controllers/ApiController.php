@@ -20,7 +20,7 @@ class ApiController extends Controller
             return 'OK';
         }
 
-        return json_encode((new HeaderCheck($request))->report());
+        return response()->json((new HeaderCheck($request))->report());
     }
 
     public function domxssReport(ScanStartRequest $request)
@@ -31,7 +31,7 @@ class ApiController extends Controller
             return 'OK';
         }
 
-        return json_encode((new DOMXSSCheck($request))->report());
+        return response()->json((new DOMXSSCheck($request))->report());
     }
 
     public static function notifyCallbacks(array $callbackurls, $report)
@@ -39,13 +39,13 @@ class ApiController extends Controller
         foreach ($callbackurls as $url) {
             try {
                 $client = new Client();
-                $client->post($url, [
+                $client->request('POST', $url, [
                     'http_errors' => false,
                     'timeout'     => 60,
                     'json'        => $report,
                 ]);
             } catch (\Exception $e) {
-                Log::warning('Could not send the report to the following callback url: '.$url);
+                Log::warning('Could not send the report to the following callback url: ' . $url);
             }
         }
     }
