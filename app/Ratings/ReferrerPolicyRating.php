@@ -10,7 +10,7 @@ class ReferrerPolicyRating extends Rating
     public function __construct(HTTPResponse $response)
     {
         $this->name = 'REFERRER_POLICY';
-        $this->scoreType = 'bonus';
+        $this->scoreType = 'warning';
 
         parent::__construct($response);
     }
@@ -34,9 +34,11 @@ class ReferrerPolicyRating extends Rating
             if ($header == 'no-referrer') {
                 $this->score = 100;
                 $this->testDetails->push(TranslateableMessage::get('DIRECTIVE_SET', ['DIRECTIVE' => 'no-referrer']));
+                $this->scoreType = 'success';
             } elseif ($header == 'same-origin') {
                 $this->score = 100;
                 $this->testDetails->push(TranslateableMessage::get('DIRECTIVE_SET', ['DIRECTIVE' => 'same-origin']));
+                $this->scoreType = 'success';
             } elseif ($header == 'strict-origin') {
                 $this->score = 70;
                 $this->testDetails->push(TranslateableMessage::get('DIRECTIVE_SET', ['DIRECTIVE' => 'strict-origin']));
