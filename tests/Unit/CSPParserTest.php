@@ -118,4 +118,12 @@ class CSPParserTest extends TestCase
         $csp = new CSPParser($header);
         $this->assertTrue($csp->isValid());
     }
+
+    /** @test */
+    public function cspParser_does_not_mark_valid_csp_as_invalid_caused_by_valueDirectives_like_blockAllMixedContent()
+    {
+        $csp = new CSPParser("default-src 'self'; img-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self'; base-uri 'none'; frame-ancestors 'none'; form-action 'self'; block-all-mixed-content; report-uri https://example.org/reports/report; report-to default");
+
+        $this->assertTrue($csp->isValid());
+    }
 }

@@ -87,15 +87,12 @@ class CSPParser
         foreach ($splittedDirectives as $directive) {
             // Get direcitve name without whitespace
             $directive = trim($directive);
+            $directive = preg_replace('/\s+/', ' ', $directive);
 
-            // Get directives values
-            $posWhitespace = strpos($directive, ' ');
-            $directiveName = substr($directive, 0, $posWhitespace);
-            $directiveValues = trim(substr($directive, $posWhitespace + 1));
-            // remove doubled whitespace
-            $directiveValues = preg_replace('/\s+/', ' ', $directiveValues);
+            $splittedDirectiveParts = explode(' ', $directive);
+
             // Put the directive with it's values to the directives collection
-            $this->directives->put($directiveName, collect(explode(' ', $directiveValues)));
+            $this->directives->put(array_shift($splittedDirectiveParts), collect($splittedDirectiveParts));
         }
     }
 
@@ -172,16 +169,19 @@ class CSPParser
                 'manifest-src',
                 'media-src',
                 'object-src',
-                'prefetch-src',
+                'prefetch-src', // experimental
                 'script-src',
+                'script-src-elem', // experimental
+                'script-src-attr', // experimental
                 'style-src',
-                'worker-src',
+                'style-src-elem', // experimental
+                'style-src-attr', // experimental
+                'worker-src', // experimental
             ],
             'document-directives' => [
                 'base-uri',
                 'plugin-types',
-                'sandbox',
-                'disown-opener', // experimental
+                'sandbox'
             ],
             'navigation-directives' => [
                 'form-action',
@@ -190,12 +190,13 @@ class CSPParser
             ],
             'reporting-directives' => [
                 'report-uri', // deprectated
-                'report-to',
+                'report-to', // experimental
             ],
             'other-directives' => [
                 'block-all-mixed-content',
                 'referrer', // deprecated
-                'required-sri-for',
+                'required-sri-for', // experimental
+                'trusted-types', // experimental
                 'upgrade-insecure-requests',
             ],
         ]);
