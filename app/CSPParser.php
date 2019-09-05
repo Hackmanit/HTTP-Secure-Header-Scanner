@@ -169,16 +169,19 @@ class CSPParser
                 'manifest-src',
                 'media-src',
                 'object-src',
-                'prefetch-src',
+                'prefetch-src', // experimental
                 'script-src',
+                'script-src-elem', // experimental
+                'script-src-attr', // experimental
                 'style-src',
-                'worker-src',
+                'style-src-elem', // experimental
+                'style-src-attr', // experimental
+                'worker-src', // experimental
             ],
             'document-directives' => [
                 'base-uri',
                 'plugin-types',
-                'sandbox',
-                'disown-opener', // experimental
+                'sandbox'
             ],
             'navigation-directives' => [
                 'form-action',
@@ -187,12 +190,13 @@ class CSPParser
             ],
             'reporting-directives' => [
                 'report-uri', // deprectated
-                'report-to',
+                'report-to', // experimental
             ],
             'other-directives' => [
                 'block-all-mixed-content',
                 'referrer', // deprecated
-                'required-sri-for',
+                'required-sri-for', // experimental
+                'trusted-types', // experimental
                 'upgrade-insecure-requests',
             ],
         ]);
