@@ -87,15 +87,12 @@ class CSPParser
         foreach ($splittedDirectives as $directive) {
             // Get direcitve name without whitespace
             $directive = trim($directive);
+            $directive = preg_replace('/\s+/', ' ', $directive);
 
-            // Get directives values
-            $posWhitespace = strpos($directive, ' ');
-            $directiveName = substr($directive, 0, $posWhitespace);
-            $directiveValues = trim(substr($directive, $posWhitespace + 1));
-            // remove doubled whitespace
-            $directiveValues = preg_replace('/\s+/', ' ', $directiveValues);
+            $splittedDirectiveParts = explode(' ', $directive);
+
             // Put the directive with it's values to the directives collection
-            $this->directives->put($directiveName, collect(explode(' ', $directiveValues)));
+            $this->directives->put(array_shift($splittedDirectiveParts), collect($splittedDirectiveParts));
         }
     }
 
