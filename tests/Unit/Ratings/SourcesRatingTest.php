@@ -11,7 +11,7 @@ use Tests\TestCase;
 class SourcesRatingTest extends TestCase
 {
     /** @test */
-    public function sourcesRatingRates0ForNoContent()
+    public function sourcesRatingRates100ForNoContent()
     {
         $client = $this->getMockedGuzzleClient([
             new Response(200),
@@ -20,7 +20,7 @@ class SourcesRatingTest extends TestCase
         $response = new HTTPResponse($this->request, $client);
         $rating = new SourcesRating($response);
 
-        $this->assertEquals(0, $rating->score);
+        $this->assertEquals(100, $rating->score);
         $this->assertTrue($rating->hasError);
         $this->assertTrue(collect($rating->errorMessage)->flatten()->contains('NO_CONTENT'));
     }
