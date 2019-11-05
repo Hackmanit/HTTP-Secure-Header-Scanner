@@ -25,6 +25,7 @@ class SinksRating extends Rating
 
         if ($html->getIsDOMDocumentCreatedWithoutHtml()) {
             $this->hasError = true;
+            $this->score = 100;
             $this->errorMessage = TranslateableMessage::get('NO_CONTENT');
         } else {
             $scriptTags = $html->find('script');
