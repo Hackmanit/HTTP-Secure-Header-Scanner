@@ -40,12 +40,14 @@ class XXSSProtectionRatingTest extends TestCase
 
         $this->assertEquals(50, $rating->score);
         $this->assertTrue(collect($rating->testDetails)->flatten()->contains('XXSS_CORRECT'));
+        $this->assertFalse(collect($rating->testDetails)->flatten()->contains('XXSS_BLOCK'));
 
         $response = new HTTPResponse($this->request, $client);
         $rating = new XXSSProtectionRating($response);
 
         $this->assertEquals(50, $rating->score);
         $this->assertTrue(collect($rating->testDetails)->flatten()->contains('XXSS_CORRECT'));
+        $this->assertFalse(collect($rating->testDetails)->flatten()->contains('XXSS_BLOCK'));
     }
 
     /** @test */
@@ -60,6 +62,7 @@ class XXSSProtectionRatingTest extends TestCase
 
         $this->assertEquals(100, $rating->score);
         $this->assertTrue(collect($rating->testDetails)->flatten()->contains('XXSS_BLOCK'));
+        $this->assertFalse(collect($rating->testDetails)->flatten()->contains('XXSS_CORRECT'));
     }
 
     /** @test */
