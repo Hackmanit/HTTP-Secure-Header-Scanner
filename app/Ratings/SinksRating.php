@@ -11,7 +11,7 @@ class SinksRating extends Rating
     public function __construct(HTTPResponse $response)
     {
         $this->name = 'SINKS';
-        $this->scoreType = 'info';
+        $this->scoreType = 'warning';
 
         parent::__construct($response);
     }
@@ -32,6 +32,7 @@ class SinksRating extends Rating
 
             if (count($scriptTags) == 0) {
                 $this->score = 100;
+                $this->scoreType = 'success';
                 $this->testDetails->push(TranslateableMessage::get('NO_SCRIPT_TAGS'));
             } else {
                 $this->score = 100;
@@ -49,6 +50,10 @@ class SinksRating extends Rating
                     $this->testDetails->push(TranslateableMessage::get('SINKS_FOUND', ['AMOUNT' => $sinkCounter]));
                 } else {
                     $this->testDetails->push(TranslateableMessage::get('NO_SINKS_FOUND'));
+                }
+
+                if ($this->score == 100) {
+                    $this->scoreType = 'success';
                 }
             }
         }
