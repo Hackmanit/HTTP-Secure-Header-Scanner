@@ -55,6 +55,7 @@ class CSPRating extends Rating
                 return ($value === "'self'") || ($value === "'none'");
             })) {
                 $this->score = 100;
+                $this->scoreType = 'success';
                 $this->testDetails->push(TranslateableMessage::get('CSP_CORRECT'));
             }
         }

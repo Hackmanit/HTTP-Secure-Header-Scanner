@@ -35,6 +35,7 @@ class XXSSProtectionRating extends Rating
 
             if (strpos($header, 'mode=block') !== false) {
                 $this->score = 100;
+                $this->scoreType = 'success';
                 $this->testDetails->push(TranslateableMessage::get('XXSS_BLOCK'));
             } else {
                 $this->testDetails->push(TranslateableMessage::get('XXSS_CORRECT'));

@@ -55,8 +55,12 @@ class SetCookieRating extends Rating
             }
 
             // Calculate average score for all cookie headers
-            $this->score = (int)ceil(($this->score / count($header)));
+            $this->score = (int) ceil(($this->score / count($header)));
             $this->score = $this->score > 100 ? 100 : $this->score;
+
+            if ($this->score == 100) {
+                $this->scoreType = 'success';
+            }
         }
     }
 }

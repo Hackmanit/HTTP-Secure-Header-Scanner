@@ -33,6 +33,7 @@ class XContentTypeOptionsRating extends Rating
 
             if ($header === 'nosniff') {
                 $this->score = 100;
+                $this->scoreType = 'success';
                 $this->testDetails->push(TranslateableMessage::get('XCTO_CORRECT'));
             } else {
                 $this->testDetails->push(TranslateableMessage::get('XCTO_NOT_CORRECT'));

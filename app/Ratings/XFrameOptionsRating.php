@@ -36,6 +36,7 @@ class XFrameOptionsRating extends Rating
                 $this->testDetails->push(TranslateableMessage::get('XFO_WILDCARDS'));
             } else {
                 $this->score = 100;
+                $this->scoreType = 'success';
                 $this->testDetails->push(TranslateableMessage::get('XFO_CORRECT'));
             }
         }

@@ -46,6 +46,7 @@ class HSTSRating extends Rating
                 $this->testDetails->push(TranslateableMessage::get('HSTS_LESS_6'));
             } elseif ($maxAge >= 15768000) {
                 $this->score = 100;
+                $this->scoreType = 'success';
                 $this->testDetails->push(TranslateableMessage::get('HSTS_MORE_6'));
             } else {
                 $this->score = 0;

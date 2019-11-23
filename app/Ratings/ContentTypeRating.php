@@ -50,6 +50,7 @@ class ContentTypeRating extends Rating
 
             if (stripos($header, 'charset=utf-8') !== false) {
                 $this->score = 100;
+                $this->scoreType = 'success';
                 $detail = 'CT_CORRECT';
             }
 
