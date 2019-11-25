@@ -49,8 +49,8 @@ class SetCookieRatingTest extends TestCase
 
         $this->assertFalse($rating->hasError);
         $this->assertEquals(0, $rating->score);
-        $this->assertTrue(collect($rating->testDetails)->flatten()->contains('NO_HTTPONLY_FLAG_SET'));
-        $this->assertTrue(collect($rating->testDetails)->flatten()->contains('NO_SECURE_FLAG_SET'));
+        $this->assertEquals('✗', $rating->testDetails[0]['placeholders']['HTTPONLY']);
+        $this->assertEquals('✗', $rating->testDetails[0]['placeholders']['SECURE']);
     }
 
     /** @test */
@@ -64,21 +64,21 @@ class SetCookieRatingTest extends TestCase
 
         $this->assertFalse($rating->hasError);
         $this->assertEquals(90, $rating->score);
-        $this->assertTrue(collect($rating->testDetails)->flatten()->contains('SECURE_FLAG_SET'));
+        $this->assertEquals('🗸', $rating->testDetails[0]['placeholders']['SECURE']);
     }
 
     /** @test */
     public function setCookieRating_detects_httpOnly_flag()
     {
         $client = $this->getMockedGuzzleClient([
-            new Response(200, ['Set-Cookie' => 'session=myCookie; HttpOnly']),
+            new Response(200, ['Set-Cookie' => 'myCookie=abc123; HttpOnly']),
         ]);
         $response = new HTTPResponse($this->request, $client);
         $rating = new SetCookieRating($response);
 
         $this->assertFalse($rating->hasError);
         $this->assertEquals(10, $rating->score);
-        $this->assertTrue(collect($rating->testDetails)->flatten()->contains('HTTPONLY_FLAG_SET'));
+        $this->assertEquals('🗸', $rating->testDetails[0]['placeholders']['HTTPONLY']);
     }
 
     /** @test */
@@ -92,8 +92,9 @@ class SetCookieRatingTest extends TestCase
 
         $this->assertFalse($rating->hasError);
         $this->assertEquals(100, $rating->score);
-        $this->assertTrue(collect($rating->testDetails)->flatten()->contains('SECURE_FLAG_SET'));
-        $this->assertTrue(collect($rating->testDetails)->flatten()->contains('HTTPONLY_FLAG_SET'));
+        $this->assertEquals('session', $rating->testDetails[0]['placeholders']['NAME']);
+        $this->assertEquals('🗸', $rating->testDetails[0]['placeholders']['HTTPONLY']);
+        $this->assertEquals('🗸', $rating->testDetails[0]['placeholders']['SECURE']);
     }
 
     /** @test */

@@ -31,21 +31,26 @@ class SetCookieRating extends Rating
             foreach ($header as $cookieHeader) {
                 $cookie = Cookie::parse('Set-Cookie: ' . $cookieHeader);
                 if ($cookie) {
-                    // Check for Secure Flag
+
                     if ($cookie->isSecureOnly()) {
                         $this->score += 90;
-                        $this->testDetails->push(TranslateableMessage::get('SECURE_FLAG_SET', ['COOKIE' => $cookieHeader]));
+                        $hasSecureFlag = true;
                     } else {
-                        $this->testDetails->push(TranslateableMessage::get('NO_SECURE_FLAG_SET', ['COOKIE' => $cookieHeader]));
+                        $hasSecureFlag = false;
                     }
 
-                    // Check for HttpOnly Flag
                     if ($cookie->isHttpOnly()) {
                         $this->score += 10;
-                        $this->testDetails->push(TranslateableMessage::get('HTTPONLY_FLAG_SET', ['COOKIE' => $cookieHeader]));
+                        $hasHttpOnlyFlag = true;
                     } else {
-                        $this->testDetails->push(TranslateableMessage::get('NO_HTTPONLY_FLAG_SET', ['COOKIE' => $cookieHeader]));
+                        $hasHttpOnlyFlag = false;
                     }
+
+                    $this->testDetails->push(TranslateableMessage::get('COOKIE', [
+                        'NAME' => $cookie->getName(),
+                        'HTTPONLY' => $hasHttpOnlyFlag ? '🗸' : '✗',
+                        'SECURE' => $hasSecureFlag ? '🗸' : '✗',
+                    ]));
                 }
                 // Set-Cookie header exists but not valid so $cookie = null
                 else {
