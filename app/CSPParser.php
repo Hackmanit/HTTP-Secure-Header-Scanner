@@ -197,6 +197,7 @@ class CSPParser
                 'referrer', // deprecated
                 'required-sri-for', // experimental
                 'trusted-types', // experimental
+                'require-trusted-types-for', // experimental
                 'upgrade-insecure-requests',
             ],
         ]);
