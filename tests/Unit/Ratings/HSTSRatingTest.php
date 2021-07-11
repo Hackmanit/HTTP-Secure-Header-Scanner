@@ -2,25 +2,29 @@
 
 namespace Tests\Unit;
 
+use App\HTTPResponse;
 use App\Ratings\HSTSRating;
-use GuzzleHttp\Client;
-use GuzzleHttp\Handler\MockHandler;
-use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Response;
 use Tests\TestCase;
 
 class HSTSRatingTest extends TestCase
 {
     /** @test */
-    public function hstsRating_rates_c_for_a_missing_header()
+    public function hstsRating_rates_0_for_a_missing_header()
     {
         $client = $this->getMockedGuzzleClient([
             new Response(200),
         ]);
-        $rating = new HSTSRating("http://testdomain", $client);
+        $response = new HTTPResponse($this->request, $client);
+        $rating = new HSTSRating($response);
 
-        $this->assertEquals("C", $rating->getRating());
-        $this->assertEquals("The header is not set.", $rating->getComment());
+        $this->assertEquals(0, $rating->score);
+
+        $expected = [
+            'translationStringId' => 'HEADER_NOT_SET',
+            'placeholders' => null,
+        ];
+        $this->assertEquals($expected, $rating->errorMessage);
     }
 
     /** @test */
@@ -28,13 +32,14 @@ class HSTSRatingTest extends TestCase
     {
         $client = $this->getMockedGuzzleClient([
             new Response(200, [
-                'Strict-Transport-Security' => 'max-age=30'
+                'Strict-Transport-Security' => 'max-age=30',
             ]),
         ]);
-        $rating = new HSTSRating("http://testdomain", $client);
+        $response = new HTTPResponse($this->request, $client);
+        $rating = new HSTSRating($response);
 
-        $this->assertEquals("B", $rating->getRating());
-        $this->assertEquals('The value for "max-age" is smaller than 6 months.', $rating->getComment());
+        $this->assertEquals(60, $rating->score);
+        $this->assertTrue(collect($rating->testDetails)->flatten()->contains('HSTS_LESS_6'));
     }
 
     /** @test */
@@ -42,13 +47,14 @@ class HSTSRatingTest extends TestCase
     {
         $client = $this->getMockedGuzzleClient([
             new Response(200, [
-                'Strict-Transport-Security' => 'max-age=' . 6 * 31 * 24 * 60 * 60
+                'Strict-Transport-Security' => 'max-age=' . 6 * 31 * 24 * 60 * 60,
             ]),
         ]);
-        $rating = new HSTSRating("http://testdomain", $client);
+        $response = new HTTPResponse($this->request, $client);
+        $rating = new HSTSRating($response);
 
-        $this->assertEquals("A", $rating->getRating());
-        $this->assertEquals('The value for "max-age" is greater than 6 months.', $rating->getComment());
+        $this->assertEquals(100, $rating->score);
+        $this->assertTrue(collect($rating->testDetails)->flatten()->contains('HSTS_MORE_6'));
     }
 
     /** @test */
@@ -56,13 +62,13 @@ class HSTSRatingTest extends TestCase
     {
         $client = $this->getMockedGuzzleClient([
             new Response(200, [
-                'Strict-Transport-Security' => 'max-age=30; includeSubDomains'
+                'Strict-Transport-Security' => 'max-age=30; includeSubDomains',
             ]),
         ]);
-        $rating = new HSTSRating("http://testdomain", $client);
+        $response = new HTTPResponse($this->request, $client);
+        $rating = new HSTSRating($response);
 
-        $this->assertStringEndsWith("+", $rating->getRating());
-        $this->assertStringEndsWith('"includeSubDomains" is set.', $rating->getComment());
+        $this->assertTrue(collect($rating->testDetails)->flatten()->contains('INCLUDE_SUBDOMAINS'));
     }
 
     /** @test */
@@ -70,24 +76,27 @@ class HSTSRatingTest extends TestCase
     {
         $client = $this->getMockedGuzzleClient([
             new Response(200, [
-                'Strict-Transport-Security' => 'max-age=30; preload'
+                'Strict-Transport-Security' => 'max-age=30; preload',
             ]),
         ]);
-        $rating = new HSTSRating("http://testdomain", $client);
+        $response = new HTTPResponse($this->request, $client);
+        $rating = new HSTSRating($response);
 
-        $this->assertStringEndsWith("+", $rating->getRating());
-        $this->assertStringEndsWith('"preload" is set.', $rating->getComment());
+        $this->assertTrue(collect($rating->testDetails)->flatten()->contains('HSTS_PRELOAD'));
     }
 
-    /**
-     * This method sets and activates the GuzzleHttp Mocking functionality.
-     * @param array $responses
-     * @return Client
-     */
-    protected function getMockedGuzzleClient(array $responses)
+    /** @test */
+    public function HSTSRating_detects_wrong_encoding()
     {
-        $mock = new MockHandler($responses);
-        $handler = HandlerStack::create($mock);
-        return (new Client(["handler" => $handler])) ;
+        $client = $this->getMockedGuzzleClient([
+            // Producing an encoding error
+            new Response(200, ['Strict-Transport-Security' => zlib_encode('SGVsbG8gV29ybGQ=', ZLIB_ENCODING_RAW)]),
+        ]);
+        $response = new HTTPResponse($this->request, $client);
+        $rating = new HSTSRating($response);
+
+        $this->assertEquals(0, $rating->score);
+        $this->assertTrue(collect($rating->errorMessage)->contains('HEADER_ENCODING_ERROR'));
+        $this->assertTrue($rating->hasError);
     }
 }

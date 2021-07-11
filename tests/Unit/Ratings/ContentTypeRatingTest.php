@@ -2,99 +2,198 @@
 
 namespace Tests\Unit;
 
+use App\HTTPResponse;
 use App\Ratings\ContentTypeRating;
-use GuzzleHttp\Client;
-use GuzzleHttp\Handler\MockHandler;
-use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Response;
 use Tests\TestCase;
 
 class ContentTypeRatingTest extends TestCase
 {
     /** @test */
-    public function contentTypeRating_rates_c_for_a_missing_header()
+    public function contentTypeRating_rates_0_for_a_missing_header()
     {
         $client = $this->getMockedGuzzleClient([
             new Response(200),
         ]);
-        $rating = new ContentTypeRating("http://testdomain", $client);
 
-        $this->assertEquals("C", $rating->getRating());
-        $this->assertEquals("The header is not set.", $rating->getComment());
+        $response = new HTTPResponse($this->request, $client);
+        $rating = new ContentTypeRating($response);
+
+        $this->assertEquals(0, $rating->score);
+        $expected = [
+            'translationStringId' => 'HEADER_NOT_SET',
+            'placeholders' => null,
+        ];
+        $this->assertEquals($expected, $rating->errorMessage);
     }
 
     /** @test */
-    public function contentTypeRating_rates_c_when_the_charset_is_missing()
+    public function contentTypeRating_rates_0_when_the_charset_is_missing()
     {
         $client = $this->getMockedGuzzleClient([
-            new Response(200, [ "Content-Type" => "text/html" ]),
+            new Response(200, ['Content-Type' => 'text/html']),
         ]);
-        $rating = new ContentTypeRating("http://testdomain", $client);
+        $response = new HTTPResponse($this->request, $client);
+        $rating = new ContentTypeRating($response);
 
-        $this->assertEquals("C", $rating->getRating());
-        $this->assertEquals("The header is set without the charset.", $rating->getComment());
+        $this->assertEquals(0, $rating->score);
+        $this->assertTrue(collect($rating)->contains('CT_HEADER_WITHOUT_CHARSET'));
     }
 
     /** @test */
-    public function contentTypeRating_rates_c_when_a_wrong_charset_definition_is_given_see_HASEGAWA()
+    public function contentTypeRating_rates_0_when_a_wrong_charset_definition_is_given_see_HASEGAWA()
     {
         $client = $this->getMockedGuzzleClient([
-            new Response(200, [ "Content-Type" => "text/html; charset=utf8" ]),
-            new Response(200, [ "Content-Type" => "text/html; charset=Windows-31J" ]),
-            new Response(200, [ "Content-Type" => "text/html; charset=CP932" ]),
-            new Response(200, [ "Content-Type" => "text/html; charset=MS932" ]),
-            new Response(200, [ "Content-Type" => "text/html; charset=MS942C" ]),
-            new Response(200, [ "Content-Type" => "text/html; charset=sjis" ]),
-            new Response(200, [ "Content-Type" => "text/html; charset=jis" ]),
+            new Response(200, ['Content-Type' => 'text/html; charset=utf8']),
+            new Response(200, ['Content-Type' => 'text/html; charset=Windows-31J']),
+            new Response(200, ['Content-Type' => 'text/html; charset=CP932']),
+            new Response(200, ['Content-Type' => 'text/html; charset=MS932']),
+            new Response(200, ['Content-Type' => 'text/html; charset=MS942C']),
+            new Response(200, ['Content-Type' => 'text/html; charset=sjis']),
+            new Response(200, ['Content-Type' => 'text/html; charset=jis']),
         ]);
 
         for ($i = 1; $i <= 7; $i++) {
-            $rating = new ContentTypeRating("http://testdomain", $client);
+            $response = new HTTPResponse($this->request, $client);
+            $rating = new ContentTypeRating($response);
 
-            $this->assertEquals("C", $rating->getRating());
-            $this->assertStringStartsWith("The given charset is wrong and thereby ineffective.", $rating->getComment());
+            $this->assertEquals(0, $rating->score);
+            $this->assertTrue(collect($rating)->contains('CT_WRONG_CHARSET'));
         }
     }
 
     /** @test */
-    public function contentTypeRating_rates_a_when_the_charset_is_utf_8()
+    public function contentTypeRating_rates_100_when_the_charset_is_utf_8()
     {
         $client = $this->getMockedGuzzleClient([
-            new Response(200, [ "Content-Type" => "text/html; charset=utf-8" ]),
-            new Response(200, [ "Content-Type" => "text/html; charset=UTF-8" ]),
+            new Response(200, ['Content-Type' => 'text/html; charset=utf-8']),
+            new Response(200, ['Content-Type' => 'text/html; charset=UTF-8']),
         ]);
 
-        for ($i = 1; $i <= 2; $i++) {
-            $rating = new ContentTypeRating("http://testdomain", $client);
+        $response = new HTTPResponse($this->request, $client);
+        $rating = new ContentTypeRating($response);
 
-            $this->assertEquals("A", $rating->getRating());
-            $this->assertEquals("The header is set with the charset and follows the best practice.", $rating->getComment());
+        for ($i = 1; $i <= 2; $i++) {
+            $this->assertEquals(100, $rating->score);
         }
     }
 
     /** @test */
     public function if_the_header_is_not_set_the_meta_tag_is_rated()
     {
-        $sampleBody = file_get_contents(base_path() . "/tests/Unit/example.org.html");
+        $sampleBody = file_get_contents(base_path() . '/tests/Unit/example.org.html');
 
         $client = $this->getMockedGuzzleClient([
-            new Response(200, [ ], $sampleBody)
+            new Response(200, [], $sampleBody),
         ]);
 
-        $rating = new ContentTypeRating("http://testdomain", $client);
+        $response = new HTTPResponse($this->request, $client);
+        $rating = new ContentTypeRating($response);
 
-        $this->assertEquals("B", $rating->getRating());
+        $this->assertEquals(60, $rating->score);
+        $this->assertTrue(collect($rating->testDetails)->flatten()->contains('CT_META_TAG_SET_CORRECT'));
     }
 
-    /**
-     * This method sets and activates the GuzzleHttp Mocking functionality.
-     * @param array $responses
-     * @return Client
-     */
-    protected function getMockedGuzzleClient(array $responses)
+    /** @test */
+    public function if_the_header_is_set_the_meta_tag_is_not_rated()
     {
-        $mock = new MockHandler($responses);
-        $handler = HandlerStack::create($mock);
-        return (new Client(["handler" => $handler])) ;
+        $sampleBody = file_get_contents(base_path() . '/tests/Unit/example.org.html');
+
+        $client = $this->getMockedGuzzleClient([
+            new Response(200, ['Content-Type' => 'text/html; charset=utf-8'], $sampleBody),
+        ]);
+
+        $response = new HTTPResponse($this->request, $client);
+        $rating = new ContentTypeRating($response);
+
+        $this->assertEquals(100, $rating->score);
+        $this->assertFalse(collect($rating->testDetails)->flatten()->contains('CT_META_TAG_SET_CORRECT'));
+    }
+
+    /** @test */
+    public function ContentTypeRating_rates_30_if_only_the_meta_tag_is_set_but_without_an_charset()
+    {
+        $sampleBody = '
+            <html><head><meta http-equiv="Content-Type" content="text/html" /></head><body></body></html>
+        ';
+
+        $client = $this->getMockedGuzzleClient([
+            new Response(200, [], $sampleBody),
+        ]);
+
+        $response = new HTTPResponse($this->request, $client);
+        $rating = new ContentTypeRating($response);
+
+        $this->assertEquals(30, $rating->score);
+        $this->assertTrue(collect($rating->testDetails)->flatten()->contains('CT_META_TAG_SET'));
+    }
+
+    /** @test */
+    public function ContentTypeRating_rates_60_if_only_the_meta_tag_is_set_but_with_the_correct_charset()
+    {
+        $sampleBody = '
+            <html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /></head><body></body></html>
+        ';
+
+        $client = $this->getMockedGuzzleClient([
+            new Response(200, [], $sampleBody),
+        ]);
+
+        $response = new HTTPResponse($this->request, $client);
+        $rating = new ContentTypeRating($response);
+
+        $this->assertEquals(60, $rating->score);
+        $this->assertTrue(collect($rating->testDetails)->flatten()->contains('CT_META_TAG_SET_CORRECT'));
+    }
+
+    /** @test */
+    public function ContentTypeRating_rates_30_if_only_the_short_meta_tag_is_set_but_with_another_charset()
+    {
+        $sampleBody = '
+            <html><head><meta charset="ISO-8859-1" /></head><body></body></html>
+        ';
+
+        $client = $this->getMockedGuzzleClient([
+            new Response(200, [], $sampleBody),
+        ]);
+
+        $response = new HTTPResponse($this->request, $client);
+        $rating = new ContentTypeRating($response);
+
+        $this->assertEquals(30, $rating->score);
+        $this->assertTrue(collect($rating->testDetails)->flatten()->contains('CT_META_TAG_SET'));
+    }
+
+    /** @test */
+    public function ContentTypeRating_rates_60_if_only_the_short_meta_tag_is_set_but_with_the_correct_charset()
+    {
+        $sampleBody = '
+            <html><head><meta charset="UTF-8" /></head><body></body></html>
+        ';
+
+        $client = $this->getMockedGuzzleClient([
+            new Response(200, [], $sampleBody),
+        ]);
+
+        $response = new HTTPResponse($this->request, $client);
+        $rating = new ContentTypeRating($response);
+
+        $this->assertEquals(60, $rating->score);
+        $this->assertTrue(collect($rating->testDetails)->flatten()->contains('CT_META_TAG_SET_CORRECT'));
+    }
+
+    /** @test */
+    public function ContentTypeRating_detects_wrong_encoding()
+    {
+        $client = $this->getMockedGuzzleClient([
+            // Producing an encoding error
+            new Response(200, ['Content-Type' => zlib_encode('SGVsbG8gV29ybGQ=', ZLIB_ENCODING_RAW)]),
+        ]);
+        $response = new HTTPResponse($this->request, $client);
+        $rating = new ContentTypeRating($response);
+
+        $this->assertEquals(0, $rating->score);
+        $this->assertTrue(collect($rating->errorMessage)->contains('HEADER_ENCODING_ERROR'));
+        $this->assertTrue($rating->hasError);
     }
 }

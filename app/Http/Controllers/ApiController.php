@@ -2,82 +2,51 @@
 
 namespace App\Http\Controllers;
 
-use App\Crawler;
-use App\DomxssReport;
-use App\Jobs\CrawlerJob;
-use App\Jobs\GenerateFullReportJob;
-use App\HeaderReport;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Redis;
-use Illuminate\Support\Facades\URL;
+use App\DOMXSSCheck;
+use App\HeaderCheck;
+use App\Http\Requests\ScanStartRequest;
+use App\Jobs\DomxssScanJob;
+use App\Jobs\HeaderScanJob;
+use GuzzleHttp\Client;
+use Illuminate\Support\Facades\Log;
 
 class ApiController extends Controller
 {
-    /**
-     * Returns a very simple report for a single URL.
-     *
-     * @param Request $request
-     * @return \Illuminate\Support\Collection
-     */
-    public function headerReport(Request $request) {
-        $this->validate($request, [
-            'url' => 'required|url'
-        ]);
+    public function headerReport(ScanStartRequest $request)
+    {
+        if ($request->json('callbackurls')) {
+            HeaderScanJob::dispatch($request->all());
 
-        $report = new HeaderReport($request->input('url'));
-        return  collect([
-                'checks' => [
-                    'Content-Type' => [
-                        'result' => (strpos( $report->getRating("content-type"), 'C' ) !== false),
-                        'comment' => $report->getComment("content-type"),
-                        'directive' => $report->getHeader( 'content-type' )
-                    ],
-                    'Content-Security-Policy' => [
-                        'result' => (strpos( $report->getRating("content-security-policy"), 'C' ) !== false),
-                        'comment' => $report->getComment("content-security-policy"),
-                        'directive' => $report->getHeader( 'content-security-policy' )
-                    ],
-                    'Public-Key-Pins' => [
-                        'result' => (strpos( $report->getRating("public-key-pins"), 'C' ) !== false),
-                        'comment' => $report->getComment("public-key-pins"),
-                        'directive' => $report->getHeader( 'public-key-pins' )
-                    ],
-                    'Strict-Transport-Security' => [
-                        'result' => (strpos( $report->getRating("strict-transport-security"), 'C' ) !== false),
-                        'comment' => $report->getComment("strict-transport-security"),
-                        'directive' => $report->getHeader( 'strict-transport-security' )
-                    ],
-                    'X-Content-Type-Options' => [
-                        'result' => (strpos( $report->getRating("x-content-type-options"), 'C' ) !== false),
-                        'comment' => $report->getComment("x-content-type-options"),
-                        'directive' => $report->getHeader( 'x-content-type-options' )
-                    ],
-                    'X-Frame-Options' => [
-                        'result' => (strpos( $report->getRating("x-frame-options"), 'C' ) !== false),
-                        'comment' => $report->getComment("x-frame-options"),
-                        'directive' => $report->getHeader( 'x-frame-options' )
-                    ],
-                    'X-Xss-Protection' => [
-                        'result' => (strpos( $report->getRating("x-xss-protection"), 'C' ) !== false),
-                        'comment' => $report->getComment("x-xss-protection"),
-                        'directive' => $report->getHeader( 'x-xss-protection' )
-                    ]
-                ]
-            ]);
+            return 'OK';
+        }
+
+        return response()->json((new HeaderCheck($request))->report());
     }
 
+    public function domxssReport(ScanStartRequest $request)
+    {
+        if ($request->json('callbackurls')) {
+            DomxssScanJob::dispatch($request->all());
 
-    public function domxssReport(Request $request){
-        $this->validate($request, [
-            'url' => 'required|url'
-        ]);
-        $report = new DomxssReport($request->url);
-        return [
-            'checks' => [
-                'sinks' => ! $report->hasSinks(),
-                'sources' => ! $report->hasSources()
-            ]
-        ];
+            return 'OK';
+        }
+
+        return response()->json((new DOMXSSCheck($request))->report());
     }
 
+    public static function notifyCallbacks(array $callbackurls, $report)
+    {
+        foreach ($callbackurls as $url) {
+            try {
+                $client = new Client();
+                $client->request('POST', $url, [
+                    'http_errors' => false,
+                    'timeout'     => 60,
+                    'json'        => $report,
+                ]);
+            } catch (\Exception $e) {
+                Log::warning('Could not send the report to the following callback url: ' . $url);
+            }
+        }
+    }
 }

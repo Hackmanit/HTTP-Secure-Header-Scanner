@@ -2,43 +2,44 @@
 
 namespace App\Ratings;
 
+use App\HTTPResponse;
+use App\TranslateableMessage;
+
 class XXSSProtectionRating extends Rating
 {
+    public function __construct(HTTPResponse $response)
+    {
+        $this->name = 'X_XSS_PROTECTION';
+        $this->scoreType = 'warning';
+
+        parent::__construct($response);
+    }
+
     protected function rate()
     {
         $header = $this->getHeader('x-xss-protection');
 
         if ($header === null) {
-            $this->rating = 'C';
-            $this->comment  = __('The header is not set.');
-        } elseif (count($header) > 1) {
-            $this->rating = 'C';
-            $this->comment  = __('The header is set multiple times.');
+            $this->hasError = true;
+            $this->errorMessage = TranslateableMessage::get('HEADER_NOT_SET');
+        } elseif ($header === 'ERROR') {
+            $this->hasError = true;
+            $this->errorMessage = TranslateableMessage::get('HEADER_ENCODING_ERROR', ['HEADER_NAME' => 'X-XSS-Protection']);
+        } elseif (is_array($header) && count($header) > 1) {
+            $this->hasError = true;
+            $this->errorMessage = TranslateableMessage::get('HEADER_SET_MULTIPLE_TIMES');
         } else {
             $header = $header[0];
 
-            $this->rating = 'B';
-            $this->comment = __('The header is set correctly.');
+            $this->score = 50;
 
             if (strpos($header, 'mode=block') !== false) {
-                $this->rating = 'A';
-                $this->comment .= "\n" . __('"mode=block" is activated.');
+                $this->score = 100;
+                $this->scoreType = 'success';
+                $this->testDetails->push(TranslateableMessage::get('XXSS_BLOCK'));
+            } else {
+                $this->testDetails->push(TranslateableMessage::get('XXSS_CORRECT'));
             }
         }
-    }
-
-    public static function getDescription()
-    {
-        // OWASP
-        // https://www.owasp.org/index.php/OWASP_Secure_Headers_Project#X-XSS-Protection
-        // TODO: Translate
-        return 'This header enables the Cross-site scripting (XSS) filter in your browser.';
-    }
-
-    public static function getBestPractice()
-    {
-        // OWASP
-        // https://www.owasp.org/index.php/OWASP_Secure_Headers_Project#xxp
-        return '1; mode=block';
     }
 }

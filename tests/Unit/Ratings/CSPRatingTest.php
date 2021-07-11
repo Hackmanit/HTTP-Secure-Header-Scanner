@@ -2,10 +2,8 @@
 
 namespace Tests\Unit;
 
+use App\HTTPResponse;
 use App\Ratings\CSPRating;
-use GuzzleHttp\Client;
-use GuzzleHttp\Handler\MockHandler;
-use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Response;
 use Tests\TestCase;
 
@@ -14,105 +12,164 @@ use Tests\TestCase;
  * TODO: Improve parsing and rating of CSP.
  *
  * Class CSPRatingTest
- * @package Tests\Unit
  */
 class CSPRatingTest extends TestCase
 {
     /** @test */
-    public function cspRating_rates_c_because_header_is_not_set()
+    public function cspRating_rates_0_because_header_is_not_set()
     {
         $client = $this->getMockedGuzzleClient([
             new Response(200),
         ]);
-        $rating = new CSPRating("http://testdomain", $client);
+        $response = new HTTPResponse($this->request, $client);
+        $rating = new CSPRating($response);
 
-        $this->assertEquals("C", $rating->getRating());
-        $this->assertEquals('The header is not set.', $rating->getComment());
+        $this->assertEquals(0, $rating->score);
+        $expected = [
+            'translationStringId' => 'HEADER_NOT_SET',
+            'placeholders' => null,
+        ];
+        $this->assertEquals($expected, $rating->errorMessage);
     }
 
     /** @test */
-    public function cspRating_rates_c_because_header_is_set_with_unsafe_inline()
+    public function cspRating_rates_50_because_header_is_set_with_unsafe_inline()
     {
         $client = $this->getMockedGuzzleClient([
             new Response(200, [
-                "Content-Security-Policy" => "default-src 'none'; script-src 'unsafe-inline'; object-src 'none';",
+                'Content-Security-Policy' => "default-src 'none'; script-src 'unsafe-inline'; object-src 'none';",
             ]),
         ]);
-        $rating = new CSPRating("http://testdomain", $client);
+        $response = new HTTPResponse($this->request, $client);
+        $rating = new CSPRating($response);
 
-        $this->assertEquals("C", $rating->getRating());
-        $this->assertEquals('The header contains "unsafe-inline" or "unsafe-eval" directives.', $rating->getComment());
+        $this->assertEquals(50, $rating->score);
+        $this->assertTrue(collect($rating->testDetails)->flatten()->contains('CSP_UNSAFE_INCLUDED'));
     }
 
     /** @test */
-    public function cspRating_rates_c_because_header_is_set_with_unsafe_eval()
+    public function cspRating_rates_50_because_header_is_set_with_unsafe_eval()
     {
         $client = $this->getMockedGuzzleClient([
             new Response(200, [
-                "Content-Security-Policy" => "default-src 'none'; script-src 'unsafe-eval'; object-src 'none';",
+                'Content-Security-Policy' => "default-src 'none'; script-src 'unsafe-eval'; object-src 'none';",
             ]),
         ]);
-        $rating = new CSPRating("http://testdomain", $client);
+        $response = new HTTPResponse($this->request, $client);
+        $rating = new CSPRating($response);
 
-        $this->assertEquals("C", $rating->getRating());
-        $this->assertEquals('The header contains "unsafe-inline" or "unsafe-eval" directives.', $rating->getComment());
+        $this->assertEquals(50, $rating->score);
+        $this->assertTrue(collect($rating->testDetails)->flatten()->contains('CSP_UNSAFE_INCLUDED'));
     }
 
     /** @test */
-    public function cspRating_rates_b_because_header_is_set_without_unsafes_but_without_default_src_none()
+    public function cspRating_rates_0_because_header_is_set_without_unsafes_but_without_default_src()
     {
         $client = $this->getMockedGuzzleClient([
             new Response(200, [
-                "Content-Security-Policy" => "default-src 'self';",
+                'Content-Security-Policy' => "img-src 'self';",
             ]),
         ]);
-        $rating = new CSPRating("http://testdomain", $client);
+        $response = new HTTPResponse($this->request, $client);
+        $rating = new CSPRating($response);
 
-        $this->assertEquals("B", $rating->getRating());
-        $this->assertEquals('The header is free of any "unsafe-" directives.', $rating->getComment());
+        $this->assertEquals(0, $rating->score);
+        $this->assertTrue(collect($rating->testDetails)->flatten()->contains('CSP_DEFAULT_SRC_MISSING'));
     }
 
     /** @test */
-    public function cspRating_rates_a_because_header_is_set_without_unsafes_and_with_default_src_none()
+    public function cspRating_rates_100_because_header_is_set_without_unsafes_and_with_default_src_none()
     {
         $client = $this->getMockedGuzzleClient([
             new Response(200, [
-                "Content-Security-Policy" => "default-src 'none';",
+                'Content-Security-Policy' => "default-src 'none';",
             ]),
         ]);
-        $rating = new CSPRating("http://testdomain", $client);
+        $response = new HTTPResponse($this->request, $client);
+        $rating = new CSPRating($response);
 
-        $this->assertEquals("A", $rating->getRating());
-        $this->assertEquals('The header is "unsafe-" free and includes "default-src \'none\'"', $rating->getComment());
+        $this->assertEquals(100, $rating->score);
     }
-
-    // TODO: Rates with C because of wildcards in script-src, object-src or default-src
-    // TODO: default-src *
-    // TODO: default-src 'none'; script-src *;
 
     /** @test */
     public function cspRating_adds_comment_for_legacy_header()
     {
+        // X-Content-Security-Policy
         $client = $this->getMockedGuzzleClient([
-            new Response(200, [
-                "X-Content-Security-Policy" => "default-src 'none';",
-            ]),
+            new Response(200, ['X-Content-Security-Policy' => "default-src 'none';"]),
+            new Response(200, ['X-WebKit-CSP' => "default-src 'none';"]),
+            new Response(200, ['X-Content-Security-Policy' => "default-src 'none';", 'X-WebKit-CSP' => "default-src 'none';"]),
         ]);
-        $rating = new CSPRating("http://testdomain", $client);
+        // Finds only X-Content-Security-Policy
+        $rating = new CSPRating(new HTTPResponse($this->request, $client));
+        $this->assertTrue($rating->testDetails->flatten()->contains('CSP_LEGACY_HEADER_SET'));
 
-        $this->assertStringEndsWith("The legacy header \"X-Content-Security-Policy\" (that is only used for IE11 with CSP v.1) is set. The new and standardized header is Content-Security-Policy.", $rating->getComment());
+        // Finds only X-WebKit-CSP
+        $rating = new CSPRating(new HTTPResponse($this->request, $client));
+        $this->assertTrue($rating->testDetails->flatten()->contains('CSP_LEGACY_HEADER_SET'));
+
+        // Finds both legacy headers.
+        $rating = new CSPRating(new HTTPResponse($this->request, $client));
+        $this->assertTrue($rating->testDetails->contains(['translationStringId' => 'CSP_LEGACY_HEADER_SET', 'placeholders' => ['HEADER_NAME' => 'X-Content-Security-Policy']]));
+        $this->assertTrue($rating->testDetails->contains(['translationStringId' => 'CSP_LEGACY_HEADER_SET', 'placeholders' => ['HEADER_NAME' => 'X-WebKit-CSP']]));
     }
 
-
-    /**
-     * This method sets and activates the GuzzleHttp Mocking functionality.
-     * @param array $responses
-     * @return Client
-     */
-    protected function getMockedGuzzleClient(array $responses)
+    /** @test */
+    public function cspRating_can_handle_whitespaces()
     {
-        $mock = new MockHandler($responses);
-        $handler = HandlerStack::create($mock);
-        return (new Client(["handler" => $handler])) ;
+        $client = $this->getMockedGuzzleClient([
+            new Response(200, [
+                'Content-Security-Policy' => "default-src   'none';",
+            ]),
+        ]);
+        $response = new HTTPResponse($this->request, $client);
+        $rating = new CSPRating($response);
+
+        $this->assertEquals(100, $rating->score);
+    }
+
+    /** @test */
+    public function CSPRating_detects_wrong_encoding()
+    {
+        $client = $this->getMockedGuzzleClient([
+            // Producing an encoding error
+            new Response(200, ['Content-Security-Policy' => zlib_encode('SGVsbG8gV29ybGQ=', ZLIB_ENCODING_RAW)]),
+        ]);
+        $response = new HTTPResponse($this->request, $client);
+        $rating = new CSPRating($response);
+
+        $this->assertEquals(0, $rating->score);
+        $this->assertTrue(collect($rating->errorMessage)->contains('HEADER_ENCODING_ERROR'));
+        $this->assertTrue($rating->hasError);
+    }
+
+    /** @test */
+    public function cspRating_rates_100_because_header_is_set_without_unsafes_and_with_default_src_self()
+    {
+        $client = $this->getMockedGuzzleClient([
+            new Response(200, [
+                'Content-Security-Policy' => "default-src 'self';",
+            ]),
+        ]);
+        $response = new HTTPResponse($this->request, $client);
+        $rating = new CSPRating($response);
+
+        $this->assertEquals(100, $rating->score);
+    }
+
+    /** @test */
+    public function cspRating_rates_0_if_the_policy_is_not_valid()
+    {
+        $client = $this->getMockedGuzzleClient([
+            new Response(200, [
+                'Content-Security-Policy' => "#default-src 'self'; font-src 'self'",
+            ]),
+        ]);
+        $response = new HTTPResponse($this->request, $client);
+        $rating = new CSPRating($response);
+
+        $this->assertEquals(0, $rating->score);
+        $this->assertTrue(collect($rating->errorMessage)->contains('CSP_IS_NOT_VALID'));
+        $this->assertTrue($rating->hasError);
     }
 }

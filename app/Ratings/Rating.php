@@ -3,63 +3,44 @@
 namespace App\Ratings;
 
 use App\HTTPResponse;
-use GuzzleHttp\Client;
+use voku\helper\HtmlDomParser;
 
-abstract class Rating implements RatingInterface, \JsonSerializable
+abstract class Rating
 {
-    protected $url;
-    public $response;
-    protected $rating = 'C';
-    protected $comment = 'An error occurred.';
+    protected $response;
+
+    public $name = null;
+    public $hasError = false;
+    public $errorMessage = null;
+    public $score = 0;
+    public $scoreType = null;
+    public $testDetails = null;
 
     /**
      * Rating constructor.
-     * @param $url
-     * @param Client $client
      */
-    public function __construct($url, Client $client = null)
+    public function __construct(HTTPResponse $response)
     {
-        $this->url = $url;
+        $this->response = $response;
+        $this->testDetails = collect();
 
-        $this->response = new HTTPResponse($this->url, $client);
         $this->rate();
-    }
-
-    public function url()
-    {
-        return $this->url;
     }
 
     public function getHeader($header)
     {
-        return $this->response->header($header);
+        $result = $this->response->header($header);
+
+        return json_encode($result) ? $result : 'ERROR';
     }
 
     /**
-     * @return string
+     * Return the HTML-Content of a site as a SimpleHtmlDom or false.
+     *
+     * @return bool|voku\helper\SimpleHtmlDom
      */
-    public function getRating()
+    public function getBody()
     {
-        return $this->rating;
-    }
-
-    /**
-     * @return string
-     */
-    public function getComment()
-    {
-        return $this->comment;
-    }
-
-    /**
-     * Specify data which should be serialized to JSON
-     * @link http://php.net/manual/en/jsonserializable.jsonserialize.php
-     * @return mixed data which can be serialized by <b>json_encode</b>,
-     * which is a value of any type other than a resource.
-     * @since 5.4.0
-     */
-    public function jsonSerialize()
-    {
-        return ["rating" => $this->getRating(), "comment" => $this->comment];
+        return HtmlDomParser::str_get_html($this->response->body());
     }
 }

@@ -1,0 +1,4 @@
+.git
+database/database.sqlite
+app/storage/
+.env

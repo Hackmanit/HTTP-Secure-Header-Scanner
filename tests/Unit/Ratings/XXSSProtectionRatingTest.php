@@ -2,69 +2,81 @@
 
 namespace Tests\Unit;
 
+use App\HTTPResponse;
 use App\Ratings\XXSSProtectionRating;
-use GuzzleHttp\Client;
-use GuzzleHttp\Handler\MockHandler;
-use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Response;
 use Tests\TestCase;
 
 class XXSSProtectionRatingTest extends TestCase
 {
-
     /** @test */
-    public function xXSSProtection_rates_c_for_a_missing_header()
+    public function xXSSProtection_rates_0_for_a_missing_header()
     {
         $client = $this->getMockedGuzzleClient([
             new Response(200),
         ]);
-        $rating = new XXSSProtectionRating("http://testdomain", $client);
 
-        $this->assertEquals("C", $rating->getRating());
-        $this->assertEquals("The header is not set.", $rating->getComment());
+        $response = new HTTPResponse($this->request, $client);
+        $rating = new XXSSProtectionRating($response);
+
+        $this->assertEquals(0, $rating->score);
+        $expected = [
+            'translationStringId' => 'HEADER_NOT_SET',
+            'placeholders' => null,
+        ];
+        $this->assertEquals($expected, $rating->errorMessage);
     }
 
     /** @test */
-    public function xXSSProtection_rates_b_for_a_set_header()
+    public function xXSSProtection_rates_a_set_header()
     {
         $client = $this->getMockedGuzzleClient([
-            new Response(200, [ "X-Xss-Protection" => "0"]),
-            new Response(200, [ "X-Xss-Protection" => "1"]),
+            new Response(200, ['X-Xss-Protection' => '0']),
+            new Response(200, ['X-Xss-Protection' => '1']),
         ]);
 
-        $rating = new XXSSProtectionRating("http://testdomain", $client);
+        $response = new HTTPResponse($this->request, $client);
+        $rating = new XXSSProtectionRating($response);
 
-        $this->assertEquals("B", $rating->getRating());
-        $this->assertEquals("The header is set correctly.", $rating->getComment());
+        $this->assertEquals(50, $rating->score);
+        $this->assertTrue(collect($rating->testDetails)->flatten()->contains('XXSS_CORRECT'));
+        $this->assertFalse(collect($rating->testDetails)->flatten()->contains('XXSS_BLOCK'));
 
-        $rating = new XXSSProtectionRating("http://testdomain", $client);
+        $response = new HTTPResponse($this->request, $client);
+        $rating = new XXSSProtectionRating($response);
 
-        $this->assertEquals("B", $rating->getRating());
-        $this->assertEquals("The header is set correctly.", $rating->getComment());
+        $this->assertEquals(50, $rating->score);
+        $this->assertTrue(collect($rating->testDetails)->flatten()->contains('XXSS_CORRECT'));
+        $this->assertFalse(collect($rating->testDetails)->flatten()->contains('XXSS_BLOCK'));
     }
 
     /** @test */
-    public function xXSSProtection_rates_a_for_mode_block()
+    public function xXSSProtection_rates_mode_block()
     {
         $client = $this->getMockedGuzzleClient([
-            new Response(200, [ "X-Xss-Protection" => "1; mode=block"]),
+            new Response(200, ['X-Xss-Protection' => '1; mode=block']),
         ]);
 
-        $rating = new XXSSProtectionRating("http://testdomain", $client);
+        $response = new HTTPResponse($this->request, $client);
+        $rating = new XXSSProtectionRating($response);
 
-        $this->assertEquals("A", $rating->getRating());
-        $this->assertEquals("The header is set correctly.\n\"mode=block\" is activated.", $rating->getComment());
+        $this->assertEquals(100, $rating->score);
+        $this->assertTrue(collect($rating->testDetails)->flatten()->contains('XXSS_BLOCK'));
+        $this->assertFalse(collect($rating->testDetails)->flatten()->contains('XXSS_CORRECT'));
     }
 
-    /**
-     * This method sets and activates the GuzzleHttp Mocking functionality.
-     * @param array $responses
-     * @return Client
-     */
-    protected function getMockedGuzzleClient(array $responses)
+    /** @test */
+    public function XXSSProtectionRating_detects_wrong_encoding()
     {
-        $mock = new MockHandler($responses);
-        $handler = HandlerStack::create($mock);
-        return (new Client(["handler" => $handler])) ;
+        $client = $this->getMockedGuzzleClient([
+            // Producing an encoding error
+            new Response(200, ['X-XSS-Protection' => zlib_encode('SGVsbG8gV29ybGQ=', ZLIB_ENCODING_RAW)]),
+        ]);
+        $response = new HTTPResponse($this->request, $client);
+        $rating = new XXSSProtectionRating($response);
+
+        $this->assertEquals(0, $rating->score);
+        $this->assertTrue(collect($rating->errorMessage)->contains('HEADER_ENCODING_ERROR'));
+        $this->assertTrue($rating->hasError);
     }
 }

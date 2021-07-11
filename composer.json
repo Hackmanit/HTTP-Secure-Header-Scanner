@@ -5,19 +5,22 @@
     "license": "MIT",
     "type": "project",
     "require": {
-        "php": ">=5.6.4",
-        "guzzlehttp/guzzle": "^6.2",
-        "kevinrob/guzzle-cache-middleware": "^1.5",
-        "laravel/framework": "5.4.*",
-        "voku/simple_html_dom": "^1.5"
+        "php": ">=7.1.0",
+        "delight-im/cookie": "^3.1",
+        "fideloper/proxy": "^4.0",
+        "guzzlehttp/guzzle": "^6.3",
+        "laravel/framework": "5.7.*",
+        "predis/predis": "^1.1",
+        "voku/simple_html_dom": "^4.1"
     },
     "require-dev": {
+        "filp/whoops": "~2.0",
         "fzaninotto/faker": "~1.4",
         "mockery/mockery": "0.9.*",
-        "phpunit/phpunit": "~5.0",
+        "phpunit/phpunit": "~7.0",
         "symfony/css-selector": "3.1.*",
         "symfony/dom-crawler": "3.1.*",
-        "barryvdh/laravel-ide-helper": "^2.2"
+        "timacdonald/log-fake": "^1.0"
     },
     "autoload": {
         "classmap": [
@@ -39,13 +42,9 @@
         "post-create-project-cmd": [
             "php artisan key:generate"
         ],
-        "post-install-cmd": [
-            "Illuminate\\Foundation\\ComposerScripts::postInstall",
-            "php artisan optimize"
-        ],
-        "post-update-cmd": [
-            "Illuminate\\Foundation\\ComposerScripts::postUpdate",
-            "php artisan optimize"
+        "post-autoload-dump": [
+            "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
+            "@php artisan package:discover"
         ]
     },
     "config": {

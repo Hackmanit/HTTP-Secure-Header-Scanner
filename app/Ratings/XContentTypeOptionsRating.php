@@ -2,43 +2,42 @@
 
 namespace App\Ratings;
 
+use App\HTTPResponse;
+use App\TranslateableMessage;
+
 class XContentTypeOptionsRating extends Rating
 {
+    public function __construct(HTTPResponse $response)
+    {
+        $this->name = 'X_CONTENT_TYPE_OPTIONS';
+        $this->scoreType = 'warning';
+
+        parent::__construct($response);
+    }
+
     protected function rate()
     {
         $header = $this->getHeader('x-content-type-options');
 
         if ($header === null) {
-            $this->rating = 'C';
-            $this->comment  = __('The header is not set.');
-        } elseif (count($header) > 1) {
-            $this->rating = 'C';
-            $this->comment  = __('The header is set multiple times.');
+            $this->hasError = true;
+            $this->errorMessage = TranslateableMessage::get('HEADER_NOT_SET');
+        } elseif ($header === 'ERROR') {
+            $this->hasError = true;
+            $this->errorMessage = TranslateableMessage::get('HEADER_ENCODING_ERROR', ['HEADER_NAME' => 'X-Content-Type-Options']);
+        } elseif (is_array($header) && count($header) > 1) {
+            $this->hasError = true;
+            $this->errorMessage = TranslateableMessage::get('HEADER_SET_MULTIPLE_TIMES');
         } else {
             $header = $header[0];
 
-            $this->rating = 'C';
-            $this->comment = __('The header is not set correctly.');
-
-            if (strpos($header, 'nosniff') !== false) {
-                $this->rating = 'A';
-                $this->comment = __('The header is set correctly.');
+            if ($header === 'nosniff') {
+                $this->score = 100;
+                $this->scoreType = 'success';
+                $this->testDetails->push(TranslateableMessage::get('XCTO_CORRECT'));
+            } else {
+                $this->testDetails->push(TranslateableMessage::get('XCTO_NOT_CORRECT'));
             }
         }
-    }
-
-    public static function getDescription()
-    {
-        // OWASP
-        // https://www.owasp.org/index.php/OWASP_Secure_Headers_Project#X-Content-Type-Options
-        // TODO: Translate
-        return 'Setting this header will prevent the browser from interpreting files as something else than declared by the content type in the HTTP headers.';
-    }
-
-    public static function getBestPractice()
-    {
-        // OWASP
-        // https://www.owasp.org/index.php/OWASP_Secure_Headers_Project#xcto
-        return 'nosniff';
     }
 }
